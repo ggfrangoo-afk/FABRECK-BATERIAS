@@ -8,7 +8,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SEUS ESTILOS CSS FICAM AQUI (sem alterações) -->
     <style>
         /* Variáveis de cores Fabreck */
         :root {
@@ -606,7 +605,7 @@
             text-align: left;
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
             white-space: nowrap; 
-            overflow: hidden;   
+            overflow: hidden;    
             text-overflow: ellipsis; 
         }
 
@@ -1596,7 +1595,6 @@
     </style>
 </head>
 <body>
-    <!-- O HTML do seu aplicativo fica aqui (sem alterações) -->
     <div class="fabreck-pattern"></div>
     
     <div class="container">
@@ -2009,9 +2007,44 @@
         
         <!-- Página de Configurações -->
         <div id="settingsPage" class="page">
+            <!-- NOVA SEÇÃO: INTEGRAÇÃO COM GITHUB -->
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-title">Banco de Dados</h2>
+                    <h2 class="card-title">Sincronização com GitHub</h2>
+                    <div class="card-icon"><i class="fab fa-github"></i></div>
+                </div>
+                <div class="info-section">
+                    <p>Salve e carregue seus dados de um repositório privado no GitHub. Isso serve como um backup online e permite sincronizar dados entre dispositivos.</p>
+                    <p><strong>Importante:</strong> Você precisa gerar um <a href="https://github.com/settings/tokens" target="_blank">Personal Access Token (Clássico)</a> com a permissão (scope) "repo" para que a integração funcione.</p>
+                </div>
+                <div class="form-group">
+                    <label for="githubToken">GitHub Personal Access Token</label>
+                    <input type="password" id="githubToken" class="form-control" placeholder="Cole seu token aqui">
+                </div>
+                 <div class="form-row">
+                    <div class="form-group">
+                        <label for="githubOwner">Dono do Repositório (usuário ou organização)</label>
+                        <input type="text" id="githubOwner" class="form-control" placeholder="ex: seu-usuario-github">
+                    </div>
+                    <div class="form-group">
+                        <label for="githubRepo">Nome do Repositório</label>
+                        <input type="text" id="githubRepo" class="form-control" placeholder="ex: dados-garantias-fabreck">
+                    </div>
+                </div>
+                 <div class="form-group">
+                    <label for="githubPath">Caminho do Arquivo no Repositório</label>
+                    <input type="text" id="githubPath" class="form-control" placeholder="ex: db/banco.json">
+                </div>
+                <button id="saveGithubSettingsBtn" class="btn btn-info"><i class="fas fa-save"></i> Salvar Configurações</button>
+                <div class="form-row" style="margin-top: 15px;">
+                    <button id="loadFromGithubBtn" class="btn btn-primary"><i class="fas fa-cloud-download-alt"></i> Carregar do GitHub</button>
+                    <button id="saveToGithubBtn" class="btn btn-success"><i class="fas fa-cloud-upload-alt"></i> Salvar no GitHub</button>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Backup Local</h2>
                     <div class="card-icon"><i class="fas fa-database"></i></div>
                 </div>
                 
@@ -2210,39 +2243,8 @@
         </div>
     </div>
 
-    <!-- =================================================================================== -->
-    <!-- INÍCIO: SCRIPTS DO FIREBASE                                                         -->
-    <!-- =================================================================================== -->
-    <script type="module">
-        // Importando as funções necessárias do Firebase
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, onSnapshot, query } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-        // ===================================================================================
-        // PASSO 1: Cole aqui a configuração do seu projeto Firebase
-        // Para obter, vá em: Console do Firebase > Configurações do Projeto > Seus apps
-        // ===================================================================================
-        const firebaseConfig = {
-            apiKey: "SUA_API_KEY",
-            authDomain: "SEU_AUTH_DOMAIN",
-            projectId: "SEU_PROJECT_ID",
-            storageBucket: "SEU_STORAGE_BUCKET",
-            messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-            appId: "SEU_APP_ID"
-        };
-
-        // INICIALIZAÇÃO DO FIREBASE
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const batteriesCollection = collection(db, "batteries"); // Nome da "pasta" no banco de dados
-
-    // ===================================================================================
-    // FIM: SCRIPTS DO FIREBASE                                                          -->
-    // ===================================================================================
-
-
-    // SEU CÓDIGO JAVASCRIPT COMEÇA AQUI (com as devidas alterações)
-    // <script> (removido para ser um único script module)
+    <script>
         // #region Elementos DOM
         const video = document.getElementById('video');
         const startCameraBtn = document.getElementById('startCamera');
@@ -2377,14 +2379,21 @@
         const laudoResultContainer = document.getElementById('laudoResultContainer');
         const laudoResult = document.getElementById('laudoResult');
         const copyLaudoBtn = document.getElementById('copyLaudoBtn');
+        
+        // Elementos do GitHub
+        const githubTokenInput = document.getElementById('githubToken');
+        const githubOwnerInput = document.getElementById('githubOwner');
+        const githubRepoInput = document.getElementById('githubRepo');
+        const githubPathInput = document.getElementById('githubPath');
+        const saveGithubSettingsBtn = document.getElementById('saveGithubSettingsBtn');
+        const loadFromGithubBtn = document.getElementById('loadFromGithubBtn');
+        const saveToGithubBtn = document.getElementById('saveToGithubBtn');
         // #endregion
 
         // #region Estado do Sistema
         let stream = null;
         let scanning = false;
-        // REMOVIDO: const DB_KEY = 'fabreck_battery_db_v21'; // Não usamos mais localStorage para os dados principais
-        
-        // Mantemos localStorage para configurações de UI que são específicas do usuário/navegador
+        const DB_KEY = 'fabreck_battery_db_v21'; // Versão antiga para migração
         const ACTIVITY_KEY = 'fabreck_activity_log_v12';
         const LAST_SALESMAN_KEY = 'fabreck_last_salesman_v12';
         const LAST_CLIENT_KEY = 'fabreck_last_client_v12';
@@ -2392,8 +2401,8 @@
         const VIEW_MODE_KEY = 'fabreck_view_mode'; 
         const DARK_MODE_KEY = 'fabreck_dark_mode'; 
         const INSTRUCTIONS_KEY = 'fabreck_instructions_v1';
-        
-        let batteryData = []; // Esta variável será agora um espelho dos dados do Firebase
+        const GITHUB_SETTINGS_KEY = 'fabreck_github_settings_v1'; // NOVO
+        let batteryData = [];
         let activityData = [];
         let currentFilters = {
             client: '',
@@ -2421,7 +2430,7 @@
         let currentViewMode = localStorage.getItem(VIEW_MODE_KEY) || 'auto';
         let isDarkMode = localStorage.getItem(DARK_MODE_KEY) === 'true';
         let aiChatHistory = [];
-        const logoBase64 = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMHEBUTEhMWFhUXGBgYGRgYGBcaGBgYGBgYGBgYGBgYHSggGBolHRgYITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAJ8BPgMBIgACEQEDEQH/xAAcAAACAgMBAQAAAAAAAAAAAAAFBgMEAAIHAQj/xABEEAACAQMCAwUEBgYHBgcAAAABAgADBBESIQUxQVEGEyJhcYEHkaGxMkKSwdEUM1JicuHwI1OCkqKyFhc0Q1Njc7PC/8QAGgEAAgMBAQAAAAAAAAAAAAAAAQIAAwQFBv/EAC8RAAICAQMDAgUDBQEAAAAAAAABAhEDEiExBEFREyJhcYGRobHB8BQy0eFCUnH/2gAMAwEAAhEDEQA/APcYiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAi_DELETAR_ESSA_LINHA_E_COLAR_A_IMAGEM_EM_BASE64_AQUI_';
+        const logoBase64 = 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMHEBUTEhMWFhUXGBgYGRgYGBcaGBgYGBgYGBgYGBgYHSggGBolHRgYITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy0lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIAJ8BPgMBIgACEQEDEQH/xAAcAAACAgMBAQAAAAAAAAAAAAAFBgMEAAIHAQj/xABEEAACAQMCAwUEBgYHBgcAAAABAgADBBESIQUxQVEGEyJhcYEHkaGxMkKSwdEUM1JicuHwI1OCkqKyFhc0Q1Njc7PC/8QAGgEAAgMBAQAAAAAAAAAAAAAAAQIAAwQFBv/EAC8RAAICAQMDAgUDBQEAAAAAAAABAhEDEiExBEFREyJhcYGRobHB8BQy0eFCUnH/2gAMAwEAAhEDEQA/APcYiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAiIgIiICIiAi_DELETAR_ESSA_LINHA_E_COLAR_A_IMAGEM_EM_BASE64_AQUI_';
 
         const batteryModelMap = {
             'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
@@ -2430,36 +2439,108 @@
             'K': 'FA7D'
         };
         
+        let db;
         // #endregion
 
-        // #region INICIALIZAÇÃO E LISTENER DO FIREBASE
-        
-        // NOVO: Listener em tempo real do Firebase. Esta função será chamada sempre que os dados mudarem no servidor.
-        onSnapshot(query(batteriesCollection), (querySnapshot) => {
-            console.log("Recebendo dados do Firebase...");
-            const firebaseBatteries = [];
-            querySnapshot.forEach((doc) => {
-                // Adicionamos o ID do documento do Firebase ao nosso objeto de bateria
-                firebaseBatteries.push({ ...doc.data(), firebaseId: doc.id });
-            });
-            
-            batteryData = firebaseBatteries; // Atualizamos nossa variável local com os dados da nuvem
-            
-            console.log(`${batteryData.length} registros carregados.`);
-            updateUI(); // Atualizamos toda a interface com os novos dados
-            updateLastUpdate();
+        // #region IndexedDB Helper
+        const dbPromise = new Promise((resolve, reject) => {
+            const request = indexedDB.open('FabreckDB', 1);
+
+            request.onerror = (event) => {
+                console.error("Erro ao abrir IndexedDB:", event.target.error);
+                reject("Erro de base de dados");
+            };
+
+            request.onupgradeneeded = (event) => {
+                const db = event.target.result;
+                if (!db.objectStoreNames.contains('batteries')) {
+                    db.createObjectStore('batteries', { keyPath: 'id' });
+                }
+                 if (!db.objectStoreNames.contains('activity')) {
+                    db.createObjectStore('activity', { autoIncrement: true });
+                }
+                 if (!db.objectStoreNames.contains('settings')) {
+                    db.createObjectStore('settings', { keyPath: 'key' });
+                }
+            };
+
+            request.onsuccess = (event) => {
+                console.log("Base de dados aberta com sucesso.");
+                db = event.target.result;
+                resolve(db);
+            };
         });
 
+        const dbManager = {
+            async get(storeName, key) {
+                const db = await dbPromise;
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.get(key);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            },
+            async getAll(storeName) {
+                const db = await dbPromise;
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readonly');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.getAll();
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            },
+            async set(storeName, value) {
+                const db = await dbPromise;
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.put(value);
+                    request.onsuccess = () => resolve(request.result);
+                    request.onerror = (event) => reject(event.target.error);
+                    transaction.oncomplete = () => resolve();
+                });
+            },
+            async delete(storeName, key) {
+                const db = await dbPromise;
+                 return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.delete(key);
+                    request.onsuccess = () => resolve();
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            },
+            async clear(storeName) {
+                const db = await dbPromise;
+                return new Promise((resolve, reject) => {
+                    const transaction = db.transaction(storeName, 'readwrite');
+                    const store = transaction.objectStore(storeName);
+                    const request = store.clear();
+                    request.onsuccess = () => resolve();
+                    request.onerror = (event) => reject(event.target.error);
+                });
+            }
+        };
+        // #endregion
 
+        // #region Inicialização e Event Listeners
         async function init() {
-            console.log("Inicializando sistema v31 com Firebase...");
+            console.log("Inicializando sistema v32 com GitHub Sync...");
             document.getElementById('logo-img-header').src = logoBase64;
             
-            // Não precisamos mais de loadFromDB(), o onSnapshot cuida disso.
-            
+            await dbPromise; // Garante que a BD está pronta
+            await migrateFromLocalStorage();
+            await loadFromDB();
+            await loadGithubSettings(); // Carrega configs do GitHub
+
+            updateUI();
+            updateLastUpdate();
             setupAudio();
             setupEventListeners();
-            loadLastUsedData(); // Carrega dados de UI do localStorage
+            loadLastUsedData();
             updateScanHistory();
             applyViewMode(); 
             applyDarkMode(); 
@@ -2470,16 +2551,274 @@
             const day = String(today.getDate()).padStart(2, '0');
             submissionDateInput.value = `${year}-${month}-${day}`;
 
-            console.log("Sistema inicializado e ouvindo mudanças no Firebase!");
+            console.log("Sistema inicializado com sucesso!");
         }
         
-        // O restante do seu código JavaScript, com as devidas alterações...
-        // ... (código omitido para não repetir tudo, mas ele está no arquivo completo) ...
+        async function loadLastUsedData() {
+            const lastSalesman = await dbManager.get('settings', LAST_SALESMAN_KEY);
+            if (lastSalesman) {
+                salesmanNameInput.value = lastSalesman.value;
+                currentSalesman.textContent = lastSalesman.value;
+            }
+            
+            const lastClient = await dbManager.get('settings', LAST_CLIENT_KEY);
+            if (lastClient) {
+                clientNameInput.value = lastClient.value;
+            }
+            
+            const lastWarrantyType = await dbManager.get('settings', LAST_WARRANTY_TYPE_KEY);
+            selectWarrantyType(lastWarrantyType ? lastWarrantyType.value : 'factory');
+        }
+        
+        function setupEventListeners() {
+            console.log("Configurando event listeners...");
+            
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => showPage(btn.getAttribute('data-page')));
+            });
+            
+            serialCodeInput.addEventListener('input', handleSerialInput);
+            serialCodeInput.addEventListener('keypress', e => { if (e.key === 'Enter') addBattery(); });
+            salesmanNameInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+            clientNameInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+            salesmanNameInput.addEventListener('blur', async () => {
+                const name = salesmanNameInput.value.trim().toUpperCase();
+                if (name) {
+                    currentSalesman.textContent = name;
+                    await dbManager.set('settings', { key: LAST_SALESMAN_KEY, value: name });
+                }
+            });
+            clientNameInput.addEventListener('blur', async () => {
+                const name = clientNameInput.value.trim().toUpperCase();
+                if (name) await dbManager.set('settings', { key: LAST_CLIENT_KEY, value: name });
+            });
+            scanBtn.addEventListener('click', handleScanClick);
+            clearFormBtn.addEventListener('click', clearCode);
+            addBtn.addEventListener('click', addBattery);
+            
+            factoryOption.addEventListener('click', () => selectWarrantyType('factory'));
+            analyzedOption.addEventListener('click', () => selectWarrantyType('analyzed'));
+            
+            startCameraBtn.addEventListener('click', startCamera);
+            stopCameraBtn.addEventListener('click', stopCamera);
+            switchCameraBtn.addEventListener('click', switchCamera);
+            captureOverlay.addEventListener('click', captureImage);
+            
+            applyFilterBtn.addEventListener('click', applyFilters);
+            clearFilterBtn.addEventListener('click', clearFilters);
+            previewPdfBtn.addEventListener('click', previewPDF);
+            pdfBtn.addEventListener('click', downloadPDF);
+            batchPdfBtn.addEventListener('click', generateBatchPDFs);
+            excelBtn.addEventListener('click', exportToFormattedExcel);
+            clearBtn.addEventListener('click', clearData);
+            codeFilter.addEventListener('input', applyFilters);
+            
+            backupBtn.addEventListener('click', exportData);
+            restoreBtn.addEventListener('click', () => restoreFileInput.click());
 
+            restoreFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    fileToRestore = e.target.files[0];
+                    restoreConfirmModal.classList.add('active');
+                }
+                e.target.value = ''; 
+            });
+
+            cancelRestoreBtn.addEventListener('click', () => {
+                fileToRestore = null;
+                restoreConfirmModal.classList.remove('active');
+            });
+
+            confirmRestoreBtn.addEventListener('click', () => {
+                restoreConfirmModal.classList.remove('active');
+                if (fileToRestore) {
+                    handleRestoreFile(fileToRestore);
+                }
+            });
+            
+            helpBtn.addEventListener('click', showRulesModal);
+            closeRulesModal.addEventListener('click', () => rulesModal.classList.remove('active'));
+            confirmRules.addEventListener('click', () => rulesModal.classList.remove('active'));
+            
+            // Listeners da Análise
+            closeAnalysisModal.addEventListener('click', () => analysisModal.classList.remove('active'));
+            saveAnalysisBtn.addEventListener('click', saveAnalysis);
+            analysisClientFilter.addEventListener('change', updateAnalysisTable);
+            selectAllCheckbox.addEventListener('change', handleSelectAll);
+            batchAnalyzeBtn.addEventListener('click', openBatchAnalysisModal);
+
+
+            closeNameEditModal.addEventListener('click', () => nameEditModal.classList.remove('active'));
+            saveNameEditBtn.addEventListener('click', saveEditedNames);
+
+            closeObservationModal.addEventListener('click', () => observationModal.classList.remove('active'));
+            saveObservationBtn.addEventListener('click', () => {
+                if (observationCallback) observationCallback(observationText.value);
+            });
+
+            procedenteBtn.addEventListener('click', () => procedenteModal.classList.add('active'));
+            closeProcedenteModal.addEventListener('click', () => procedenteModal.classList.remove('active'));
+            capacidadeBaixaBtn.addEventListener('click', () => {
+                recommendationInput.value = 'PROCEDENTE - CAPACIDADE BAIXA';
+                procedenteModal.classList.remove('active');
+            });
+            ccaBaixoBtn.addEventListener('click', () => {
+                recommendationInput.value = 'PROCEDENTE - CCA BAIXO';
+                procedenteModal.classList.remove('active');
+            });
+
+            descarregadaBtn.addEventListener('click', () => {
+                recommendationInput.value = 'RECARREGAR A BATERIA POR 6H EM CARGA LENTA E REFAZER O TESTE';
+            });
+            addObservationBtn.addEventListener('click', () => openObservationModal(tempObservation, (obs) => {
+                tempObservation = obs;
+                observationModal.classList.remove('active');
+                showNotification('Observação salva temporariamente.', 'info');
+            }));
+            analysisAddObservationBtn.addEventListener('click', async () => {
+                 const battery = await dbManager.get('batteries', analyzingBatteryId);
+                 if(battery) openObservationModal(battery.observations, async (obs) => {
+                     battery.observations = obs;
+                     await dbManager.set('batteries', battery);
+                     observationModal.classList.remove('active');
+                     showNotification('Observação atualizada.', 'info');
+                 });
+            });
+
+
+            toggleViewModeBtn.addEventListener('click', toggleViewMode);
+            toggleDarkModeBtn.addEventListener('click', toggleDarkMode);
+
+            // Listeners do Assistente de IA
+            aiAssistantFab.addEventListener('click', openAIAssistant);
+            aiModalClose.addEventListener('click', closeAIAssistant);
+            aiSendBtn.addEventListener('click', sendAIChatMessage);
+            aiChatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendAIChatMessage();
+            });
+            
+            // Listeners do Laudo Técnico
+            generateLaudoBtn.addEventListener('click', generateLaudo);
+            copyLaudoBtn.addEventListener('click', copyLaudo);
+            
+            // Listeners do GitHub
+            saveGithubSettingsBtn.addEventListener('click', saveGithubSettings);
+            loadFromGithubBtn.addEventListener('click', loadFromGithub);
+            saveToGithubBtn.addEventListener('click', saveToGithub);
+        }
         // #endregion
 
-        // #region Lógica de Dados (CRUD e Persistência) - *** ALTERADO PARA FIREBASE ***
+        // #region Lógica de UI (Páginas, Modos, Notificações)
+        function applyViewMode() {
+            const body = document.body;
+            body.setAttribute('data-view-mode', currentViewMode);
+            viewModeText.textContent = currentViewMode === 'desktop' ? 'Modo Móvel' : 'Modo Desktop';
+            toggleViewModeBtn.querySelector('i').className = currentViewMode === 'desktop' ? 'fas fa-mobile-alt' : 'fas fa-desktop';
+        }
 
+        function toggleViewMode() {
+            currentViewMode = (currentViewMode === 'desktop') ? 'auto' : 'desktop';
+            localStorage.setItem(VIEW_MODE_KEY, currentViewMode);
+            applyViewMode();
+        }
+
+        function applyDarkMode() {
+            document.body.classList.toggle('dark-mode', isDarkMode);
+            darkModeText.textContent = isDarkMode ? 'Modo Claro' : 'Modo Escuro';
+            toggleDarkModeBtn.querySelector('i').className = isDarkMode ? 'fas fa-sun' : 'fas fa-moon';
+        }
+
+        function toggleDarkMode() {
+            isDarkMode = !isDarkMode;
+            localStorage.setItem(DARK_MODE_KEY, isDarkMode);
+            applyDarkMode();
+        }
+        
+        function showPage(pageId) {
+            pages.forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+            
+            navBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
+            });
+            
+            if (['reportPage', 'analysisPage', 'finalizadoPage', 'settingsPage'].includes(pageId)) {
+                updateUI();
+            }
+            if (pageId !== 'scanPage' && stream) {
+                stopCamera();
+            }
+        }
+
+        function showNotification(message, type, duration = 3000) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, duration);
+        }
+
+        function showRulesModal() {
+            rulesModal.classList.add('active');
+        }
+        // #endregion
+
+        // #region Lógica de Dados (CRUD e Persistência)
+        async function migrateFromLocalStorage() {
+            const oldData = localStorage.getItem(DB_KEY);
+            if (oldData) {
+                try {
+                    const dataToMigrate = JSON.parse(oldData);
+                    if (Array.isArray(dataToMigrate)) {
+                        await dbManager.clear('batteries');
+                        for (const item of dataToMigrate) {
+                            await dbManager.set('batteries', item);
+                        }
+                        localStorage.removeItem(DB_KEY);
+                        console.log('Migração de localStorage para IndexedDB concluída.');
+                        showNotification('Dados migrados para a nova base de dados segura!', 'success');
+                    }
+                } catch (e) {
+                    console.error("Erro na migração de dados:", e);
+                }
+            }
+            const oldScanHistory = localStorage.getItem('fabreck_scan_history');
+            if (oldScanHistory) {
+                try {
+                    const historyToMigrate = JSON.parse(oldScanHistory);
+                    if (Array.isArray(historyToMigrate)) {
+                        await dbManager.set('settings', { key: 'fabreck_scan_history', value: historyToMigrate });
+                        localStorage.removeItem('fabreck_scan_history');
+                        console.log('Migração do histórico de scan concluída.');
+                    }
+                } catch (e) {
+                    console.error("Erro na migração do histórico de scan:", e);
+                }
+            }
+        }
+
+        async function loadFromDB() {
+            batteryData = await dbManager.getAll('batteries');
+            activityData = await dbManager.getAll('activity');
+            const savedScanHistory = await dbManager.get('settings', 'fabreck_scan_history');
+            if (savedScanHistory) {
+                scanHistory = savedScanHistory.value;
+            }
+            const instructions = await dbManager.get('settings', INSTRUCTIONS_KEY);
+            if(instructions) {
+                warrantyInstructions = instructions.value;
+            } else {
+                 warrantyInstructions = {
+                    approved: 'Bateria com defeito de fabricação. Enviar uma nova unidade para o cliente.',
+                    rejected_return: 'Bateria sem defeito, apenas descarregada ou com falha externa. Devolver ao cliente.',
+                    rejected_scrap: 'Bateria com falha por mau uso (ex: sobrecarga, caixa danificada) ou fora do prazo. Sucatear.'
+                };
+                await dbManager.set('settings', {key: INSTRUCTIONS_KEY, value: warrantyInstructions});
+            }
+        }
+        
         async function addBattery() {
             const client = clientNameInput.value.trim().toUpperCase();
             const salesman = salesmanNameInput.value.trim().toUpperCase();
@@ -2510,7 +2849,7 @@
             const warrantyStatus = calculateWarrantyStatus(week, year);
             
             const newBattery = {
-                id: Date.now(), // Mantemos um ID local para consistência, mas o Firebase terá o seu próprio
+                id: Date.now(),
                 client,
                 salesman,
                 code,
@@ -2532,55 +2871,540 @@
                 newBattery.finalAction = 'REPROVADA - FORA DO PRAZO';
                 newBattery.recommendation = newBattery.recommendation || 'Finalizada automaticamente: Bateria fora do prazo de garantia.';
                 newBattery.technicalOpinionDate = new Date().toISOString();
-            } else if (recommendation) {
+                showNotification(`Bateria ${code} finalizada automaticamente (Fora do Prazo).`, 'warning');
+                addActivity('fas fa-clock', `Bateria ${code} finalizada (Fora do Prazo).`);
+            } else if (recommendation) { // A chave é a existência de um parecer técnico
                 newBattery.status = 'finalized';
                 if (recommendation.toUpperCase().includes('PROCEDENTE')) {
                     newBattery.finalAction = 'APROVADA - ENVIAR NOVA';
                 } else if (recommendation.toUpperCase().includes('RECARREGAR')) {
                     newBattery.finalAction = 'REPROVADA - DEVOLVER AO CLIENTE';
                 } else {
+                    // Ação genérica se o parecer não contiver palavras-chave
                     newBattery.finalAction = 'ANALISADA NO REGISTRO';
                 }
                 newBattery.technicalOpinionDate = new Date().toISOString();
-            }
-            
-            try {
-                // ALTERADO: Adicionando o documento ao Firestore
-                const docRef = await addDoc(batteriesCollection, newBattery);
-                console.log("Documento escrito com ID: ", docRef.id);
-                
-                showNotification(newBattery.status === 'finalized' ? `Bateria ${code} finalizada no registro!` : 'Bateria adicionada para análise!', 'success');
+                showNotification(`Bateria ${code} finalizada no registro.`, 'success');
+                addActivity('fas fa-check-circle', `Bateria ${code} finalizada no registro.`);
+            } else { // Sem parecer, vai para a fila de análise
+                newBattery.status = 'in_analysis';
+                showNotification('Bateria adicionada para análise!', 'success');
                 addActivity('fas fa-battery-full', `Bateria ${code} adicionada para ${client}`);
-                
-                clearCode();
-                recommendationInput.value = '';
-                tempObservation = '';
-                
-                // Não precisamos mais chamar updateUI() aqui, o onSnapshot fará isso automaticamente.
-            } catch (e) {
-                console.error("Erro ao adicionar documento: ", e);
-                showNotification('Erro ao salvar no banco de dados.', 'error');
+            }
+
+            await dbManager.set('batteries', newBattery);
+            batteryData.push(newBattery);
+            
+            clearCode();
+            recommendationInput.value = '';
+            tempObservation = '';
+            
+            updateUI();
+        }
+
+        async function removeBattery(id) {
+            if (!confirm('Tem certeza que deseja remover esta bateria? A ação é irreversível.')) return;
+            
+            const removed = batteryData.find(b => b.id === id);
+            await dbManager.delete('batteries', id);
+            batteryData = batteryData.filter(b => b.id !== id);
+            updateUI();
+            showNotification('Bateria removida com sucesso!', 'success');
+            addActivity('fas fa-trash-alt', `Bateria removida: ${removed.code}`);
+        }
+
+        async function clearData() {
+            if (batteryData.length === 0) {
+                showNotification('Não há dados para limpar', 'info');
+                return;
+            }
+            if (confirm('TEM CERTEZA? Todos os dados de garantia serão apagados permanentemente.')) {
+                await dbManager.clear('batteries');
+                await dbManager.clear('activity');
+                await dbManager.delete('settings', 'fabreck_scan_history');
+                batteryData = [];
+                activityData = [];
+                scanHistory = [];
+                updateUI();
+                updateActivityLog();
+                updateScanHistory();
+                lastUpdate.textContent = "Nenhuma atualização";
+                showNotification('Todos os dados foram removidos.', 'success');
+                addActivity('fas fa-trash-alt', 'Todos os dados foram removidos');
             }
         }
         
-        async function removeBattery(firebaseId) {
-            if (!confirm('Tem certeza que deseja remover esta bateria? A ação é irreversível.')) return;
+        async function exportData() {
+            const dataToExport = await dbManager.getAll('batteries');
+            if (dataToExport.length === 0) {
+                showNotification('Não há dados para exportar', 'info');
+                return;
+            }
+            const dataStr = JSON.stringify(dataToExport);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            const exportFileDefaultName = `fabreck_backup_${new Date().toISOString().slice(0,10)}.json`;
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            showNotification('Dados exportados com sucesso!', 'success');
+            addActivity('fas fa-download', 'Dados exportados');
+        }
+        
+        function handleRestoreFile(file) {
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                try {
+                    const importedData = JSON.parse(event.target.result);
+                    if (!Array.isArray(importedData)) {
+                        throw new Error('Estrutura de dados inválida: o arquivo não contém um array.');
+                    }
+                    
+                    await dbManager.clear('batteries');
+                    await dbManager.clear('activity');
+                    
+                    for(const item of importedData) {
+                        await dbManager.set('batteries', item);
+                    }
+
+                    batteryData = importedData;
+                    activityData = [];
+
+                    updateUI();
+                    updateActivityLog();
+
+                    showNotification(`${importedData.length} registros restaurados com sucesso! Os dados atuais foram substituídos.`, 'success');
+                    addActivity('fas fa-upload', `${importedData.length} baterias restauradas do backup.`);
+
+                } catch (error) {
+                    showNotification('Erro ao importar. Arquivo inválido ou incompatível.', 'error');
+                    console.error('Erro na restauração:', error);
+                } finally {
+                    fileToRestore = null;
+                }
+            };
+            reader.readAsText(file);
+        }
+        // #endregion
+
+        // #region Lógica de Negócio (Garantia, Código)
+        function validateSerialCode(code) {
+            return /^\d{4}[A-Za-z]\d{4}$/.test(code);
+        }
+
+        function getBatteryModelFromCode(code) {
+            if (code && code.length >= 5) {
+                const fifthChar = code[4].toUpperCase();
+                return batteryModelMap[fifthChar] || 'Desconhecido';
+            }
+            return 'N/A';
+        }
+
+        function getManufacturingDate(week, year) {
+            const date = new Date(year, 0, 1 + (week - 1) * 7);
+            return date;
+        }
+        
+        function calculateWarrantyStatus(week, year) {
+            const manufDate = getManufacturingDate(week, year);
+            const warrantyEnd = new Date(manufDate);
+            warrantyEnd.setFullYear(warrantyEnd.getFullYear() + 1);
+            warrantyEnd.setDate(warrantyEnd.getDate() + 7); // 1 semana de tolerância
+            return new Date() <= warrantyEnd ? 'warranty' : 'expired';
+        }
+
+        function updateWarrantyDebugInfo(code) {
+            if (validateSerialCode(code)) {
+                const week = parseInt(code.substring(0, 2));
+                const year = parseInt("20" + code.substring(2, 4));
+                const manufDate = getManufacturingDate(week, year);
+                const warrantyEnd = new Date(manufDate);
+                warrantyEnd.setFullYear(warrantyEnd.getFullYear() + 1);
+                warrantyEnd.setDate(warrantyEnd.getDate() + 7);
+
+                debugManufDate.textContent = manufDate.toLocaleDateString('pt-BR');
+                debugWarrantyEndDate.textContent = warrantyEnd.toLocaleDateString('pt-BR');
+                debugCalculatedStatus.textContent = new Date() <= warrantyEnd ? 'Em Garantia' : 'Fora do Prazo';
+                warrantyDebugInfo.style.display = 'block';
+            } else {
+                warrantyDebugInfo.style.display = 'none';
+            }
+        }
+        // #endregion
+
+        // #region Atualização da UI (Tabelas, Stats)
+        function updateUI() {
+            updateClientFilter();
+            updateReportTable();
+            updateAnalysisClientFilter();
+            updateAnalysisTable();
+            updateFinalizadoTable();
+            updateStats();
+            updateWarrantyInstructionsUI();
+        }
+        
+        function updateStats() {
+            const inAnalysis = batteryData.filter(b => b.status === 'in_analysis').length;
+            const finalized = batteryData.filter(b => b.status === 'finalized').length;
             
-            try {
-                // ALTERADO: Deletando o documento do Firestore
-                await deleteDoc(doc(db, "batteries", firebaseId));
+            // Report Page
+            if (totalCount) totalCount.textContent = batteryData.length;
+            if (inAnalysisCountReport) inAnalysisCountReport.textContent = inAnalysis;
+            if (finalizedCountReport) finalizedCountReport.textContent = finalized;
+
+            // Analysis Page
+            if (inAnalysisCount) inAnalysisCount.textContent = inAnalysis;
+
+            // Finalized Page
+            if (finalizadoCount) finalizadoCount.textContent = finalized;
+
+            // DETAILED STATS FOR FINALIZED PAGE
+            if(finalizadoAprovadaCount) {
+                const approvedCount = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('APROVADA')).length;
+                finalizadoAprovadaCount.textContent = approvedCount;
+            }
+            if(finalizadoReprovadaPrazoCount) {
+                const rejectedInWarrantyCount = batteryData.filter(b => 
+                    b.status === 'finalized' && 
+                    b.finalAction.includes('REPROVADA') && 
+                    b.warranty_period_status === 'warranty'
+                ).length;
+                finalizadoReprovadaPrazoCount.textContent = rejectedInWarrantyCount;
+            }
+            if(finalizadoReprovadaForaCount) {
+                const rejectedExpiredCount = batteryData.filter(b => 
+                    b.status === 'finalized' && 
+                    b.warranty_period_status === 'expired'
+                ).length;
+                finalizadoReprovadaForaCount.textContent = rejectedExpiredCount;
+            }
+        }
+        
+        function updateClientFilter() {
+            const currentVal = clientFilter.value;
+            clientFilter.innerHTML = '<option value="">Todos os Clientes</option>';
+            const uniqueClients = [...new Set(batteryData.map(b => b.client))];
+            uniqueClients.sort().forEach(client => {
+                const option = document.createElement('option');
+                option.value = client;
+                option.textContent = client;
+                clientFilter.appendChild(option);
+            });
+            clientFilter.value = currentVal;
+        }
+
+        function updateAnalysisClientFilter() {
+            const currentVal = analysisClientFilter.value;
+            analysisClientFilter.innerHTML = '<option value="">Todos os Clientes</option>';
+            const uniqueClientsInAnalysis = [...new Set(batteryData.filter(b => b.status === 'in_analysis').map(b => b.client))];
+            uniqueClientsInAnalysis.sort().forEach(client => {
+                const option = document.createElement('option');
+                option.value = client;
+                option.textContent = client;
+                analysisClientFilter.appendChild(option);
+            });
+            analysisClientFilter.value = currentVal;
+        }
+
+        function updateWarrantyInstructionsUI() {
+            warrantyInstructionsContainer.innerHTML = `
+                <p><strong>APROVADA - ENVIAR NOVA:</strong><br>${warrantyInstructions.approved}</p>
+                <hr style="margin: 10px 0; border-color: rgba(0,0,0,0.1);">
+                <p><strong>REPROVADA - DEVOLVER AO CLIENTE:</strong><br>${warrantyInstructions.rejected_return}</p>
+                 <hr style="margin: 10px 0; border-color: rgba(0,0,0,0.1);">
+                <p><strong>REPROVADA - SUCATEAR:</strong><br>${warrantyInstructions.rejected_scrap}</p>
+            `;
+        }
+        
+        function getFilteredData() {
+            return batteryData.filter(b => {
+                const clientMatch = !currentFilters.client || b.client.toLowerCase().includes(currentFilters.client.toLowerCase());
+                const statusMatch = !currentFilters.status || b.warranty_period_status === currentFilters.status;
+                const workflowMatch = !currentFilters.workflowStatus || b.status === currentFilters.workflowStatus;
+                const codeMatch = !currentFilters.code || b.code.toLowerCase().includes(currentFilters.code.toLowerCase());
                 
-                const removed = batteryData.find(b => b.firebaseId === firebaseId);
-                showNotification('Bateria removida com sucesso!', 'success');
-                addActivity('fas fa-trash-alt', `Bateria removida: ${removed.code}`);
-                // O onSnapshot vai atualizar a UI.
-            } catch (e) {
-                console.error("Erro ao remover documento: ", e);
-                showNotification('Erro ao remover do banco de dados.', 'error');
+                let dateMatch = true;
+                if (currentFilters.startDate && currentFilters.endDate) {
+                    const batteryDate = new Date(b.timestamp);
+                    const startDate = new Date(currentFilters.startDate + 'T00:00:00');
+                    const endDate = new Date(currentFilters.endDate + 'T23:59:59');
+                    dateMatch = batteryDate >= startDate && batteryDate <= endDate;
+                }
+                return clientMatch && statusMatch && workflowMatch && codeMatch && dateMatch;
+            });
+        }
+        
+        function updateReportTable() {
+            const filteredData = getFilteredData();
+            filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            reportBody.innerHTML = '';
+            if (filteredData.length === 0) {
+                reportBody.innerHTML = `<tr><td colspan="10" style="text-align: center;">Nenhum resultado encontrado</td></tr>`;
+                totalsContainer.innerHTML = '';
+                document.getElementById('modelStatusSummaryCard').style.display = 'none';
+                return;
+            }
+            
+            filteredData.forEach(battery => {
+                const row = document.createElement('tr');
+                const warrantyStatus = battery.warranty_period_status === 'warranty' ? '<span class="status-badge status-warranty">Em Garantia</span>' : '<span class="status-badge status-expired">Fora do Prazo</span>';
+                const workflowStatus = battery.status === 'in_analysis' ? '<span class="status-badge status-in-analysis">Em Análise</span>' : '<span class="status-badge status-finalized">Finalizado</span>';
+                
+                let finalActionBadge = '-';
+                if (battery.finalAction) {
+                    let actionClass = '';
+                    if (battery.finalAction.includes('APROVADA')) actionClass = 'action-approved';
+                    else if (battery.finalAction.includes('DEVOLVER')) actionClass = 'action-rejected';
+                    else if (battery.finalAction.includes('SUCATEAR') || battery.finalAction.includes('PRAZO') || battery.finalAction.includes('VÍDEO')) actionClass = 'action-scrapped';
+                    finalActionBadge = `<span class="status-badge ${actionClass}">${battery.finalAction}</span>`;
+                }
+
+                row.innerHTML = `
+                    <td>${battery.code}</td>
+                    <td>${battery.batteryModel}</td>
+                    <td>${battery.client}</td>
+                    <td>${battery.salesman}</td>
+                    <td>${warrantyStatus}</td>
+                    <td>${workflowStatus}</td>
+                    <td>${finalActionBadge}</td>
+                    <td style="white-space: normal; max-width: 150px;">${battery.recommendation || '-'}</td>
+                    <td>${battery.technicalOpinionDate ? new Date(battery.technicalOpinionDate).toLocaleDateString('pt-BR') : '-'}</td>
+                    <td style="display: flex; gap: 8px;">
+                        <button class="name-edit-btn btn btn-info" data-id="${battery.id}" title="Editar Nomes" style="padding: 5px 10px; width: auto; margin: 0;">
+                            <i class="fas fa-pencil-alt"></i>
+                        </button>
+                        <button class="remove-btn btn btn-danger" data-id="${battery.id}" title="Remover" style="padding: 5px 10px; width: auto; margin: 0;">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
+                `;
+                reportBody.appendChild(row);
+            });
+
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', function() { removeBattery(parseInt(this.getAttribute('data-id'))); });
+            });
+            document.querySelectorAll('.name-edit-btn').forEach(btn => {
+                btn.addEventListener('click', function() { openNameEditModal(parseInt(this.getAttribute('data-id'))); });
+            });
+
+            updateReportTotals(filteredData);
+            updateModelStatusSummary(filteredData);
+        }
+
+        function updateReportTotals(data) {
+            const warrantyCount = data.filter(b => b.warranty_period_status === 'warranty').length;
+            const expiredCount = data.filter(b => b.warranty_period_status === 'expired').length;
+            
+            totalsContainer.innerHTML = `
+                <div class="total-box">
+                    <div class="total-title">Total (Filtro)</div>
+                    <div class="total-value total-all">${data.length}</div>
+                </div>
+                <div class="total-box">
+                    <div class="total-title">Em Garantia</div>
+                    <div class="total-value total-warranty">${warrantyCount}</div>
+                </div>
+                <div class="total-box">
+                    <div class="total-title">Fora do Prazo</div>
+                    <div class="total-value total-expired">${expiredCount}</div>
+                </div>
+            `;
+        }
+
+        function updateModelStatusSummary(data) {
+            const summaryCard = document.getElementById('modelStatusSummaryCard');
+            const summaryBody = document.getElementById('modelStatusSummaryBody');
+
+            const finalizedData = data.filter(b => b.status === 'finalized');
+
+            if (finalizedData.length === 0) {
+                summaryCard.style.display = 'none';
+                return;
+            }
+
+            const summary = {
+                approved: {},
+                rejected: {},
+                recharge: {},
+                expired: {}
+            };
+
+            finalizedData.forEach(battery => {
+                const model = battery.batteryModel || 'N/A';
+                if (battery.finalAction.includes('APROVADA')) {
+                    summary.approved[model] = (summary.approved[model] || 0) + 1;
+                } else if (battery.finalAction.includes('FORA DO PRAZO')) {
+                    summary.expired[model] = (summary.expired[model] || 0) + 1;
+                } else if (battery.recommendation && battery.recommendation.toUpperCase().includes('RECARREGAR')) {
+                    summary.recharge[model] = (summary.recharge[model] || 0) + 1;
+                } else if (battery.finalAction.includes('REPROVADA')) {
+                    summary.rejected[model] = (summary.rejected[model] || 0) + 1;
+                }
+            });
+
+            if (Object.keys(summary.approved).length === 0 && Object.keys(summary.rejected).length === 0 && Object.keys(summary.recharge).length === 0 && Object.keys(summary.expired).length === 0) {
+                summaryCard.style.display = 'none';
+                return;
+            }
+
+            summaryCard.style.display = 'block';
+
+            let html = '';
+
+            const createSummaryLine = (title, data) => {
+                if (Object.keys(data).length > 0) {
+                    const items = Object.entries(data).map(([model, count]) => `${model} = ${String(count).padStart(2, '0')}`).join(' / ');
+                    return `<div style="margin-bottom: 10px;"><h4>${title}</h4><p>${items}</p></div>`;
+                }
+                return '';
+            };
+
+            html += createSummaryLine('BATERIAS APROVADAS (TROCA)', summary.approved);
+            html += createSummaryLine('BATERIAS REPROVADAS', summary.rejected);
+            html += createSummaryLine('BATERIAS PARA RECARREGAR', summary.recharge);
+            html += createSummaryLine('BATERIAS FORA DO PRAZO', summary.expired);
+
+            summaryBody.innerHTML = html;
+        }
+
+
+        function updateAnalysisTable() {
+            const selectedClient = analysisClientFilter.value;
+            let dataToAnalyze = batteryData.filter(b => b.status === 'in_analysis');
+
+            if (selectedClient) {
+                dataToAnalyze = dataToAnalyze.filter(b => b.client === selectedClient);
+            }
+
+            dataToAnalyze.sort((a, b) => new Date(a.submissionDate) - new Date(b.submissionDate));
+            analysisBody.innerHTML = '';
+            selectAllCheckbox.checked = false;
+
+            if (dataToAnalyze.length === 0) {
+                analysisBody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Nenhuma bateria na fila de análise.</td></tr>`;
+                return;
+            }
+
+            dataToAnalyze.forEach(battery => {
+                const row = document.createElement('tr');
+                const warrantyStatus = battery.warranty_period_status === 'warranty' ? '<span class="status-badge status-warranty">Em Garantia</span>' : '<span class="status-badge status-expired">Fora do Prazo</span>';
+                row.innerHTML = `
+                    <td><input type="checkbox" class="analysis-checkbox" data-id="${battery.id}"></td>
+                    <td>${battery.code}</td>
+                    <td>${battery.client}</td>
+                    <td>${battery.batteryModel}</td>
+                    <td>${new Date(battery.submissionDate).toLocaleDateString('pt-BR')}</td>
+                    <td>${warrantyStatus}</td>
+                    <td>
+                        <button class="analyze-btn btn btn-primary" data-id="${battery.id}" style="padding: 8px 12px; width: auto; margin: 0;">
+                            <i class="fas fa-edit"></i> Analisar
+                        </button>
+                    </td>
+                `;
+                analysisBody.appendChild(row);
+            });
+
+            document.querySelectorAll('.analyze-btn').forEach(btn => {
+                btn.addEventListener('click', function() { openSingleAnalysisModal(parseInt(this.getAttribute('data-id'))); });
+            });
+            document.querySelectorAll('.analysis-checkbox').forEach(box => {
+                box.addEventListener('change', updateBatchAnalyzeButtonState);
+            });
+            updateBatchAnalyzeButtonState();
+        }
+
+        function updateFinalizadoTable() {
+            const dataFinalizada = batteryData.filter(b => b.status === 'finalized');
+            dataFinalizada.sort((a, b) => new Date(b.technicalOpinionDate) - new Date(a.technicalOpinionDate));
+            finalizadoBody.innerHTML = '';
+
+            if (dataFinalizada.length === 0) {
+                finalizadoBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhuma garantia finalizada.</td></tr>`;
+                return;
+            }
+
+            dataFinalizada.forEach(battery => {
+                const row = document.createElement('tr');
+                 let finalActionBadge = '-';
+                if (battery.finalAction) {
+                    let actionClass = '';
+                    if (battery.finalAction.includes('APROVADA')) actionClass = 'action-approved';
+                    else if (battery.finalAction.includes('DEVOLVER')) actionClass = 'action-rejected';
+                    else if (battery.finalAction.includes('SUCATEAR') || battery.finalAction.includes('PRAZO') || battery.finalAction.includes('VÍDEO')) actionClass = 'action-scrapped';
+                    finalActionBadge = `<span class="status-badge ${actionClass}">${battery.finalAction}</span>`;
+                }
+                row.innerHTML = `
+                    <td>${battery.code}</td>
+                    <td>${battery.client}</td>
+                    <td>${new Date(battery.technicalOpinionDate).toLocaleDateString('pt-BR')}</td>
+                    <td>${finalActionBadge}</td>
+                    <td style="white-space: normal; max-width: 200px;">${battery.recommendation}</td>
+                `;
+                finalizadoBody.appendChild(row);
+            });
+        }
+        // #endregion
+
+        // #region Lógica de Análise e Edição (Single e Batch)
+        async function openSingleAnalysisModal(id) {
+            const battery = await dbManager.get('batteries', id);
+            if (!battery) return;
+
+            analysisMode = 'single';
+            analyzingBatteryId = id;
+            
+            analysisModalTitle.textContent = `Analisar Bateria: ${battery.code}`;
+            analysisSingleInfo.style.display = 'block';
+
+            analysisClientName.textContent = battery.client;
+            analysisSalesmanName.textContent = battery.salesman;
+            analysisBatteryModel.textContent = battery.batteryModel;
+            analysisWarrantyStatus.innerHTML = battery.warranty_period_status === 'warranty' ? '<span class="status-badge status-warranty">Em Garantia</span>' : '<span class="status-badge status-expired">Fora do Prazo</span>';
+            analysisRecommendation.value = battery.recommendation || '';
+            analysisFinalAction.value = '';
+
+            analysisModal.classList.add('active');
+        }
+
+        function openBatchAnalysisModal() {
+            const selectedCheckboxes = document.querySelectorAll('.analysis-checkbox:checked');
+            if (selectedCheckboxes.length === 0) {
+                showNotification('Nenhuma bateria selecionada para análise em lote.', 'error');
+                return;
+            }
+
+            batchAnalysisIds = [];
+            selectedCheckboxes.forEach(checkbox => {
+                batchAnalysisIds.push(parseInt(checkbox.getAttribute('data-id')));
+            });
+
+            analysisMode = 'batch';
+            analysisModalTitle.textContent = `Analisar ${batchAnalysisIds.length} Baterias em Lote`;
+            analysisSingleInfo.style.display = 'none'; // Oculta informações individuais
+            analysisRecommendation.value = '';
+            analysisFinalAction.value = '';
+            
+            analysisModal.classList.add('active');
+        }
+
+        function saveAnalysis() {
+            if (analysisMode === 'single') {
+                saveSingleAnalysis();
+            } else if (analysisMode === 'batch') {
+                saveBatchAnalysis();
             }
         }
 
-        async function saveAnalysis() {
+        async function saveSingleAnalysis() {
+            if (analyzingBatteryId === null) return;
+
+            const battery = await dbManager.get('batteries', analyzingBatteryId);
+            if (!battery) return;
+
             const newRecommendation = analysisRecommendation.value.trim();
             const newFinalAction = analysisFinalAction.value;
 
@@ -2589,36 +3413,966 @@
                 return;
             }
 
-            const idsToUpdate = analysisMode === 'single' ? [analyzingBatteryId] : batchAnalysisIds;
-            
-            try {
-                for (const firebaseId of idsToUpdate) {
-                    const batteryRef = doc(db, "batteries", firebaseId);
-                    // ALTERADO: Atualizando o documento no Firestore
-                    await updateDoc(batteryRef, {
-                        status: 'finalized',
-                        recommendation: newRecommendation,
-                        finalAction: newFinalAction,
-                        technicalOpinionDate: new Date().toISOString()
-                    });
-                }
+            battery.status = 'finalized';
+            battery.recommendation = newRecommendation;
+            battery.finalAction = newFinalAction;
+            battery.technicalOpinionDate = new Date().toISOString();
 
+            await dbManager.set('batteries', battery);
+            batteryData = await dbManager.getAll('batteries');
+            
+            analysisModal.classList.remove('active');
+            showNotification(`Análise da bateria ${battery.code} salva!`, 'success');
+            addActivity('fas fa-clipboard-check', `Análise da bateria ${battery.code} finalizada.`);
+            analyzingBatteryId = null;
+            updateUI();
+        }
+
+        async function saveBatchAnalysis() {
+            const newRecommendation = analysisRecommendation.value.trim();
+            const newFinalAction = analysisFinalAction.value;
+
+            if (!newRecommendation || !newFinalAction) {
+                showNotification('Preencha o Parecer Técnico e a Ação Final para o lote.', 'error');
+                return;
+            }
+
+            let updatedCount = 0;
+            for (const batteryId of batchAnalysisIds) {
+                const battery = await dbManager.get('batteries', batteryId);
+                if (battery) {
+                    battery.status = 'finalized';
+                    battery.recommendation = newRecommendation;
+                    battery.finalAction = newFinalAction;
+                    battery.technicalOpinionDate = new Date().toISOString();
+                    await dbManager.set('batteries', battery);
+                    updatedCount++;
+                }
+            }
+
+            if (updatedCount > 0) {
+                batteryData = await dbManager.getAll('batteries');
                 analysisModal.classList.remove('active');
-                showNotification(`${idsToUpdate.length} bateria(s) analisada(s) com sucesso!`, 'success');
-                addActivity('fas fa-clipboard-check', `${idsToUpdate.length} bateria(s) analisada(s).`);
-                analyzingBatteryId = null;
-                batchAnalysisIds = [];
-                // O onSnapshot vai atualizar a UI.
-            } catch (e) {
-                console.error("Erro ao salvar análise: ", e);
-                showNotification('Erro ao salvar análise no banco de dados.', 'error');
+                showNotification(`${updatedCount} baterias analisadas em lote com sucesso!`, 'success');
+                addActivity('fas fa-layer-group', `${updatedCount} baterias analisadas em lote.`);
+                batchAnalysisIds = []; // Limpa o array após o uso
+                updateUI();
+            }
+        }
+
+        function handleSelectAll() {
+            const checkboxes = document.querySelectorAll('.analysis-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            updateBatchAnalyzeButtonState();
+        }
+
+        function updateBatchAnalyzeButtonState() {
+            const selectedCount = document.querySelectorAll('.analysis-checkbox:checked').length;
+            batchAnalyzeBtn.disabled = selectedCount === 0;
+            batchAnalyzeBtn.textContent = selectedCount > 0 ? `Analisar ${selectedCount} Selecionados` : 'Analisar Selecionados';
+        }
+
+        async function openNameEditModal(id) {
+            const battery = await dbManager.get('batteries', id);
+            if (!battery) return;
+
+            editingBatteryId = id;
+            editClientNameInput.value = battery.client;
+            editSalesmanNameInput.value = battery.salesman;
+            nameEditModal.classList.add('active');
+        }
+
+        async function saveEditedNames() {
+            if (editingBatteryId === null) return;
+
+            const originalBattery = await dbManager.get('batteries', editingBatteryId);
+            if (!originalBattery) return;
+
+            const oldClientName = originalBattery.client;
+            const oldSalesmanName = originalBattery.salesman;
+
+            const newClientName = editClientNameInput.value.trim().toUpperCase();
+            const newSalesmanName = editSalesmanNameInput.value.trim().toUpperCase();
+
+            if (!newClientName || !newSalesmanName) {
+                showNotification('Os nomes não podem estar em branco.', 'error');
+                return;
+            }
+
+            const allBatteries = await dbManager.getAll('batteries');
+            for (const battery of allBatteries) {
+                let updated = false;
+                if (battery.client === oldClientName) {
+                    battery.client = newClientName;
+                    updated = true;
+                }
+                if (battery.salesman === oldSalesmanName) {
+                    battery.salesman = newSalesmanName;
+                    updated = true;
+                }
+                if(updated) await dbManager.set('batteries', battery);
+            }
+
+            batteryData = await dbManager.getAll('batteries');
+            updateUI();
+            nameEditModal.classList.remove('active');
+            showNotification('Nomes atualizados em todos os registros!', 'success');
+            addActivity('fas fa-pencil-alt', `Nomes '${oldClientName}/${oldSalesmanName}' atualizados.`);
+            editingBatteryId = null;
+        }
+
+        function openObservationModal(currentObservation, callback) {
+            observationText.value = currentObservation || '';
+            observationCallback = callback;
+            observationModal.classList.add('active');
+        }
+        // #endregion
+
+        // #region Formulário e Câmera com IA
+        function handleSerialInput() {
+            const code = this.value.trim().toUpperCase();
+            codePreview.textContent = code;
+            codePreview.style.color = validateSerialCode(code) ? 'var(--fabreck-blue)' : 'var(--fabreck-danger)';
+            updateWarrantyDebugInfo(code);
+            if (!rulesShown && code.length >= 4 && !validateSerialCode(code)) {
+                showRulesModal();
+                rulesShown = true;
+                localStorage.setItem('rulesShown', 'true');
             }
         }
         
-        // ... outras funções como saveEditedNames, exportData, etc., também foram adaptadas ...
-        // (O restante do seu código JS original, adaptado para usar Firebase, continua aqui)
+        function clearCode() {
+            serialCodeInput.value = '';
+            codePreview.textContent = '';
+            warrantyDebugInfo.style.display = 'none';
+            serialCodeInput.focus();
+        }
 
-    //</script> (fechamento do script module)
+        async function selectWarrantyType(type) {
+            factoryRadio.checked = type === 'factory';
+            analyzedRadio.checked = type === 'analyzed';
+            factoryOption.classList.toggle('selected', type === 'factory');
+            analyzedOption.classList.toggle('selected', type === 'analyzed');
+            videoAnalysisOptions.classList.toggle('hidden', type !== 'analyzed');
+            await dbManager.set('settings', { key: LAST_WARRANTY_TYPE_KEY, value: type });
+        }
+
+        function handleScanClick() {
+            if (stream) {
+                showNotification('Toque na tela da câmera para capturar.', 'info');
+            } else {
+                startCamera();
+            }
+        }
+        
+        async function startCamera() {
+            try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('API de câmera não suportada');
+                if (stream) stream.getTracks().forEach(track => track.stop());
+                
+                const constraints = { video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } } };
+                stream = await navigator.mediaDevices.getUserMedia(constraints);
+                video.srcObject = stream;
+                
+                startCameraBtn.disabled = true;
+                stopCameraBtn.disabled = false;
+                switchCameraBtn.style.display = 'block';
+                captureOverlay.classList.remove('hidden');
+                scannerIndicator.classList.add('active');
+                scannerStatusText.textContent = 'Toque na tela para capturar';
+                scanning = true;
+            } catch (err) {
+                console.error('Erro ao acessar a câmera:', err);
+                showNotification('Erro ao acessar a câmera. Verifique as permissões.', 'error');
+                stopCamera();
+            }
+        }
+        
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            startCameraBtn.disabled = false;
+            stopCameraBtn.disabled = true;
+            switchCameraBtn.style.display = 'none';
+            captureOverlay.classList.add('hidden');
+            scannerIndicator.classList.remove('active');
+            scannerStatusText.textContent = 'Câmera desativada';
+            scanning = false;
+        }
+        
+        function switchCamera() {
+            currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
+            stopCamera();
+            setTimeout(startCamera, 100);
+        }
+        
+        async function captureImage() {
+            if (!stream || !scanning) return;
+            
+            scannerStatusText.textContent = 'Processando com IA...';
+            
+            try {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                
+                const base64ImageData = canvas.toDataURL('image/png').split(',')[1];
+                
+                const prompt = "Extraia o número de série de 9 caracteres desta imagem. O formato é 4 dígitos, 1 letra e 4 dígitos (ex: 3524A2623). Forneça apenas o código, sem texto adicional.";
+
+                const payload = {
+                    contents: [{
+                        parts: [
+                            { text: prompt },
+                            { inlineData: { mimeType: "image/png", data: base64ImageData } }
+                        ]
+                    }]
+                };
+                
+                const apiKey = ""; // A chave será injetada pelo ambiente
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro na API: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                const text = result?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
+
+                if (text && validateSerialCode(text)) {
+                    serialCodeInput.value = text;
+                    handleSerialInput();
+                    playBeep();
+                    await addToScanHistory(text);
+                    scannerStatusText.textContent = 'Código reconhecido!';
+                    showNotification(`Código reconhecido pela IA: ${text}`, 'success');
+                    clientNameInput.focus();
+                } else {
+                    scannerStatusText.textContent = 'Código não encontrado. Tente novamente.';
+                    showNotification('IA não encontrou um código válido. Melhore a iluminação ou o enquadramento.', 'error');
+                }
+
+            } catch (error) {
+                console.error('Erro no OCR com IA:', error);
+                scannerStatusText.textContent = 'Erro no reconhecimento';
+                showNotification('Ocorreu um erro ao processar a imagem.', 'error');
+            } finally {
+                setTimeout(() => { if (scanning) scannerStatusText.textContent = 'Toque na tela para capturar'; }, 2000);
+            }
+        }
+        // #endregion
+
+        // #region Histórico e Log de Atividades
+        function setupAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                beepSound = () => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    oscillator.type = 'sine';
+                    oscillator.frequency.value = 800;
+                    gainNode.gain.value = 0.1;
+                    oscillator.start();
+                    setTimeout(() => oscillator.stop(), 150);
+                };
+            } catch (e) {
+                console.log('Web Audio API não suportada');
+            }
+        }
+        
+        function playBeep() {
+            if (beepSound) beepSound();
+        }
+        
+        function updateLastUpdate() {
+            if(batteryData.length > 0) {
+                 lastUpdate.textContent = new Date(Math.max(...batteryData.map(b => new Date(b.timestamp)))).toLocaleString('pt-BR');
+            } else {
+                 lastUpdate.textContent = "Nenhuma atualização";
+            }
+        }
+        
+        function updateActivityLog() {
+            activityLog.innerHTML = '';
+            if (activityData.length === 0) {
+                activityLog.innerHTML = `<div class="activity-item"><div class="activity-icon"><i class="fas fa-info-circle"></i></div><div class="activity-content">Nenhuma atividade recente</div></div>`;
+                return;
+            }
+            activityData.slice(-5).reverse().forEach(activity => {
+                const item = document.createElement('div');
+                item.className = 'activity-item';
+                item.innerHTML = `<div class="activity-icon"><i class="${activity.icon}"></i></div><div class="activity-content">${activity.message}</div><div class="activity-time">${activity.time}</div>`;
+                activityLog.appendChild(item);
+            });
+        }
+        
+        async function addActivity(icon, message) {
+            const newActivity = { icon, message, time: new Date().toLocaleTimeString('pt-BR') };
+            await dbManager.set('activity', newActivity);
+            activityData.push(newActivity);
+            if (activityData.length > 50) activityData.shift();
+            updateActivityLog();
+        }
+
+        async function addToScanHistory(code) {
+            scanHistory.unshift({ code, time: new Date().toLocaleTimeString('pt-BR') });
+            if (scanHistory.length > 10) scanHistory.pop();
+            await dbManager.set('settings', { key: 'fabreck_scan_history', value: scanHistory });
+            updateScanHistory();
+        }
+
+        function updateScanHistory() {
+            scannedHistory.innerHTML = '';
+            if (scanHistory.length === 0) {
+                scannedHistory.innerHTML = '<div class="scanned-item"><span>Nenhum código escaneado</span></div>';
+                return;
+            }
+            scanHistory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'scanned-item';
+                div.innerHTML = `<span class="scanned-code">${item.code}</span><span class="scanned-time">${item.time}</span>`;
+                scannedHistory.appendChild(div);
+            });
+        }
+        // #endregion
+
+        // #region Filtros e PDF/Excel
+        function applyFilters() {
+            currentFilters = {
+                client: clientFilter.value,
+                status: statusFilter.value,
+                workflowStatus: workflowStatusFilter.value,
+                startDate: startDateInput.value,
+                endDate: endDateInput.value,
+                code: codeFilter.value
+            };
+            updateReportTable();
+            showNotification('Filtros aplicados!', 'success');
+        }
+        
+        function clearFilters() {
+            clientFilter.value = '';
+            statusFilter.value = '';
+            workflowStatusFilter.value = '';
+            startDateInput.value = '';
+            endDateInput.value = '';
+            codeFilter.value = '';
+            currentFilters = { client: '', status: '', workflowStatus: '', startDate: '', endDate: '', code: '' };
+            updateReportTable();
+            showNotification('Filtros limpos!', 'success');
+        }
+
+        function drawPdfHeader(doc, clientName, salesmanName) {
+            if (logoBase64) {
+                doc.addImage(logoBase64, 'JPEG', 15, 8, 40, 40);
+            }
+            doc.setFontSize(18);
+            doc.text('Relatório de Análise de Garantia', 195, 15, { align: 'right' });
+            doc.setFontSize(10);
+            doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 195, 22, { align: 'right' });
+            
+            doc.setFontSize(12);
+            doc.text(`Cliente: ${clientName}`, 15, 40);
+            doc.text(`Vendedor: ${salesmanName}`, 15, 46);
+
+            doc.setLineWidth(0.5);
+            doc.line(15, 55, 195, 55);
+
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'bold');
+            doc.text('RESPONSÁVEL TÉCNICO: REGINALDO SANTOS', 15, 62);
+            doc.text('ANÁLISE DE GARANTIA: JENILTON CRUZ', 195, 62, { align: 'right' });
+            doc.setFont(undefined, 'normal');
+
+            return 70;
+        }
+
+        function buildClientPDFPage(doc, clientName, clientBatteries, startY) {
+            let currentY = startY;
+
+            // 1. Resumo por Ação
+            const summary = {
+                approved: {},
+                rejected: {},
+                recharge: {},
+                expired: {}
+            };
+
+            const finalizedData = clientBatteries.filter(b => b.status === 'finalized');
+
+            finalizedData.forEach(battery => {
+                const model = battery.batteryModel || 'N/A';
+                if (battery.finalAction.includes('APROVADA')) {
+                    summary.approved[model] = (summary.approved[model] || 0) + 1;
+                } else if (battery.finalAction.includes('FORA DO PRAZO')) {
+                    summary.expired[model] = (summary.expired[model] || 0) + 1;
+                } else if (battery.recommendation && battery.recommendation.toUpperCase().includes('RECARREGAR')) {
+                    summary.recharge[model] = (summary.recharge[model] || 0) + 1;
+                } else if (battery.finalAction.includes('REPROVADA')) {
+                    summary.rejected[model] = (summary.rejected[model] || 0) + 1;
+                }
+            });
+
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.text('Resumo para Separação', 15, currentY);
+            currentY += 10;
+
+            const createSummaryList = (title, data, color) => {
+                if (Object.keys(data).length > 0) {
+                    if (currentY > 260) {
+                        doc.addPage();
+                        currentY = 20;
+                    }
+                    const totalCount = Object.values(data).reduce((sum, count) => sum + count, 0);
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(color[0], color[1], color[2]);
+                    doc.text(`${title} - TOTAL: ${String(totalCount).padStart(2, '0')}`, 15, currentY);
+                    currentY += 8;
+
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    const items = Object.entries(data).map(([model, count]) => `${model} = ${String(count).padStart(2, '0')}`).join('  /  ');
+                    doc.text(items, 15, currentY, { maxWidth: 180 });
+                    currentY += 15;
+                }
+            };
+            
+            doc.setTextColor(0, 0, 0);
+            createSummaryList('BATERIAS APROVADAS (PARA TROCA)', summary.approved, [39, 174, 96]);
+            createSummaryList('BATERIAS PARA RECARREGAR', summary.recharge, [243, 156, 18]);
+            createSummaryList('BATERIAS REPROVADAS', summary.rejected, [231, 76, 60]);
+            createSummaryList('BATERIAS FORA DO PRAZO', summary.expired, [127, 140, 141]);
+
+            // 2. Tabela Detalhada de Baterias
+            if (currentY > 240) {
+                doc.addPage();
+                currentY = 20;
+            } else {
+                doc.setLineWidth(0.2);
+                doc.line(15, currentY - 5, 195, currentY - 5);
+            }
+            
+            doc.setFontSize(14);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(0,0,0);
+            doc.text('Detalhamento das Baterias', 15, currentY);
+            currentY += 10;
+
+            const tableBodyData = clientBatteries.map(b => [
+                b.code,
+                b.batteryModel,
+                new Date(b.submissionDate).toLocaleDateString('pt-BR'),
+                b.finalAction || (b.status === 'in_analysis' ? 'Em Análise' : '-'),
+                b.recommendation || '-'
+            ]);
+
+            doc.autoTable({
+                startY: currentY,
+                head: [['Código', 'Modelo', 'Data Envio', 'Ação Final', 'Parecer Técnico']],
+                body: tableBodyData,
+                theme: 'striped',
+                headStyles: { fillColor: [22, 49, 72] },
+                bodyStyles: { fontSize: 8 },
+                columnStyles: { 4: { cellWidth: 60 } },
+                 didDrawPage: (data) => {
+                    currentY = data.cursor.y; 
+                }
+            });
+            currentY = doc.lastAutoTable.finalY + 15;
+
+            // 3. Critérios de Análise
+            if (currentY > 240) {
+                doc.addPage();
+                currentY = 20;
+            }
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.text('Critérios para Análise de Garantia', 15, currentY);
+            currentY += 8;
+            
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'normal');
+            doc.text(`APROVADA (TROCA): ${warrantyInstructions.approved}`, 17, currentY, { maxWidth: 180 });
+            currentY += 12;
+            doc.text(`REPROVADA: ${warrantyInstructions.rejected_return}`, 17, currentY, { maxWidth: 180 });
+            currentY += 12;
+             doc.text(`SUCATEAR: ${warrantyInstructions.rejected_scrap}`, 17, currentY, { maxWidth: 180 });
+        }
+
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const filteredData = getFilteredData();
+
+            const groupedByClient = filteredData.reduce((acc, battery) => {
+                (acc[battery.client] = acc[battery.client] || []).push(battery);
+                return acc;
+            }, {});
+            
+            let firstClient = true;
+            for (const clientName in groupedByClient) {
+                if (!firstClient) {
+                    doc.addPage();
+                }
+                const clientBatteries = groupedByClient[clientName];
+                const salesmanName = clientBatteries.length > 0 ? clientBatteries[0].salesman : 'N/A';
+                const startY = drawPdfHeader(doc, clientName, salesmanName);
+                buildClientPDFPage(doc, clientName, clientBatteries, startY);
+                firstClient = false;
+            }
+            
+            return doc;
+        }
+        
+        function generateBatchPDFs() {
+            const filteredData = getFilteredData();
+             if (filteredData.length === 0) {
+                showNotification('Nenhum dado para gerar os relatórios.', 'error');
+                return;
+            }
+
+            const groupedByClient = filteredData.reduce((acc, battery) => {
+                (acc[battery.client] = acc[battery.client] || []).push(battery);
+                return acc;
+            }, {});
+
+            showNotification(`Gerando ${Object.keys(groupedByClient).length} relatórios...`, 'info');
+
+            for (const clientName in groupedByClient) {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                const clientBatteries = groupedByClient[clientName];
+                const salesmanName = clientBatteries.length > 0 ? clientBatteries[0].salesman : 'N/A';
+
+                const startY = drawPdfHeader(doc, clientName, salesmanName);
+                buildClientPDFPage(doc, clientName, clientBatteries, startY);
+                
+                const safeFileName = clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                doc.save(`relatorio_garantia_${safeFileName}.pdf`);
+            }
+        }
+
+        function previewPDF() {
+            if (getFilteredData().length === 0) {
+                showNotification('Nenhum dado para gerar o relatório.', 'error');
+                return;
+            }
+            const doc = generatePDF();
+            doc.output('dataurlnewwindow');
+        }
+        
+        function downloadPDF() {
+             if (getFilteredData().length === 0) {
+                showNotification('Nenhum dado para gerar o relatório.', 'error');
+                return;
+            }
+            const doc = generatePDF();
+            doc.save(`relatorio_consolidado_${new Date().toISOString().slice(0,10)}.pdf`);
+        }
+        
+        function exportToFormattedExcel() {
+            const data = getFilteredData();
+            if (data.length === 0) {
+                showNotification('Não há dados para exportar', 'error');
+                return;
+            }
+
+            const mappedData = data.map(b => ({
+                'Código': b.code,
+                'Modelo': b.batteryModel,
+                'Cliente': b.client,
+                'Vendedor': b.salesman,
+                'Data de Registro': new Date(b.timestamp).toLocaleString('pt-BR'),
+                'Data de Envio': b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : '',
+                'Status da Garantia': b.warranty_period_status === 'warranty' ? 'Em Garantia' : 'Fora do Prazo',
+                'Status da Análise': b.status === 'in_analysis' ? 'Em Análise' : 'Finalizado',
+                'Parecer Técnico': b.recommendation || '',
+                'Ação Final': b.finalAction || '',
+                'Data da Análise': b.technicalOpinionDate ? new Date(b.technicalOpinionDate).toLocaleString('pt-BR') : ''
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(mappedData);
+            
+            // Auto-filtro
+            ws['!autofilter'] = { ref: XLSX.utils.encode_range(XLSX.utils.decode_range(ws['!ref'])) };
+
+            // Ajustar largura das colunas
+            const colWidths = [];
+            for (const key in mappedData[0]) {
+                colWidths.push({ wch: Math.max(key.length, ...mappedData.map(row => row[key] ? row[key].toString().length : 0)) + 2 });
+            }
+            ws['!cols'] = colWidths;
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Relatório de Garantias");
+
+            XLSX.writeFile(wb, `relatorio_garantias_${new Date().toISOString().slice(0,10)}.xlsx`);
+        }
+        // #endregion
+        
+        // #region Lógica do GitHub
+        async function saveGithubSettings() {
+            const settings = {
+                token: githubTokenInput.value,
+                owner: githubOwnerInput.value.trim(),
+                repo: githubRepoInput.value.trim(),
+                path: githubPathInput.value.trim()
+            };
+            await dbManager.set('settings', { key: GITHUB_SETTINGS_KEY, value: settings });
+            showNotification('Configurações do GitHub salvas!', 'success');
+        }
+
+        async function loadGithubSettings() {
+            const settings = await dbManager.get('settings', GITHUB_SETTINGS_KEY);
+            if (settings && settings.value) {
+                githubTokenInput.value = settings.value.token || '';
+                githubOwnerInput.value = settings.value.owner || '';
+                githubRepoInput.value = settings.value.repo || '';
+                githubPathInput.value = settings.value.path || '';
+            }
+        }
+        
+        function getGithubSettings() {
+            const token = githubTokenInput.value;
+            const owner = githubOwnerInput.value.trim();
+            const repo = githubRepoInput.value.trim();
+            const path = githubPathInput.value.trim();
+            if (!token || !owner || !repo || !path) {
+                showNotification('Por favor, preencha todas as configurações do GitHub.', 'error');
+                return null;
+            }
+            return { token, owner, repo, path };
+        }
+
+        async function saveToGithub() {
+            const settings = getGithubSettings();
+            if (!settings) return;
+
+            const { token, owner, repo, path } = settings;
+            const GITHUB_API_URL = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+            const headers = {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+            };
+
+            showNotification('Sincronizando com o GitHub...', 'info', 10000);
+
+            try {
+                // 1. Obter o SHA do arquivo atual para evitar conflitos
+                let fileSha = null;
+                const getResponse = await fetch(GITHUB_API_URL, { headers });
+                if (getResponse.ok) {
+                    const fileData = await getResponse.json();
+                    fileSha = fileData.sha;
+                } else if (getResponse.status !== 404) {
+                    throw new Error(`Falha ao verificar arquivo no GitHub: ${getResponse.statusText}`);
+                }
+
+                // 2. Preparar os dados para salvar
+                const dataToSave = await dbManager.getAll('batteries');
+                const content = JSON.stringify(dataToSave, null, 2);
+                const encodedContent = btoa(unescape(encodeURIComponent(content))); // Corrige encoding de caracteres especiais
+
+                // 3. Fazer o PUT para criar/atualizar o arquivo
+                const body = {
+                    message: `Atualização do banco de dados do app em ${new Date().toLocaleString('pt-BR')}`,
+                    content: encodedContent,
+                    sha: fileSha // Se for null, o GitHub cria um novo arquivo
+                };
+
+                const putResponse = await fetch(GITHUB_API_URL, {
+                    method: 'PUT',
+                    headers,
+                    body: JSON.stringify(body),
+                });
+
+                if (!putResponse.ok) {
+                    throw new Error(`Falha ao salvar no GitHub: ${putResponse.statusText}`);
+                }
+
+                showNotification('Dados salvos com sucesso no GitHub!', 'success');
+                addActivity('fab fa-github', 'Dados salvos no GitHub.');
+
+            } catch (error) {
+                console.error('Erro ao salvar no GitHub:', error);
+                showNotification(`Erro ao salvar no GitHub: ${error.message}`, 'error', 5000);
+            }
+        }
+
+        async function loadFromGithub() {
+            const settings = getGithubSettings();
+            if (!settings) return;
+
+             if (!confirm('Isso substituirá TODOS os dados locais pelos dados do GitHub. Deseja continuar?')) {
+                return;
+            }
+
+            const { token, owner, repo, path } = settings;
+            const GITHUB_API_URL = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+            const headers = {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+            };
+
+            showNotification('Carregando dados do GitHub...', 'info', 10000);
+
+            try {
+                const response = await fetch(GITHUB_API_URL, { headers });
+
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error("Arquivo não encontrado no repositório. Salve os dados primeiro.");
+                    }
+                    throw new Error(`Falha ao carregar do GitHub: ${response.statusText}`);
+                }
+
+                const fileData = await response.json();
+                const content = decodeURIComponent(escape(atob(fileData.content)));
+                const dataFromGithub = JSON.parse(content);
+
+                if (!Array.isArray(dataFromGithub)) {
+                    throw new Error("O arquivo no GitHub não contém dados válidos.");
+                }
+
+                // Substituir dados locais
+                await dbManager.clear('batteries');
+                for (const item of dataFromGithub) {
+                    await dbManager.set('batteries', item);
+                }
+                
+                // Recarregar UI
+                await loadFromDB();
+                updateUI();
+                
+                showNotification(`${dataFromGithub.length} registros carregados do GitHub!`, 'success');
+                addActivity('fab fa-github', 'Dados carregados do GitHub.');
+
+            } catch (error) {
+                 console.error('Erro ao carregar do GitHub:', error);
+                showNotification(`Erro ao carregar do GitHub: ${error.message}`, 'error', 5000);
+            }
+        }
+        // #endregion
+
+        // #region Lógica do Assistente e Laudo de IA
+        function openAIAssistant() {
+            aiModal.classList.add('active');
+            if (aiChatBox.children.length === 0) {
+                const welcomeMessage = "Olá! Sou o assistente técnico Fabreck IA. Posso fornecer informações detalhadas sobre tipos de bateria, diagnósticos, manutenção e as regras de garantia. Como posso ajudar?";
+                addMessageToAIChat('assistant', welcomeMessage);
+                aiChatHistory.push({ role: 'model', parts: [{ text: welcomeMessage }] });
+            }
+        }
+
+        function closeAIAssistant() {
+            aiModal.classList.remove('active');
+        }
+
+        function addMessageToAIChat(sender, message) {
+            const messageEl = document.createElement('div');
+            messageEl.classList.add('ai-chat-message', sender);
+            
+            if (sender === 'assistant' && message === 'thinking') {
+                messageEl.classList.add('thinking');
+                messageEl.innerHTML = `<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>`;
+            } else {
+                messageEl.textContent = message;
+            }
+            
+            aiChatBox.appendChild(messageEl);
+            aiChatBox.scrollTop = aiChatBox.scrollHeight;
+            return messageEl;
+        }
+
+        async function sendAIChatMessage() {
+            const userInput = aiChatInput.value.trim();
+            if (!userInput) return;
+
+            addMessageToAIChat('user', userInput);
+            aiChatHistory.push({ role: 'user', parts: [{ text: userInput }] });
+            aiChatInput.value = '';
+            
+            const thinkingEl = addMessageToAIChat('assistant', 'thinking');
+
+            const knowledgeBase = `
+                **Sobre a Fabreck:** A Fabreck é especialista em baterias de alta performance para motocicletas, utilizando tecnologia de ponta para garantir durabilidade e confiança.
+
+                **Tipos de Bateria de Moto:**
+                - **Convencional (Chumbo-Ácido):** Requer ativação com a solução ácida que acompanha o produto. Manutenção periódica do nível da solução pode ser necessária (completar apenas com água destilada). É a tecnologia mais tradicional e com bom custo-benefício.
+                - **AGM (Absorbent Glass Mat) / Selada VRLA:** A solução ácida é absorvida por uma manta de fibra de vidro. Vem selada de fábrica e não requer manutenção de água. Oferece maior resistência à vibração e pode ser instalada em diferentes posições. É uma evolução da convencional.
+                - **Gel:** Similar à AGM, mas a solução é em forma de gel. Excelente resistência à vibração e a vazamentos, ideal para motos de alta performance e off-road.
+                - **Lítio (LiFePO4):** Tecnologia mais moderna. Extremamente leve (até 70% mais leve), vida útil muito superior, taxa de autodescarga baixíssima e alta capacidade de partida (CCA). Não sofre com sulfatação. É a escolha premium para performance.
+
+                **Termos Técnicos Importantes:**
+                - **Voltagem (V):** A maioria das motos usa 12V. É a tensão nominal do sistema elétrico.
+                - **Amperagem (Ah - Ampere-hora):** Indica a capacidade de armazenamento de energia. Quanto maior, mais tempo a bateria consegue fornecer energia.
+                - **CA (Cranking Amps):** A capacidade de partida da bateria. Um CA mais alto significa mais força para girar o motor de arranque. É um dos indicadores mais importantes de performance.
+                - **CCA (Cold Cranking Amps - Corrente de Arranque a Frio):** Medida do CA em baixas temperaturas (0°F ou -18°C).
+
+                **Diagnóstico de Problemas Comuns:**
+                - **Bateria não segura carga:** Pode ser sulfatação (cristais de sulfato de chumbo nas placas que impedem a reação química), fim da vida útil (desgaste natural) ou problema no sistema de recarga da moto (alternador/estator ou retificador/regulador de voltagem).
+                - **Moto não liga:** Primeiro, verificar se os terminais estão limpos e bem apertados. Medir a voltagem: abaixo de 12.4V em repouso indica necessidade de recarga; abaixo de 12V pode indicar um problema sério ou célula danificada. Testar o CA/CCA com equipamento adequado é a forma mais precisa de avaliar a saúde da bateria.
+                - **Sulfatação:** Ocorre principalmente quando a bateria de chumbo-ácido fica descarregada por longos períodos. Os cristais de sulfato de chumbo se solidificam nas placas, impedindo a recarga. É uma das maiores causas de falha prematura. Baterias de lítio não sofrem deste problema.
+
+                **Dicas de Manutenção e Vida Útil:**
+                - **Limpeza:** Mantenha os terminais (polos) limpos, apertados e livres de corrosão (zinabre). Pode-se usar uma escova de aço e aplicar graxa específica para polos após a limpeza.
+                - **Recarga:** Se a moto ficar parada por mais de 15 dias, o ideal é usar um carregador/mantenedor inteligente. Ele evita a descarga profunda e a sulfatação. A voltagem de recarga da moto deve ser verificada anualmente, devendo estar entre 13.5V e 14.5V com o motor em funcionamento.
+                - **Armazenamento:** Se for guardar a bateria fora da moto, armazene-a em local seco e fresco, e dê uma carga completa a cada 30-45 dias.
+
+                **Regras de Garantia Fabreck:**
+                - O código de série deve ter exatamente 9 caracteres.
+                - Formato: 4 números, 1 letra, 4 números (Ex: 3524A2623).
+                - A garantia é de 1 ano a partir da data de fabricação (codificada no número de série), com uma tolerância de 7 dias.
+            `;
+
+            const systemPrompt = `Você é o "Fabreck IA", um assistente técnico especialista em baterias de motocicleta da marca Fabreck. Sua função é fornecer informações claras, precisas e úteis para os usuários do aplicativo de garantia. Responda de forma profissional, amigável e direta. Utilize a base de conhecimento a seguir para responder a todas as perguntas. Se a pergunta for fora do escopo de baterias ou do aplicativo, informe educadamente que você só pode ajudar com tópicos relacionados a baterias Fabreck. Base de Conhecimento: ${knowledgeBase}`;
+
+            const fullHistory = [
+                { role: 'user', parts: [{ text: systemPrompt }] },
+                { role: 'model', parts: [{ text: 'Entendido. Sou o Fabreck IA, especialista em baterias. Estou pronto para ajudar.' }] },
+                ...aiChatHistory
+            ];
+
+
+            try {
+                const payload = { contents: fullHistory };
+                const apiKey = ""; // A chave será injetada pelo ambiente
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                const aiResponse = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (aiResponse) {
+                    thinkingEl.remove();
+                    addMessageToAIChat('assistant', aiResponse);
+                    aiChatHistory.push({ role: 'model', parts: [{ text: aiResponse }] });
+                } else {
+                    throw new Error("No response from AI.");
+                }
+
+            } catch (error) {
+                console.error("Erro no chat com IA:", error);
+                thinkingEl.remove();
+                addMessageToAIChat('assistant', 'Desculpe, ocorreu um erro. Tente novamente mais tarde.');
+            }
+        }
+        
+        async function generateLaudo() {
+            const client = document.getElementById('laudoClientName').value.trim();
+            const code = document.getElementById('laudoBatteryCode').value.trim();
+            const model = document.getElementById('laudoBatteryModel').value.trim();
+            const ca = document.getElementById('laudoCA').value;
+            const voltage = document.getElementById('laudoVoltage').value;
+            const visual = document.getElementById('laudoVisualInspection').value.trim();
+            const notes = document.getElementById('laudoTechnicianNotes').value.trim();
+
+            if(!client || !code || !model || !ca || !voltage || !visual) {
+                showNotification('Por favor, preencha todos os campos do laudo.', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('generateLaudoBtn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
+            
+            laudoResultContainer.classList.remove('hidden');
+            laudoResult.value = "A IA está a redigir o laudo técnico com base nos dados fornecidos. Por favor, aguarde...";
+
+            const prompt = `
+                Aja como um engenheiro técnico especialista em baterias da Fabreck.
+                Crie um laudo técnico profissional, formal e bem estruturado em português do Brasil.
+                A análise é feita em bancada, na fábrica, sem acesso à motocicleta do cliente.
+                Use os seguintes dados brutos fornecidos por um técnico:
+                - Cliente: ${client}
+                - Código da Bateria: ${code}
+                - Modelo da Bateria: ${model}
+                - Teste de CA (Cranking Amps): ${ca} A
+                - Voltagem em Repouso: ${voltage} V
+                - Análise Visual da Bateria: ${visual}
+                - Observações Adicionais do Técnico: ${notes}
+
+                O laudo deve seguir esta estrutura:
+                1.  **CABEÇALHO:** "LAUDO TÉCNICO DE ANÁLISE DE BATERIA - FABRECK"
+                2.  **DADOS DE IDENTIFICAÇÃO:** Liste claramente o Cliente, Código e Modelo da bateria.
+                3.  **PROCEDIMENTOS DE TESTE:** Descreva brevemente os testes realizados em bancada (inspeção visual, medição de tensão e teste de CA).
+                4.  **RESULTADOS OBTIDOS:** Apresente os valores numéricos dos testes (Voltagem, CA) e as observações da inspeção visual.
+                5.  **ANÁLISE TÉCNICA:** Com base nos dados, faça uma análise profissional. Utilize o seu conhecimento especializado para determinar se o valor de CA de ${ca}A é apropriado para uma bateria modelo ${model}. Se estiver baixo, mencione isso como um indicador de perda de performance ou fim de vida útil. Compare a voltagem com o padrão esperado (padrão de voltagem saudável: acima de 12.4V). Explique o que os resultados significam (ex: "A voltagem de ${voltage}V indica que a bateria está com a carga baixa").
+                6.  **DIAGNÓSTICO FINAL:** Conclua com um diagnóstico claro focado apenas na bateria, já que o sistema de carga do veículo não foi testado. Exemplos: "Bateria com desgaste natural no fim da sua vida útil", "Falha causada por sulfatação devido a longos períodos sem uso", "Nenhum defeito de fabricação encontrado, bateria apenas descarregada".
+                7.  **RECOMENDAÇÃO:** Dê uma recomendação técnica. Se o problema for da bateria, recomende a substituição. Se a bateria estiver apenas descarregada, recomende uma recarga lenta. Adicione a seguinte observação padrão em todas as recomendações: "É crucial que o sistema de recarga da motocicleta (alternador/retificador) seja verificado por um profissional qualificado antes da instalação de uma nova bateria, para evitar danos recorrentes."
+                8.  **RODAPÉ:** "Laudo gerado por Fabreck IA em ${new Date().toLocaleDateString('pt-BR')}. Análise realizada em bancada."
+
+                Seja objetivo, use terminologia técnica apropriada e não adicione informações que não foram fornecidas.
+            `;
+            
+            try {
+                const payload = { contents: [{ parts: [{ text: prompt }] }] };
+                const apiKey = ""; // A chave será injetada pelo ambiente
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.statusText}`);
+                }
+                
+                const result = await response.json();
+                const aiResponse = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if(aiResponse) {
+                    laudoResult.value = aiResponse;
+                } else {
+                    throw new Error("Resposta da IA vazia.");
+                }
+
+            } catch(error) {
+                console.error("Erro ao gerar laudo:", error);
+                laudoResult.value = "Ocorreu um erro ao comunicar com a IA. Por favor, tente novamente.";
+                showNotification("Erro ao gerar laudo.", 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-cogs"></i> Gerar Laudo com IA';
+            }
+        }
+
+        function copyLaudo() {
+            laudoResult.select();
+            document.execCommand('copy');
+            showNotification('Laudo copiado para a área de transferência!', 'success');
+        }
+        // #endregion
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
