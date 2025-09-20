@@ -43,7 +43,7 @@
         
         html, body {
             height: 100%;
-            overflow: hidden; /* Previne scroll no body */
+            overflow-x: hidden; /* ALTERADO: Previne apenas o scroll horizontal */
         }
 
         body {
@@ -4489,4 +4489,5 @@
     </script>
 </body>
 </html>
+
 
