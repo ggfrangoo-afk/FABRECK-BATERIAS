@@ -115,7 +115,6 @@
             padding: 20px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.1);
             transition: background 0.3s ease;
-            flex-shrink: 0; /* Impede que a sidebar encolha */
         }
         body.dark-mode #sidebar {
             background: var(--dark-card-bg);
@@ -521,8 +520,11 @@
         }
         
         /* Estilos para o conteúdo principal */
-        .page > .card {
-             margin-bottom: 20px;
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
         }
         
         .card {
@@ -1710,33 +1712,6 @@
                 grid-template-columns: repeat(3, 1fr);
             }
         }
-
-        /* --- INÍCIO: AJUSTES PARA WIDESCREEN --- */
-        /* Media query para telas extra largas (a partir de 1400px) */
-        @media (min-width: 1400px) {
-            .container {
-                max-width: 1350px; /* Aumenta a largura máxima do conteúdo */
-            }
-
-            /* Organiza as páginas com 2 cards principais em colunas */
-            #scanPage, #settingsPage {
-                display: grid;
-                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* Duas colunas flexíveis */
-                gap: 20px;
-                align-items: start; /* Alinha os cards no topo */
-            }
-
-            /* Garante que os cards dentro da grid não tenham margem extra que atrapalhe */
-            #scanPage > .card, #settingsPage > .card {
-                margin-bottom: 0;
-            }
-
-            /* Melhora a disposição dos filtros no relatório em telas maiores */
-            .filter-row {
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            }
-        }
-        /* --- FIM: AJUSTES PARA WIDESCREEN --- */
     </style>
 </head>
 <body>
@@ -2594,7 +2569,7 @@
         const ADMIN_PASS = 'FABRECK2024';
         const FIXED_SYNC_KEY = '1418850998876823552';
         
-        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyNDAgNDAiPjxyZWN0IHdpZHRoPSIyNDAiIGhlaWdodD0iNDAiIGZpbGw9IiMwMDQ3QUIiLz48dGV4dCB4PSIxMjAiIHk9IjI1IiBmb250LWZhbWlseT0iU2Vnb2UgVUksIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ-Gh0PSJib2xkIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5GQUJSRUNLIERPIEJSQVNJTDwvdGV4dD48L3N2Zz4=';
+        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyNDAgNDAiPjxyZWN0IHdpZHRoPSIyNDAiIGhlaWdodD0iNDAiIGZpbGw9IiMwMDQ7QUIiLz48dGV4dCB4PSIxMjAiIHk9IjI1IiBmb250LWZhbWlseT0iU2Vnb2UgVUksIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ-Gh0PSJib2xkIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5GQUJSRUNLIERPIEJSQVNJTDwvdGV4dD48L3N2Zz4=';
 
         const batteryModelMap = {
             'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
@@ -4261,7 +4236,7 @@
 
             const knowledgeBase = `
                 **Sobre a FABRECK DO BRASIL:** A FABRECK DO BRASIL é especialista em baterias de alta performance para motocicletas, utilizando tecnologia de ponta para garantir durabilidade e confiança.
-                **Tipos de Bateria de Moto:** Convencional (Chumbo-Ácido), AGM (Selada VRLA), Gel, Lítio (LiFePO4).
+                **Tipos de Bateria de Moto:** Convencional (Chumbo-Ácido), AGM (Selada VRLA), Gel, Lítio (LiFePo4).
                 **Termos Técnicos:** Voltagem (V), Amperagem (Ah), CA (Cranking Amps), CCA (Cold Cranking Amps).
                 **Diagnóstico de Problemas:** Causas para a bateria não segurar carga (sulfatação, fim da vida útil, problema na moto), passos para diagnosticar moto que não liga (terminais, voltagem, teste de CCA).
                 **Dicas de Manutenção:** Limpeza de terminais, uso de carregador inteligente, voltagem de recarga ideal (13.5V-14.5V), armazenamento correto.
@@ -4514,3 +4489,4 @@
     </script>
 </body>
 </html>
+
