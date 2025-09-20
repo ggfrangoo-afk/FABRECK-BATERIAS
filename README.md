@@ -115,6 +115,7 @@
             padding: 20px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.1);
             transition: background 0.3s ease;
+            flex-shrink: 0; /* Impede que a sidebar encolha */
         }
         body.dark-mode #sidebar {
             background: var(--dark-card-bg);
@@ -520,11 +521,8 @@
         }
         
         /* Estilos para o conteúdo principal */
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
+        .page > .card {
+             margin-bottom: 20px;
         }
         
         .card {
@@ -1712,6 +1710,33 @@
                 grid-template-columns: repeat(3, 1fr);
             }
         }
+
+        /* --- INÍCIO: AJUSTES PARA WIDESCREEN --- */
+        /* Media query para telas extra largas (a partir de 1400px) */
+        @media (min-width: 1400px) {
+            .container {
+                max-width: 1350px; /* Aumenta a largura máxima do conteúdo */
+            }
+
+            /* Organiza as páginas com 2 cards principais em colunas */
+            #scanPage, #settingsPage {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); /* Duas colunas flexíveis */
+                gap: 20px;
+                align-items: start; /* Alinha os cards no topo */
+            }
+
+            /* Garante que os cards dentro da grid não tenham margem extra que atrapalhe */
+            #scanPage > .card, #settingsPage > .card {
+                margin-bottom: 0;
+            }
+
+            /* Melhora a disposição dos filtros no relatório em telas maiores */
+            .filter-row {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+        /* --- FIM: AJUSTES PARA WIDESCREEN --- */
     </style>
 </head>
 <body>
@@ -4489,4 +4514,3 @@
     </script>
 </body>
 </html>
-
