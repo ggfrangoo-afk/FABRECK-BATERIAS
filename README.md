@@ -42,8 +42,8 @@
         }
         
         html, body {
-            height: 100%;
-            overflow-x: hidden; /* ALTERADO: Previne apenas o scroll horizontal */
+            min-height: 100%; /* CORRIGIDO: Permite que a página cresça com o conteúdo */
+            overflow-x: hidden; /* Previne apenas o scroll horizontal */
         }
 
         body {
@@ -102,7 +102,7 @@
         /* --- LAYOUT PRINCIPAL (DESKTOP/WEB) --- */
         #layoutContainer {
             display: flex;
-            height: 100vh;
+            min-height: 100vh; /* CORRIGIDO: Usa altura mínima para não cortar o conteúdo */
             width: 100%;
         }
 
@@ -114,7 +114,8 @@
             flex-direction: column;
             padding: 20px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.1);
-            transition: background 0.3s ease;
+            transition: background 0.3s ease, width 0.3s ease;
+            position: relative; /* Adicionado para posicionar o botão */
         }
         body.dark-mode #sidebar {
             background: var(--dark-card-bg);
@@ -183,7 +184,7 @@
 
         #mainContentWrapper {
             flex: 1;
-            overflow-y: auto; /* Permite scroll do conteúdo principal */
+            /* overflow-y: auto; REMOVIDO: Para usar a barra de rolagem principal do navegador */
             position: relative;
             padding: 10px;
         }
@@ -1670,6 +1671,9 @@
             #sidebar {
                 display: flex;
             }
+            #sidebar-toggle-btn {
+                display: flex;
+            }
             #mainContentWrapper {
                 padding: 20px;
             }
@@ -1712,6 +1716,57 @@
                 grid-template-columns: repeat(3, 1fr);
             }
         }
+
+        /* --- NOVOS ESTILOS PARA MENU RECOLHÍVEL --- */
+        #sidebar-toggle-btn {
+            position: absolute;
+            top: 50%;
+            right: -15px;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            background-color: var(--fabreck-dark);
+            color: var(--fabreck-white);
+            border: 2px solid var(--fabreck-light);
+            border-radius: 50%;
+            display: none; /* Escondido em mobile */
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 201;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            border: none;
+            padding: 0;
+        }
+        #sidebar-toggle-btn:hover {
+            background-color: var(--fabreck-blue);
+        }
+        body.dark-mode #sidebar-toggle-btn {
+            background-color: var(--dark-card-bg);
+            border-color: var(--dark-bg);
+        }
+
+        /* Estado Recolhido */
+        body.sidebar-collapsed #sidebar {
+            width: 90px;
+        }
+        body.sidebar-collapsed #sidebar .sidebar-header .logo-img {
+            width: 60px;
+        }
+        body.sidebar-collapsed #sidebar .sidebar-header h3,
+        body.sidebar-collapsed #sidebar .sidebar-btn span,
+        body.sidebar-collapsed #sidebar .sidebar-footer p {
+            display: none;
+        }
+        body.sidebar-collapsed #sidebar .sidebar-btn {
+            justify-content: center;
+        }
+        body.sidebar-collapsed #sidebar .sidebar-btn i {
+            margin-right: 0;
+        }
+        body.sidebar-collapsed #sidebar-toggle-btn i {
+            transform: rotate(180deg);
+        }
     </style>
 </head>
 <body>
@@ -1751,6 +1806,7 @@
             <div class="sidebar-footer">
                 <p>&copy; 2024 FABRECK DO BRASIL</p>
             </div>
+            <button id="sidebar-toggle-btn" title="Recolher menu"><i class="fas fa-chevron-left"></i></button>
         </nav>
 
         <!-- Conteúdo Principal -->
@@ -2522,6 +2578,7 @@
         const usernameInput = document.getElementById('usernameInput');
         const passwordInput = document.getElementById('passwordInput');
         const logoutBtn = document.getElementById('logoutBtn');
+        const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
         // #endregion
 
         // #region Estado do Sistema
@@ -2534,6 +2591,7 @@
         const LAST_WARRANTY_TYPE_KEY = 'fabreck_last_warranty_type_v12';
         const DARK_MODE_KEY = 'fabreck_dark_mode'; 
         const INSTRUCTIONS_KEY = 'fabreck_instructions_v1';
+        const SIDEBAR_COLLAPSED_KEY = 'fabreck_sidebar_collapsed_v1';
         let batteryData = [];
         let activityData = [];
         let currentFilters = {
@@ -2673,6 +2731,7 @@
             document.getElementById('logo-img-sidebar').src = logoBase64;
 
             setupEventListeners();
+            applySidebarState();
             await dbPromise; // Garante que a BD está pronta antes de qualquer operação
             checkAuth(); // Verifica o login e inicia o carregamento de dados
         }
@@ -2879,6 +2938,7 @@
             
             generateLaudoBtn.addEventListener('click', generateLaudo);
             copyLaudoBtn.addEventListener('click', copyLaudo);
+            sidebarToggleBtn.addEventListener('click', toggleSidebar);
         }
         // #endregion
 
@@ -2927,6 +2987,17 @@
 
         function showRulesModal() {
             rulesModal.classList.add('active');
+        }
+
+        function toggleSidebar() {
+            const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
+            localStorage.setItem(SIDEBAR_COLLAPSED_KEY, isCollapsed);
+        }
+
+        function applySidebarState() {
+            if (localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true') {
+                document.body.classList.add('sidebar-collapsed');
+            }
         }
         // #endregion
 
@@ -4111,13 +4182,15 @@
         }
         
         function generateBatchPDFs() {
-            const filteredData = getFilteredData();
-             if (filteredData.length === 0) {
+            // MELHORIA: Usa todos os dados (batteryData) em vez dos dados filtrados (getFilteredData)
+            // para garantir que o lote seja gerado para todos os clientes, independentemente do filtro aplicado na tela.
+            const dataToProcess = batteryData;
+             if (dataToProcess.length === 0) {
                 showNotification('Nenhum dado para gerar os relatórios.', 'error');
                 return;
             }
 
-            const groupedByClient = filteredData.reduce((acc, battery) => {
+            const groupedByClient = dataToProcess.reduce((acc, battery) => {
                 (acc[battery.client] = acc[battery.client] || []).push(battery);
                 return acc;
             }, {});
@@ -4489,5 +4562,7 @@
     </script>
 </body>
 </html>
+
+
 
 
