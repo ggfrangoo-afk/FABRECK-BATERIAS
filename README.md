@@ -41,13 +41,15 @@
             -webkit-tap-highlight-color: transparent; /* Remove highlight em mobile */
         }
         
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Previne scroll no body */
+        }
+
         body {
             background: var(--fabreck-light);
             color: var(--fabreck-dark);
             line-height: 1.6;
-            min-height: 100vh;
-            padding: 10px; /* Default padding for mobile */
-            overflow-x: hidden; /* Evita rolagem horizontal */
             transition: background 0.3s ease, color 0.3s ease;
         }
 
@@ -96,6 +98,96 @@
             text-align: left;
         }
          /* --- FIM ESTILOS DO LOGIN --- */
+
+        /* --- LAYOUT PRINCIPAL (DESKTOP/WEB) --- */
+        #layoutContainer {
+            display: flex;
+            height: 100vh;
+            width: 100%;
+        }
+
+        #sidebar {
+            width: 260px;
+            background: var(--fabreck-dark);
+            color: var(--fabreck-white);
+            display: none; /* Escondido por padrão em mobile */
+            flex-direction: column;
+            padding: 20px;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.1);
+            transition: background 0.3s ease;
+        }
+        body.dark-mode #sidebar {
+            background: var(--dark-card-bg);
+            border-right: 1px solid var(--dark-border);
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .sidebar-header .logo-img {
+            width: 150px;
+            margin-bottom: 10px;
+        }
+        .sidebar-header h3 {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+
+        .sidebar-nav {
+            flex-grow: 1;
+        }
+        .sidebar-btn {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            color: var(--fabreck-white);
+            opacity: 0.7;
+            text-decoration: none;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .sidebar-btn {
+            color: var(--dark-text);
+        }
+        .sidebar-btn i {
+            font-size: 20px;
+            width: 30px;
+            margin-right: 15px;
+        }
+        .sidebar-btn:hover {
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-btn.active {
+            opacity: 1;
+            background: var(--fabreck-blue);
+            color: var(--fabreck-white);
+            font-weight: 600;
+        }
+        body.dark-mode .sidebar-btn.active {
+             background: var(--dark-blue-light);
+        }
+        .sidebar-footer {
+            font-size: 12px;
+            text-align: center;
+            opacity: 0.5;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        body.dark-mode .sidebar-footer {
+            border-top-color: var(--dark-border);
+        }
+
+        #mainContentWrapper {
+            flex: 1;
+            overflow-y: auto; /* Permite scroll do conteúdo principal */
+            position: relative;
+            padding: 10px;
+        }
+        /* --- FIM LAYOUT PRINCIPAL --- */
 
         /* Estilos para o Modo Escuro */
         body.dark-mode {
@@ -339,11 +431,11 @@
             margin-bottom: 15px;
             text-align: center;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            position: sticky; /* Fixa o cabeçalho no topo */
-            top: 10px;
+            position: sticky;
+            top: 0;
             z-index: 10;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            overflow: hidden; /* Para o padrão de fundo */
+            overflow: hidden;
             position: relative;
         }
 
@@ -354,8 +446,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.03; /* Transparência */
-            pointer-events: none; /* Não interfere com cliques */
+            opacity: 0.03;
+            pointer-events: none;
             background: 
                 linear-gradient(135deg, var(--fabreck-blue) 25%, transparent 25%) -50px 0,
                 linear-gradient(225deg, var(--fabreck-blue) 25%, transparent 25%) -50px 0,
@@ -371,7 +463,7 @@
             align-items: center;
             gap: 8px;
             margin-bottom: 10px;
-            position: relative; /* Para ficar acima do padrão */
+            position: relative;
             z-index: 1;
         }
         
@@ -405,7 +497,7 @@
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.15);
             font-size: 13px;
-            backdrop-filter: blur(5px); /* Efeito de desfoque */
+            backdrop-filter: blur(5px);
             position: relative;
             z-index: 1;
         }
@@ -505,7 +597,6 @@
             transition: border 0.3s, box-shadow 0.3s, background 0.3s ease, color 0.3s ease;
         }
 
-        /* NEW: Force uppercase on client and salesman inputs */
         #clientName, #salesmanName, #editClientName, #editSalesmanName, #laudoClientName, #usernameInput {
             text-transform: uppercase;
         }
@@ -518,7 +609,7 @@
         
         .form-row {
             display: grid;
-            grid-template-columns: 1fr; /* Default to single column for very small screens */
+            grid-template-columns: 1fr;
             gap: 10px;
         }
         
@@ -631,7 +722,7 @@
         
         /* Estilos da tabela de relatório */
         .table-container {
-            overflow-x: auto; /* Permite rolagem horizontal em telas pequenas */
+            overflow-x: auto;
             margin-top: 15px;
             max-height: 500px;
             overflow-y: auto;
@@ -656,7 +747,7 @@
         }
 
         th:first-child, td:first-child {
-            width: 40px; /* Largura para o checkbox */
+            width: 40px;
             text-align: center;
         }
         
@@ -664,7 +755,7 @@
             background: rgba(0, 71, 171, 0.1);
             color: var(--fabreck-blue);
             font-weight: 700;
-            position: sticky; /* Fixa o cabeçalho da tabela */
+            position: sticky;
             top: 0;
             font-size: 13px;
         }
@@ -708,7 +799,7 @@
         }
 
         .status-in-analysis {
-            background: rgba(243, 156, 18, 0.15); /* fabreck-warning */
+            background: rgba(243, 156, 18, 0.15);
             color: var(--fabreck-warning);
             border: 1px solid rgba(243, 156, 18, 0.3);
         }
@@ -721,17 +812,17 @@
 
         /* Badges para Ação Final */
         .action-approved {
-            background: rgba(46, 204, 113, 0.2); /* Verde mais forte */
+            background: rgba(46, 204, 113, 0.2);
             color: var(--fabreck-success);
             border: 1px solid rgba(46, 204, 113, 0.4);
         }
         .action-rejected {
-            background: rgba(231, 76, 60, 0.2); /* Vermelho mais forte */
+            background: rgba(231, 76, 60, 0.2);
             color: var(--fabreck-danger);
             border: 1px solid rgba(231, 76, 60, 0.4);
         }
         .action-scrapped {
-            background: rgba(127, 140, 141, 0.2); /* Cinza */
+            background: rgba(127, 140, 141, 0.2);
             color: var(--fabreck-gray);
             border: 1px solid rgba(127, 140, 141, 0.4);
         }
@@ -814,21 +905,24 @@
         .notification {
             position: fixed;
             top: 20px;
-            left: 10px;
-            right: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: auto;
+            min-width: 300px;
+            max-width: 90%;
             padding: 15px 20px;
             border-radius: 12px;
             color: var(--fabreck-white);
             font-weight: 600;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
             z-index: 2100;
-            transform: translateY(-120px);
+            transform: translate(-50%, -120px);
             transition: transform 0.4s ease;
             text-align: center;
         }
         
         .notification.show {
-            transform: translateY(0);
+            transform: translate(-50%, 0);
         }
         
         .notification.success {
@@ -1558,10 +1652,10 @@
         }
         /* --- FIM DOS ESTILOS DE LOTE --- */
 
-        /* Media query para tablets e telas maiores (a partir de 600px) */
+        /* Media query para tablets (a partir de 600px) */
         @media (min-width: 600px) {
             .form-row {
-                grid-template-columns: 1fr 1fr; /* Duas colunas para telas mais largas */
+                grid-template-columns: 1fr 1fr;
             }
             .filter-row {
                 grid-template-columns: 1fr 1fr;
@@ -1571,16 +1665,27 @@
             }
         }
 
-        /* Media query para telas de desktop (a partir de 992px) */
+        /* Media query para telas de desktop (a partir de 992px) - MODO WEB */
         @media (min-width: 992px) {
-            body {
-                padding: 20px; /* Mais padding nas laterais para desktop */
+            #sidebar {
+                display: flex;
+            }
+            #mainContentWrapper {
+                padding: 20px;
             }
             .container {
-                max-width: 1200px; /* Largura máxima para o conteúdo em desktop */
+                max-width: 1200px;
+                padding-bottom: 20px; /* Reduz padding do footer em desktop */
             }
             header {
-                padding: 20px;
+                position: static; /* Header normal no fluxo da página */
+                top: auto;
+            }
+            .footer {
+                display: none; /* Esconde o footer de navegação mobile */
+            }
+            .ai-assistant-fab {
+                bottom: 20px; /* Ajusta posição do FAB sem o footer */
             }
             .card {
                 padding: 25px;
@@ -1607,37 +1712,6 @@
                 grid-template-columns: repeat(3, 1fr);
             }
         }
-
-        /* Estilos aplicados quando o modo desktop é forçado via botão */
-        body[data-view-mode="desktop"] {
-            padding: 20px; /* Padding consistente quando forçado */
-        }
-
-        body[data-view-mode="desktop"] .container {
-            max-width: 1200px; /* Força a largura de desktop */
-            padding: 0; /* O padding já está no body */
-        }
-
-        body[data-view-mode="desktop"] .form-row {
-            grid-template-columns: 1fr 1fr; /* Força duas colunas */
-        }
-
-        body[data-view-mode="desktop"] .stat-cards {
-            grid-template-columns: repeat(3, 1fr); /* FIX: Changed to 3 for the main report */
-        }
-
-        body[data-view-mode="desktop"] #finalizadoPage .stat-cards {
-            grid-template-columns: repeat(4, 1fr); /* Keep 4 for the finalized page */
-        }
-
-        body[data-view-mode="desktop"] table th,
-        body[data-view-mode="desktop"] table td {
-            font-size: 15px;
-            padding: 14px 18px;
-        }
-        body[data-view-mode="desktop"] .filter-row {
-            grid-template-columns: repeat(3, 1fr);
-        }
     </style>
 </head>
 <body>
@@ -1659,490 +1733,492 @@
         </div>
     </div>
 
-    <div id="appWrapper" class="hidden">
-        <div class="fabreck-pattern"></div>
-        
-        <div class="container">
-            <header>
-                <div class="logo">
-                    <img id="logo-img-header" alt="Fabreck Logo" class="logo-img">
-                </div>
-                <div class="system-title">Sistema de Controle de Garantia com IA</div>
-                
-                <div class="company-info">
-                    <p><strong>Encarregado de Produção: Reginaldo</strong></p>
-                    <p>Análise da Garantia: Jenilton Cruz</p>
-                    <p class="active-salesman">Vendedor Ativo: <span id="currentSalesman">N/A</span></p>
-                </div>
+    <div id="layoutContainer" class="hidden">
+        <!-- Sidebar para Desktop -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                <img id="logo-img-sidebar" alt="Fabreck Logo" class="logo-img">
+                <h3>Garantia IA</h3>
+            </div>
+            <div class="sidebar-nav">
+                <a href="#" class="sidebar-btn active" data-page="scanPage"><i class="fas fa-bolt"></i><span>Rápido</span></a>
+                <a href="#" class="sidebar-btn" data-page="laudoPage"><i class="fas fa-file-invoice"></i><span>Laudo</span></a>
+                <a href="#" class="sidebar-btn" data-page="analysisPage"><i class="fas fa-clipboard-check"></i><span>Análise</span></a>
+                <a href="#" class="sidebar-btn" data-page="finalizadoPage"><i class="fas fa-check-double"></i><span>Finalizadas</span></a>
+                <a href="#" class="sidebar-btn" data-page="reportPage"><i class="fas fa-chart-bar"></i><span>Geral</span></a>
+                <a href="#" class="sidebar-btn" data-page="settingsPage"><i class="fas fa-cog"></i><span>Ajustes</span></a>
+            </div>
+            <div class="sidebar-footer">
+                <p>&copy; 2024 FABRECK DO BRASIL</p>
+            </div>
+        </nav>
 
-                <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
-                    <button id="toggleViewModeBtn" class="btn btn-info" style="width: auto;">
-                        <i class="fas fa-desktop"></i> <span id="viewModeText">Modo Desktop</span>
-                    </button>
-                    <button id="toggleDarkModeBtn" class="btn btn-info" style="width: auto;">
-                        <i class="fas fa-moon"></i> <span id="darkModeText">Modo Escuro</span>
-                    </button>
-                    <button id="logoutBtn" class="btn btn-danger" style="width: auto;">
-                        <i class="fas fa-sign-out-alt"></i> Sair
-                    </button>
-                </div>
-            </header>
+        <!-- Conteúdo Principal -->
+        <div id="mainContentWrapper">
+            <div class="fabreck-pattern"></div>
             
-            <!-- Página de Registro Rápido -->
-            <div id="scanPage" class="page active">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Registro Rápido</h2>
-                        <div class="card-icon"><i class="fas fa-bolt"></i></div>
+            <div class="container">
+                <header>
+                    <div class="logo">
+                        <img id="logo-img-header" alt="Fabreck Logo" class="logo-img">
                     </div>
+                    <div class="system-title">Sistema de Controle de Garantia com IA</div>
                     
-                    <div class="form-row">
-                        <div class="form-group autocomplete-container">
-                            <label for="clientName">Nome do Cliente</label>
-                            <input type="text" id="clientName" class="form-control" placeholder="Nome completo" autocomplete="off">
-                        </div>
-                        
-                        <div class="form-group autocomplete-container">
-                            <label for="salesmanName">Nome do Vendedor</label>
-                            <input type="text" id="salesmanName" class="form-control" placeholder="Nome do vendedor" autocomplete="off">
-                        </div>
+                    <div class="company-info">
+                        <p><strong>Encarregado de Produção: Reginaldo</strong></p>
+                        <p>Análise da Garantia: Jenilton Cruz</p>
+                        <p class="active-salesman">Vendedor Ativo: <span id="currentSalesman">N/A</span></p>
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="submissionDateInput">Data do Envio</label>
-                        <input type="date" id="submissionDateInput" class="form-control">
-                    </div>
+                    <div id="syncStatus" style="color: white; font-size: 12px; margin-top: 8px; opacity: 0.8; font-weight: 600;">A ligar...</div>
 
-                    <div class="warranty-type">
-                        <div class="warranty-option" id="factoryOption">
-                            <input type="radio" id="factoryRadio" name="warrantyType" value="factory" style="display:none;">
-                            <label for="factoryRadio" style="width:100%; cursor:pointer;">Garantia p/ Fábrica</label>
+                    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
+                        <button id="toggleDarkModeBtn" class="btn btn-info" style="width: auto;">
+                            <i class="fas fa-moon"></i> <span id="darkModeText">Modo Escuro</span>
+                        </button>
+                        <button id="logoutBtn" class="btn btn-danger" style="width: auto;">
+                            <i class="fas fa-sign-out-alt"></i> Sair
+                        </button>
+                    </div>
+                </header>
+            
+                <!-- Página de Registro Rápido -->
+                <div id="scanPage" class="page active">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Registro Rápido</h2>
+                            <div class="card-icon"><i class="fas fa-bolt"></i></div>
                         </div>
                         
-                        <div class="warranty-option" id="analyzedOption">
-                            <input type="radio" id="analyzedRadio" name="warrantyType" value="analyzed" style="display:none;">
-                            <label for="analyzedRadio" style="width:100%; cursor:pointer;">Análise por Vídeo</label>
+                        <div class="form-row">
+                            <div class="form-group autocomplete-container">
+                                <label for="clientName">Nome do Cliente</label>
+                                <input type="text" id="clientName" class="form-control" placeholder="Nome completo" autocomplete="off">
+                            </div>
+                            
+                            <div class="form-group autocomplete-container">
+                                <label for="salesmanName">Nome do Vendedor</label>
+                                <input type="text" id="salesmanName" class="form-control" placeholder="Nome do vendedor" autocomplete="off">
+                            </div>
                         </div>
-                    </div>
-                    
-                    <!-- NEW: Container for Video Analysis Options -->
-                    <div id="videoAnalysisOptions" class="hidden">
+                        
                         <div class="form-group">
-                            <label>Parecer Rápido (Análise por Vídeo)</label>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                                <button id="procedenteBtn" class="btn btn-success" style="margin-top:0;">Procedente</button>
-                                <button id="descarregadaBtn" class="btn btn-warning" style="margin-top:0;">Descarregada</button>
-                            </div>
+                            <label for="submissionDateInput">Data do Envio</label>
+                            <input type="date" id="submissionDateInput" class="form-control">
                         </div>
-                         <div class="form-group">
-                            <label for="recommendation">Parecer Técnico (Obrigatório)</label>
-                            <textarea id="recommendation" class="form-control" placeholder="Clique em uma opção acima ou digite o parecer."></textarea>
-                        </div>
-                        <button id="addObservationBtn" class="btn btn-info" style="margin-top: -10px; margin-bottom: 10px;"><i class="fas fa-comment-alt"></i> Adicionar Observações</button>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="serialCode">Código de Série
-                            <i class="fas fa-question-circle help-icon" id="helpBtn"></i>
-                        </label>
-                        <div class="code-input-row">
-                            <div style="position: relative; flex: 1;">
-                                <input type="text" id="serialCode" class="form-control" placeholder="Ex: 3524A2623" maxlength="9">
+                        <div class="warranty-type">
+                            <div class="warranty-option" id="factoryOption">
+                                <input type="radio" id="factoryRadio" name="warrantyType" value="factory" style="display:none;">
+                                <label for="factoryRadio" style="width:100%; cursor:pointer;">Garantia p/ Fábrica</label>
                             </div>
-                            <button id="addBtn" class="btn btn-primary">
-                                <i class="fas fa-plus-circle"></i> Adicionar
+                            
+                            <div class="warranty-option" id="analyzedOption">
+                                <input type="radio" id="analyzedRadio" name="warrantyType" value="analyzed" style="display:none;">
+                                <label for="analyzedRadio" style="width:100%; cursor:pointer;">Análise por Vídeo</label>
+                            </div>
+                        </div>
+                        
+                        <div id="videoAnalysisOptions" class="hidden">
+                            <div class="form-group">
+                                <label>Parecer Rápido (Análise por Vídeo)</label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <button id="procedenteBtn" class="btn btn-success" style="margin-top:0;">Procedente</button>
+                                    <button id="descarregadaBtn" class="btn btn-warning" style="margin-top:0;">Descarregada</button>
+                                </div>
+                            </div>
+                             <div class="form-group">
+                                <label for="recommendation">Parecer Técnico (Obrigatório)</label>
+                                <textarea id="recommendation" class="form-control" placeholder="Clique em uma opção acima ou digite o parecer."></textarea>
+                            </div>
+                            <button id="addObservationBtn" class="btn btn-info" style="margin-top: -10px; margin-bottom: 10px;"><i class="fas fa-comment-alt"></i> Adicionar Observações</button>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="serialCode">Código de Série
+                                <i class="fas fa-question-circle help-icon" id="helpBtn"></i>
+                            </label>
+                            <div class="code-input-row">
+                                <div style="position: relative; flex: 1;">
+                                    <input type="text" id="serialCode" class="form-control" placeholder="Ex: 3524A2623" maxlength="9">
+                                </div>
+                                <button id="addBtn" class="btn btn-primary">
+                                    <i class="fas fa-plus-circle"></i> Adicionar
+                                </button>
+                            </div>
+                            <div id="codePreview" class="code-preview"></div>
+                            <div id="warrantyDebugInfo" class="info-section" style="margin-top: 10px; display: none;">
+                                <p><strong>Informações de Cálculo da Garantia:</strong></p>
+                                <p>Fabricação: <span id="debugManufDate"></span></p>
+                                <p>Fim da Garantia: <span id="debugWarrantyEndDate"></span></p>
+                                <p>Status Calculado: <span id="debugCalculatedStatus"></span></p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row" style="margin-top: 10px;">
+                            <button id="scanBtn" class="btn btn-primary">
+                                <i class="fas fa-camera"></i> Usar Câmera com IA
+                            </button>
+                            <button id="clearFormBtn" class="btn btn-danger">
+                                <i class="fas fa-eraser"></i> Limpar Código
                             </button>
                         </div>
-                        <div id="codePreview" class="code-preview"></div>
-                        <div id="warrantyDebugInfo" class="info-section" style="margin-top: 10px; display: none;">
-                            <p><strong>Informações de Cálculo da Garantia:</strong></p>
-                            <p>Fabricação: <span id="debugManufDate"></span></p>
-                            <p>Fim da Garantia: <span id="debugWarrantyEndDate"></span></p>
-                            <p>Status Calculado: <span id="debugCalculatedStatus"></span></p>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row" style="margin-top: 10px;">
-                        <button id="scanBtn" class="btn btn-primary">
-                            <i class="fas fa-camera"></i> Usar Câmera com IA
-                        </button>
-                        <button id="clearFormBtn" class="btn btn-danger">
-                            <i class="fas fa-eraser"></i> Limpar Código
-                        </button>
-                    </div>
-                    
-                    <div class="activity-log" id="activityLog"></div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Leitor por Câmera (IA)</h2>
-                        <div class="card-icon"><i class="fas fa-robot"></i></div>
-                    </div>
-                    
-                    <div class="camera-container">
-                        <video id="video" autoplay playsinline></video>
-                        <div class="scanner-guide"></div>
-                        <div class="scanner-status">
-                            <div class="scanner-status-indicator" id="scannerIndicator"></div>
-                            <span id="scannerStatusText">Câmera desativada</span>
-                        </div>
-                        <div class="capture-overlay hidden" id="captureOverlay">
-                            <div class="capture-indicator">
-                                <i class="fas fa-camera"></i>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="camera-controls">
-                        <button id="switchCamera" class="btn" style="display: none; background: rgba(0,0,0,0.1); color: var(--fabreck-dark);">
-                            <i class="fas fa-sync-alt"></i> Alternar
-                        </button>
-                        <button id="startCamera" class="btn btn-primary">
-                            <i class="fas fa-play"></i> Iniciar
-                        </button>
-                        <button id="stopCamera" class="btn btn-danger" disabled>
-                            <i class="fas fa-stop"></i> Parar
-                        </button>
-                    </div>
-                    
-                    <div class="scanned-history" id="scannedHistory"></div>
-                </div>
-            </div>
-
-            <!-- ***** NOVA PÁGINA DE LAUDO TÉCNICO ***** -->
-            <div id="laudoPage" class="page">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Gerador de Laudo Técnico com IA</h2>
-                        <div class="card-icon"><i class="fas fa-file-invoice"></i></div>
-                    </div>
-                    <div class="info-section">
-                        <p>Preencha os dados abaixo para que a Inteligência Artificial gere um laudo técnico profissional e detalhado.</p>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="laudoClientName">Nome do Cliente</label>
-                            <input type="text" id="laudoClientName" class="form-control" placeholder="Nome completo do cliente">
-                        </div>
-                        <div class="form-group">
-                            <label for="laudoBatteryCode">Código de Série da Bateria</label>
-                            <input type="text" id="laudoBatteryCode" class="form-control" placeholder="Ex: 3524A2623" maxlength="9">
-                        </div>
-                    </div>
-                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="laudoBatteryModel">Modelo da Bateria</label>
-                            <input type="text" id="laudoBatteryModel" class="form-control" placeholder="Ex: FA6AD">
-                        </div>
-                        <div class="form-group">
-                            <label for="laudoCA">CA Medido (A)</label>
-                            <input type="number" id="laudoCA" class="form-control" placeholder="Valor do teste de Cranking Amps">
-                        </div>
-                    </div>
-                     <div class="form-row">
-                         <div class="form-group">
-                            <label for="laudoVoltage">Voltagem em Repouso (V)</label>
-                            <input type="number" id="laudoVoltage" class="form-control" placeholder="Ex: 12.5">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="laudoVisualInspection">Inspeção Visual</label>
-                        <textarea id="laudoVisualInspection" class="form-control" rows="3" placeholder="Ex: Caixa estufada, polos oxidados, vazamento de solução..."></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="laudoTechnicianNotes">Observações Adicionais do Técnico</label>
-                        <textarea id="laudoTechnicianNotes" class="form-control" rows="3" placeholder="Qualquer outra informação relevante sobre o teste."></textarea>
-                    </div>
-                    <button id="generateLaudoBtn" class="btn btn-primary"><i class="fas fa-cogs"></i> Gerar Laudo com IA</button>
-
-                    <div id="laudoResultContainer" class="hidden">
-                        <div class="laudo-header">
-                            <h3 class="laudo-title">Laudo Técnico Gerado</h3>
-                            <button id="copyLaudoBtn" class="btn btn-info" style="width:auto; margin-top:0;"><i class="fas fa-copy"></i> Copiar</button>
-                        </div>
-                        <textarea id="laudoResult" class="form-control" rows="15" readonly></textarea>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Página de Análise Técnica -->
-            <div id="analysisPage" class="page">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Fila de Análise Técnica</h2>
-                        <div class="card-icon"><i class="fas fa-clipboard-check"></i></div>
-                    </div>
-                    <div class="info-section">
-                        <p>Baterias que precisam de um parecer técnico para finalizar o processo de garantia. Use o filtro e as caixas de seleção para analisar várias baterias de um mesmo cliente em lote.</p>
-                    </div>
-                    <div class="stat-cards">
-                        <div class="stat-card">
-                            <div class="stat-title">Aguardando Análise</div>
-                            <div class="stat-value" id="inAnalysisCount">0</div>
-                        </div>
-                    </div>
-
-                    <!-- NEW: Batch Actions -->
-                    <div class="batch-actions">
-                        <div class="form-group">
-                            <label for="analysisClientFilter">Agrupar por Cliente:</label>
-                            <select id="analysisClientFilter" class="form-control"></select>
-                        </div>
-                        <button id="batchAnalyzeBtn" class="btn btn-success" disabled>
-                            <i class="fas fa-layer-group"></i> Analisar Selecionados
-                        </button>
-                    </div>
-
-                    <div class="table-container">
-                        <table id="analysisTable">
-                            <thead>
-                                <tr>
-                                    <th><input type="checkbox" id="selectAllCheckbox"></th>
-                                    <th>Código</th>
-                                    <th>Cliente</th>
-                                    <th>Modelo</th>
-                                    <th>Data Envio</th>
-                                    <th>Status Garantia</th>
-                                    <th>Ação</th>
-                                </tr>
-                            </thead>
-                            <tbody id="analysisBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ***** NOVA PÁGINA DE FINALIZADOS ***** -->
-            <div id="finalizadoPage" class="page">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Garantias Finalizadas</h2>
-                        <div class="card-icon"><i class="fas fa-check-double"></i></div>
-                    </div>
-                    <div class="info-section">
-                        <p>Lista de todas as garantias que já foram concluídas, com um resumo dos resultados.</p>
-                    </div>
-                     <div class="stat-cards">
-                        <div class="stat-card">
-                            <div class="stat-title">Total Finalizadas</div>
-                            <div class="stat-value" id="finalizadoCount">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-title">Aprovadas</div>
-                            <div class="stat-value" id="finalizadoAprovadaCount">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-title">Reprovadas (Prazo)</div>
-                            <div class="stat-value" id="finalizadoReprovadaPrazoCount">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-title">Reprovadas (Fora)</div>
-                            <div class="stat-value" id="finalizadoReprovadaForaCount">0</div>
-                        </div>
-                    </div>
-                    <div class="table-container">
-                        <table id="finalizadoTable">
-                            <thead>
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Cliente</th>
-                                    <th>Data da Análise</th>
-                                    <th>Ação Final</th>
-                                    <th>Parecer</th>
-                                </tr>
-                            </thead>
-                            <tbody id="finalizadoBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Página de Relatórios -->
-            <div id="reportPage" class="page">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Relatório Geral</h2>
-                        <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
-                    </div>
-                    <div class="info-section">
-                        <p>Esta é a lista completa de <strong>todas</strong> as garantias registradas. Use os filtros abaixo para visualizar grupos específicos.</p>
-                    </div>
-                    <div class="stat-cards">
-                        <div class="stat-card">
-                            <div class="stat-title">Total Geral</div>
-                            <div class="stat-value" id="totalCount">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-title">Em Análise</div>
-                            <div class="stat-value" id="inAnalysisCountReport">0</div>
-                        </div>
-                        <div class="stat-card">
-                            <div class="stat-title">Finalizadas</div>
-                            <div class="stat-value" id="finalizedCountReport">0</div>
-                        </div>
-                    </div>
-                    
-                    <div class="report-filters">
-                        <div class="filter-row">
-                            <div class="filter-group">
-                                <label for="clientFilter">Filtrar por Cliente:</label>
-                                <select id="clientFilter" class="form-control">
-                                    <option value="">Todos os Clientes</option>
-                                </select>
-                            </div>
-                            <div class="filter-group">
-                                <label for="statusFilter">Status da Garantia (Prazo):</label>
-                                <select id="statusFilter" class="form-control">
-                                    <option value="">Todos</option>
-                                    <option value="warranty">Em Garantia</option>
-                                    <option value="expired">Fora do Prazo</option>
-                                </select>
-                            </div>
-                            <div class="filter-group">
-                                <label for="workflowStatusFilter">Status do Processo:</label>
-                                <select id="workflowStatusFilter" class="form-control">
-                                    <option value="">Todos</option>
-                                    <option value="in_analysis">Em Análise</option>
-                                    <option value="finalized">Finalizado</option>
-                                </select>
-                            </div>
-                        </div>
                         
-                        <div class="filter-row">
-                            <div class="filter-group">
-                                <label for="codeFilter">Filtrar por Código:</label>
-                                <input type="text" id="codeFilter" class="form-control" placeholder="Código de série">
-                            </div>
-                            <div class="filter-group">
-                                <label for="startDate">Data Inicial (Registro):</label>
-                                <input type="date" id="startDate" class="form-control">
-                            </div>
-                            <div class="filter-group">
-                                <label for="endDate">Data Final (Registro):</label>
-                                <input type="date" id="endDate" class="form-control">
-                            </div>
-                        </div>
-                        
-                        <div class="filter-buttons">
-                            <button id="applyFilter" class="btn btn-primary">Aplicar Filtros</button>
-                            <button id="clearFilter" class="btn btn-danger">Limpar Filtros</button>
-                        </div>
+                        <div class="activity-log" id="activityLog"></div>
                     </div>
                     
-                    <div class="table-container">
-                        <table id="reportTable">
-                            <thead>
-                                <tr>
-                                    <th>Código</th>
-                                    <th>Modelo</th>
-                                    <th>Cliente</th>
-                                    <th>Vendedor</th>
-                                    <th>Status Prazo</th>
-                                    <th>Status Processo</th>
-                                    <th>Ação Final</th>
-                                    <th>Parecer Técnico</th>
-                                    <th>Data Análise</th>
-                                    <th>Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="reportBody"></tbody>
-                        </table>
-                    </div>
-                    
-                    <div class="totals-container" id="totalsContainer"></div>
-
-                    <!-- NOVO: Resumo de Ações por Modelo -->
-                    <div class="card" id="modelStatusSummaryCard" style="display:none; margin-top: 20px;">
+                    <div class="card">
                         <div class="card-header">
-                            <h2 class="card-title">Resumo de Ações por Modelo (com base no filtro)</h2>
-                            <div class="card-icon"><i class="fas fa-tasks"></i></div>
+                            <h2 class="card-title">Leitor por Câmera (IA)</h2>
+                            <div class="card-icon"><i class="fas fa-robot"></i></div>
                         </div>
-                        <div id="modelStatusSummaryBody" class="info-section" style="margin-top:0;">
-                            <!-- O resumo em lista será gerado aqui pelo JavaScript -->
+                        
+                        <div class="camera-container">
+                            <video id="video" autoplay playsinline></video>
+                            <div class="scanner-guide"></div>
+                            <div class="scanner-status">
+                                <div class="scanner-status-indicator" id="scannerIndicator"></div>
+                                <span id="scannerStatusText">Câmera desativada</span>
+                            </div>
+                            <div class="capture-overlay hidden" id="captureOverlay">
+                                <div class="capture-indicator">
+                                    <i class="fas fa-camera"></i>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    
-                    <div class="action-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
-                        <button id="previewPdfBtn" class="btn btn-info"><i class="fas fa-eye"></i> Visualizar PDF Único</button>
-                        <button id="pdfBtn" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Baixar PDF Único</button>
-                        <button id="batchPdfBtn" class="btn btn-success"><i class="fas fa-file-archive"></i> Baixar Todos (PDF por Cliente)</button>
-                        <button id="excelBtn" class="btn btn-primary"><i class="fas fa-file-excel"></i> Baixar Excel</button>
-                        <button id="clearBtn" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
+                        
+                        <div class="camera-controls">
+                            <button id="switchCamera" class="btn" style="display: none; background: rgba(0,0,0,0.1); color: var(--fabreck-dark);">
+                                <i class="fas fa-sync-alt"></i> Alternar
+                            </button>
+                            <button id="startCamera" class="btn btn-primary">
+                                <i class="fas fa-play"></i> Iniciar
+                            </button>
+                            <button id="stopCamera" class="btn btn-danger" disabled>
+                                <i class="fas fa-stop"></i> Parar
+                            </button>
+                        </div>
+                        
+                        <div class="scanned-history" id="scannedHistory"></div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Página de Configurações -->
-            <div id="settingsPage" class="page">
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Banco de Dados</h2>
-                        <div class="card-icon"><i class="fas fa-database"></i></div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <button id="backupBtn" class="btn btn-primary"><i class="fas fa-download"></i> Exportar Dados</button>
-                        <button id="restoreBtn" class="btn btn-primary"><i class="fas fa-upload"></i> Importar Dados</button>
-                    </div>
-                    <input type="file" id="restoreFile" accept=".json" style="display: none;">
-                    
-                    <div class="info-section" style="margin-top: 20px;">
-                        <h3>Sincronização em Nuvem (Beta)</h3>
-                        <p>Salve seus dados na nuvem e carregue-os em qualquer dispositivo usando a chave fixa da sua empresa.</p>
-                        <div class="form-group" style="margin-top: 15px;">
-                            <label for="cloudSyncKey">Chave de Sincronização Fixa</label>
-                            <input type="text" id="cloudSyncKey" class="form-control" readonly>
+
+                <!-- ***** NOVA PÁGINA DE LAUDO TÉCNICO ***** -->
+                <div id="laudoPage" class="page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Gerador de Laudo Técnico com IA</h2>
+                            <div class="card-icon"><i class="fas fa-file-invoice"></i></div>
+                        </div>
+                        <div class="info-section">
+                            <p>Preencha os dados abaixo para que a Inteligência Artificial gere um laudo técnico profissional e detalhado.</p>
                         </div>
                         <div class="form-row">
-                            <button id="cloudSaveBtn" class="btn btn-success"><i class="fas fa-cloud-upload-alt"></i> Atualizar Nuvem</button>
-                            <button id="cloudLoadBtn" class="btn btn-info"><i class="fas fa-cloud-download-alt"></i> Carregar da Nuvem</button>
+                            <div class="form-group">
+                                <label for="laudoClientName">Nome do Cliente</label>
+                                <input type="text" id="laudoClientName" class="form-control" placeholder="Nome completo do cliente">
+                            </div>
+                            <div class="form-group">
+                                <label for="laudoBatteryCode">Código de Série da Bateria</label>
+                                <input type="text" id="laudoBatteryCode" class="form-control" placeholder="Ex: 3524A2623" maxlength="9">
+                            </div>
+                        </div>
+                         <div class="form-row">
+                            <div class="form-group">
+                                <label for="laudoBatteryModel">Modelo da Bateria</label>
+                                <input type="text" id="laudoBatteryModel" class="form-control" placeholder="Ex: FA6AD">
+                            </div>
+                            <div class="form-group">
+                                <label for="laudoCA">CA Medido (A)</label>
+                                <input type="number" id="laudoCA" class="form-control" placeholder="Valor do teste de Cranking Amps">
+                            </div>
+                        </div>
+                         <div class="form-row">
+                             <div class="form-group">
+                                <label for="laudoVoltage">Voltagem em Repouso (V)</label>
+                                <input type="number" id="laudoVoltage" class="form-control" placeholder="Ex: 12.5">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="laudoVisualInspection">Inspeção Visual</label>
+                            <textarea id="laudoVisualInspection" class="form-control" rows="3" placeholder="Ex: Caixa estufada, polos oxidados, vazamento de solução..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="laudoTechnicianNotes">Observações Adicionais do Técnico</label>
+                            <textarea id="laudoTechnicianNotes" class="form-control" rows="3" placeholder="Qualquer outra informação relevante sobre o teste."></textarea>
+                        </div>
+                        <button id="generateLaudoBtn" class="btn btn-primary"><i class="fas fa-cogs"></i> Gerar Laudo com IA</button>
+
+                        <div id="laudoResultContainer" class="hidden">
+                            <div class="laudo-header">
+                                <h3 class="laudo-title">Laudo Técnico Gerado</h3>
+                                <button id="copyLaudoBtn" class="btn btn-info" style="width:auto; margin-top:0;"><i class="fas fa-copy"></i> Copiar</button>
+                            </div>
+                            <textarea id="laudoResult" class="form-control" rows="15" readonly></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Página de Análise Técnica -->
+                <div id="analysisPage" class="page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Fila de Análise Técnica</h2>
+                            <div class="card-icon"><i class="fas fa-clipboard-check"></i></div>
+                        </div>
+                        <div class="info-section">
+                            <p>Baterias que precisam de um parecer técnico para finalizar o processo de garantia. Use o filtro e as caixas de seleção para analisar várias baterias de um mesmo cliente em lote.</p>
+                        </div>
+                        <div class="stat-cards">
+                            <div class="stat-card">
+                                <div class="stat-title">Aguardando Análise</div>
+                                <div class="stat-value" id="inAnalysisCount">0</div>
+                            </div>
+                        </div>
+
+                        <div class="batch-actions">
+                            <div class="form-group">
+                                <label for="analysisClientFilter">Agrupar por Cliente:</label>
+                                <select id="analysisClientFilter" class="form-control"></select>
+                            </div>
+                            <button id="batchAnalyzeBtn" class="btn btn-success" disabled>
+                                <i class="fas fa-layer-group"></i> Analisar Selecionados
+                            </button>
+                        </div>
+
+                        <div class="table-container">
+                            <table id="analysisTable">
+                                <thead>
+                                    <tr>
+                                        <th><input type="checkbox" id="selectAllCheckbox"></th>
+                                        <th>Código</th>
+                                        <th>Cliente</th>
+                                        <th>Modelo</th>
+                                        <th>Data Envio</th>
+                                        <th>Status Garantia</th>
+                                        <th>Ação</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="analysisBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ***** NOVA PÁGINA DE FINALIZADOS ***** -->
+                <div id="finalizadoPage" class="page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Garantias Finalizadas</h2>
+                            <div class="card-icon"><i class="fas fa-check-double"></i></div>
+                        </div>
+                        <div class="info-section">
+                            <p>Lista de todas as garantias que já foram concluídas, com um resumo dos resultados.</p>
+                        </div>
+                         <div class="stat-cards">
+                            <div class="stat-card">
+                                <div class="stat-title">Total Finalizadas</div>
+                                <div class="stat-value" id="finalizadoCount">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-title">Aprovadas</div>
+                                <div class="stat-value" id="finalizadoAprovadaCount">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-title">Reprovadas (Prazo)</div>
+                                <div class="stat-value" id="finalizadoReprovadaPrazoCount">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-title">Reprovadas (Fora)</div>
+                                <div class="stat-value" id="finalizadoReprovadaForaCount">0</div>
+                            </div>
+                        </div>
+                        <div class="table-container">
+                            <table id="finalizadoTable">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Cliente</th>
+                                        <th>Data da Análise</th>
+                                        <th>Ação Final</th>
+                                        <th>Parecer</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="finalizadoBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Página de Relatórios -->
+                <div id="reportPage" class="page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Relatório Geral</h2>
+                            <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
+                        </div>
+                        <div class="info-section">
+                            <p>Esta é a lista completa de <strong>todas</strong> as garantias registradas. Use os filtros abaixo para visualizar grupos específicos.</p>
+                        </div>
+                        <div class="stat-cards">
+                            <div class="stat-card">
+                                <div class="stat-title">Total Geral</div>
+                                <div class="stat-value" id="totalCount">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-title">Em Análise</div>
+                                <div class="stat-value" id="inAnalysisCountReport">0</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-title">Finalizadas</div>
+                                <div class="stat-value" id="finalizedCountReport">0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="report-filters">
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label for="clientFilter">Filtrar por Cliente:</label>
+                                    <select id="clientFilter" class="form-control">
+                                        <option value="">Todos os Clientes</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="statusFilter">Status da Garantia (Prazo):</label>
+                                    <select id="statusFilter" class="form-control">
+                                        <option value="">Todos</option>
+                                        <option value="warranty">Em Garantia</option>
+                                        <option value="expired">Fora do Prazo</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="workflowStatusFilter">Status do Processo:</label>
+                                    <select id="workflowStatusFilter" class="form-control">
+                                        <option value="">Todos</option>
+                                        <option value="in_analysis">Em Análise</option>
+                                        <option value="finalized">Finalizado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="filter-row">
+                                <div class="filter-group">
+                                    <label for="codeFilter">Filtrar por Código:</label>
+                                    <input type="text" id="codeFilter" class="form-control" placeholder="Código de série">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="startDate">Data Inicial (Registro):</label>
+                                    <input type="date" id="startDate" class="form-control">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="endDate">Data Final (Registro):</label>
+                                    <input type="date" id="endDate" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="filter-buttons">
+                                <button id="applyFilter" class="btn btn-primary">Aplicar Filtros</button>
+                                <button id="clearFilter" class="btn btn-danger">Limpar Filtros</button>
+                            </div>
+                        </div>
+                        
+                        <div class="table-container">
+                            <table id="reportTable">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Modelo</th>
+                                        <th>Cliente</th>
+                                        <th>Vendedor</th>
+                                        <th>Status Prazo</th>
+                                        <th>Status Processo</th>
+                                        <th>Ação Final</th>
+                                        <th>Parecer Técnico</th>
+                                        <th>Data Análise</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reportBody"></tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="totals-container" id="totalsContainer"></div>
+
+                        <div class="card" id="modelStatusSummaryCard" style="display:none; margin-top: 20px;">
+                            <div class="card-header">
+                                <h2 class="card-title">Resumo de Ações por Modelo (com base no filtro)</h2>
+                                <div class="card-icon"><i class="fas fa-tasks"></i></div>
+                            </div>
+                            <div id="modelStatusSummaryBody" class="info-section" style="margin-top:0;">
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
+                            <button id="previewPdfBtn" class="btn btn-info"><i class="fas fa-eye"></i> Visualizar PDF Único</button>
+                            <button id="pdfBtn" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Baixar PDF Único</button>
+                            <button id="batchPdfBtn" class="btn btn-success"><i class="fas fa-file-archive"></i> Baixar Todos (PDF por Cliente)</button>
+                            <button id="excelBtn" class="btn btn-primary"><i class="fas fa-file-excel"></i> Baixar Excel</button>
+                            <button id="clearBtn" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Página de Configurações -->
+                <div id="settingsPage" class="page">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Banco de Dados</h2>
+                            <div class="card-icon"><i class="fas fa-database"></i></div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <button id="backupBtn" class="btn btn-primary"><i class="fas fa-download"></i> Exportar Dados (Backup Local)</button>
+                            <button id="restoreBtn" class="btn btn-primary"><i class="fas fa-upload"></i> Importar Dados (Restaurar Backup)</button>
+                        </div>
+                        <input type="file" id="restoreFile" accept=".json" style="display: none;">
+
+                        <div class="info-section">
+                            <h3>Última Atualização Local</h3>
+                            <p id="lastUpdate">Nenhuma atualização realizada</p>
                         </div>
                     </div>
 
-                    <div class="info-section">
-                        <h3>Última Atualização</h3>
-                        <p id="lastUpdate">Nenhuma atualização realizada</p>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Instruções de Garantia</h2>
+                            <div class="card-icon"><i class="fas fa-info-circle"></i></div>
+                        </div>
+                        <div id="warrantyInstructionsContainer" class="info-section" style="margin-top:0;">
+                        </div>
                     </div>
-                </div>
 
-                <div class="card">
-                    <div class="card-header">
-                        <h2 class="card-title">Instruções de Garantia</h2>
-                        <div class="card-icon"><i class="fas fa-info-circle"></i></div>
-                    </div>
-                    <div id="warrantyInstructionsContainer" class="info-section" style="margin-top:0;">
-                        <!-- Instruções serão inseridas aqui pelo JS -->
-                    </div>
                 </div>
-
             </div>
-        </div>
-        
-        <div class="footer">
-            <div class="nav-btn active" data-page="scanPage">
-                <div><i class="fas fa-bolt"></i></div>
-                <span>Rápido</span>
-            </div>
-            <div class="nav-btn" data-page="laudoPage">
-                <div><i class="fas fa-file-invoice"></i></div>
-                <span>Laudo</span>
-            </div>
-            <div class="nav-btn" data-page="analysisPage">
-                <div><i class="fas fa-clipboard-check"></i></div>
-                <span>Análise</span>
-            </div>
-            <div class="nav-btn" data-page="finalizadoPage">
-                <div><i class="fas fa-check-double"></i></div>
-                <span>Finalizadas</span>
-            </div>
-            <div class="nav-btn" data-page="reportPage">
-                <div><i class="fas fa-chart-bar"></i></div>
-                <span>Geral</span>
-            </div>
-            <div class="nav-btn" data-page="settingsPage">
-                <div><i class="fas fa-cog"></i></div>
-                <span>Ajustes</span>
+            
+            <div class="footer">
+                <div class="nav-btn active" data-page="scanPage">
+                    <div><i class="fas fa-bolt"></i></div>
+                    <span>Rápido</span>
+                </div>
+                <div class="nav-btn" data-page="laudoPage">
+                    <div><i class="fas fa-file-invoice"></i></div>
+                    <span>Laudo</span>
+                </div>
+                <div class="nav-btn" data-page="analysisPage">
+                    <div><i class="fas fa-clipboard-check"></i></div>
+                    <span>Análise</span>
+                </div>
+                <div class="nav-btn" data-page="finalizadoPage">
+                    <div><i class="fas fa-check-double"></i></div>
+                    <span>Finalizadas</span>
+                </div>
+                <div class="nav-btn" data-page="reportPage">
+                    <div><i class="fas fa-chart-bar"></i></div>
+                    <span>Geral</span>
+                </div>
+                <div class="nav-btn" data-page="settingsPage">
+                    <div><i class="fas fa-cog"></i></div>
+                    <span>Ajustes</span>
+                </div>
             </div>
         </div>
     </div>
@@ -2281,7 +2357,6 @@
                 <span class="ai-modal-close" id="aiModalClose">&times;</span>
             </div>
             <div class="ai-chat-box" id="aiChatBox">
-                <!-- Mensagens do chat serão inseridas aqui -->
             </div>
             <div class="ai-modal-footer">
                 <input type="text" id="aiChatInput" class="form-control" placeholder="Faça uma pergunta...">
@@ -2290,7 +2365,6 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Carregamento da Nuvem -->
     <div class="edit-modal" id="cloudLoadConfirmModal">
         <div class="edit-content">
             <h3 class="edit-title">Confirmar Carregamento</h3>
@@ -2334,6 +2408,7 @@
         const applyFilterBtn = document.getElementById('applyFilter');
         const clearFilterBtn = document.getElementById('clearFilter');
         const navBtns = document.querySelectorAll('.nav-btn');
+        const sidebarBtns = document.querySelectorAll('.sidebar-btn');
         const pages = document.querySelectorAll('.page');
         const scannerIndicator = document.getElementById('scannerIndicator');
         const scannerStatusText = document.getElementById('scannerStatusText');
@@ -2361,8 +2436,6 @@
         const debugWarrantyEndDate = document.getElementById('debugWarrantyEndDate');
         const debugCalculatedStatus = document.getElementById('debugCalculatedStatus');
         const submissionDateInput = document.getElementById('submissionDateInput');
-        const toggleViewModeBtn = document.getElementById('toggleViewModeBtn');
-        const viewModeText = document.getElementById('viewModeText');
         const toggleDarkModeBtn = document.getElementById('toggleDarkModeBtn');
         const darkModeText = document.getElementById('darkModeText');
         const warrantyInstructionsContainer = document.getElementById('warrantyInstructionsContainer');
@@ -2441,18 +2514,10 @@
         const laudoResultContainer = document.getElementById('laudoResultContainer');
         const laudoResult = document.getElementById('laudoResult');
         const copyLaudoBtn = document.getElementById('copyLaudoBtn');
-
-        // Elementos da Sincronização em Nuvem
-        const cloudSyncKeyInput = document.getElementById('cloudSyncKey');
-        const cloudSaveBtn = document.getElementById('cloudSaveBtn');
-        const cloudLoadBtn = document.getElementById('cloudLoadBtn');
-        const cloudLoadConfirmModal = document.getElementById('cloudLoadConfirmModal');
-        const confirmCloudLoadBtn = document.getElementById('confirmCloudLoadBtn');
-        const cancelCloudLoadBtn = document.getElementById('cancelCloudLoadBtn');
-
-        // Elementos do Login
+        
+        // Elementos do Login e Layout
         const loginOverlay = document.getElementById('loginOverlay');
-        const appWrapper = document.getElementById('appWrapper');
+        const layoutContainer = document.getElementById('layoutContainer');
         const loginForm = document.getElementById('loginForm');
         const usernameInput = document.getElementById('usernameInput');
         const passwordInput = document.getElementById('passwordInput');
@@ -2467,10 +2532,8 @@
         const LAST_SALESMAN_KEY = 'fabreck_last_salesman_v12';
         const LAST_CLIENT_KEY = 'fabreck_last_client_v12';
         const LAST_WARRANTY_TYPE_KEY = 'fabreck_last_warranty_type_v12';
-        const VIEW_MODE_KEY = 'fabreck_view_mode'; 
         const DARK_MODE_KEY = 'fabreck_dark_mode'; 
         const INSTRUCTIONS_KEY = 'fabreck_instructions_v1';
-        const CLOUD_SYNC_KEY = 'fabreck_cloud_sync_key';
         let batteryData = [];
         let activityData = [];
         let currentFilters = {
@@ -2496,17 +2559,17 @@
         let editingBatteryId = null;
         let observationCallback = null; // Callback para salvar observação
         let tempObservation = '';
-        let currentViewMode = localStorage.getItem(VIEW_MODE_KEY) || 'auto';
         let isDarkMode = localStorage.getItem(DARK_MODE_KEY) === 'true';
         let aiChatHistory = [];
-        let cloudDataToLoad = null; // Variável temporária para dados da nuvem
+        let cloudDataToLoad = null; 
+        let syncDebounceTimer = null;
 
         // Credenciais e Chave Fixa
         const ADMIN_USER = 'ADMIN';
         const ADMIN_PASS = 'FABRECK2024';
         const FIXED_SYNC_KEY = '1418850998876823552';
         
-        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyNDAgNDAiPjxyZWN0IHdpZHRoPSIyNDAiIGhlaWdodD0iNDAiIGZpbGw9IiMwMDQ3QUIiLz48dGV4dCB4PSIxMjAiIHk9IjI1IiBmb250LWZhbWlseT0iU2Vnb2UgVUksIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5GQUJSRUNLIERPIEJSQVNJTDwvdGV4dD48L3N2Zz4=';
+        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyNDAgNDAiPjxyZWN0IHdpZHRoPSIyNDAiIGhlaWdodD0iNDAiIGZpbGw9IiMwMDQ3QUIiLz48dGV4dCB4PSIxMjAiIHk9IjI1IiBmb250LWZhbWlseT0iU2Vnb2UgVUksIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ-Gh0PSJib2xkIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5GQUJSRUNLIERPIEJSQVNJTDwvdGV4dD48L3N2Zz4=';
 
         const batteryModelMap = {
             'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
@@ -2607,20 +2670,28 @@
             console.log("Inicializando sistema...");
             document.getElementById('logo-img-header').src = logoBase64;
             document.getElementById('logo-img-login').src = logoBase64;
+            document.getElementById('logo-img-sidebar').src = logoBase64;
 
             setupEventListeners();
-            checkAuth(); // Verifica o login antes de carregar o resto
+            await dbPromise; // Garante que a BD está pronta antes de qualquer operação
+            checkAuth(); // Verifica o login e inicia o carregamento de dados
+        }
 
-            await dbPromise; 
+        async function initializeAppData() {
+            showNotification('Autenticado. A carregar dados da nuvem...', 'info');
+            
+            await loadFromCloud(true); // Carrega os dados silenciosamente da nuvem primeiro
+
+            // A migração e o carregamento do DB local servem como fallback
             await migrateFromLocalStorage();
-            await loadFromDB();
+            await loadFromDB(); 
 
+            // Atualiza a UI com os dados carregados (da nuvem ou locais)
             updateUI();
             updateLastUpdate();
             setupAudio();
-            loadLastUsedData();
+            loadLastUsedData(); 
             updateScanHistory();
-            applyViewMode(); 
             applyDarkMode(); 
 
             const today = new Date();
@@ -2628,17 +2699,18 @@
             const month = String(today.getMonth() + 1).padStart(2, '0');
             const day = String(today.getDate()).padStart(2, '0');
             submissionDateInput.value = `${year}-${month}-${day}`;
-
-            console.log("Sistema inicializado com sucesso!");
         }
 
         function checkAuth() {
             if (sessionStorage.getItem('isAuthenticated') === 'true') {
                 loginOverlay.classList.add('hidden');
-                appWrapper.classList.remove('hidden');
+                layoutContainer.classList.remove('hidden');
+                if (batteryData.length === 0) { // Só inicializa se os dados ainda não estiverem na memória
+                     initializeAppData();
+                }
             } else {
                 loginOverlay.classList.remove('hidden');
-                appWrapper.classList.add('hidden');
+                layoutContainer.classList.add('hidden');
             }
         }
         
@@ -2656,20 +2728,18 @@
             
             const lastWarrantyType = await dbManager.get('settings', LAST_WARRANTY_TYPE_KEY);
             selectWarrantyType(lastWarrantyType ? lastWarrantyType.value : 'factory');
-
-            cloudSyncKeyInput.value = FIXED_SYNC_KEY;
         }
         
         function setupEventListeners() {
             console.log("Configurando event listeners...");
 
-            // Listeners do Login
-            loginForm.addEventListener('submit', (e) => {
+            loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const user = usernameInput.value.trim().toUpperCase();
                 const pass = passwordInput.value.trim();
                 if (user === ADMIN_USER && pass === ADMIN_PASS) {
                     sessionStorage.setItem('isAuthenticated', 'true');
+                    await initializeAppData();
                     checkAuth();
                 } else {
                     showNotification('Utilizador ou palavra-passe incorretos.', 'error');
@@ -2683,6 +2753,13 @@
             
             navBtns.forEach(btn => {
                 btn.addEventListener('click', () => showPage(btn.getAttribute('data-page')));
+            });
+
+            sidebarBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showPage(btn.getAttribute('data-page'));
+                });
             });
             
             serialCodeInput.addEventListener('input', handleSerialInput);
@@ -2748,13 +2825,11 @@
             closeRulesModal.addEventListener('click', () => rulesModal.classList.remove('active'));
             confirmRules.addEventListener('click', () => rulesModal.classList.remove('active'));
             
-            // Listeners da Análise
             closeAnalysisModal.addEventListener('click', () => analysisModal.classList.remove('active'));
             saveAnalysisBtn.addEventListener('click', saveAnalysis);
             analysisClientFilter.addEventListener('change', updateAnalysisTable);
             selectAllCheckbox.addEventListener('change', handleSelectAll);
             batchAnalyzeBtn.addEventListener('click', openBatchAnalysisModal);
-
 
             closeNameEditModal.addEventListener('click', () => nameEditModal.classList.remove('active'));
             saveNameEditBtn.addEventListener('click', saveEditedNames);
@@ -2793,11 +2868,8 @@
                  });
             });
 
-
-            toggleViewModeBtn.addEventListener('click', toggleViewMode);
             toggleDarkModeBtn.addEventListener('click', toggleDarkMode);
 
-            // Listeners do Assistente de IA
             aiAssistantFab.addEventListener('click', openAIAssistant);
             aiModalClose.addEventListener('click', closeAIAssistant);
             aiSendBtn.addEventListener('click', sendAIChatMessage);
@@ -2805,41 +2877,12 @@
                 if (e.key === 'Enter') sendAIChatMessage();
             });
             
-            // Listeners do Laudo Técnico
             generateLaudoBtn.addEventListener('click', generateLaudo);
             copyLaudoBtn.addEventListener('click', copyLaudo);
-
-            // Listeners da Sincronização em Nuvem
-            cloudSaveBtn.addEventListener('click', saveToCloud);
-            cloudLoadBtn.addEventListener('click', loadFromCloud);
-            
-            cancelCloudLoadBtn.addEventListener('click', () => {
-                cloudDataToLoad = null;
-                cloudLoadConfirmModal.classList.remove('active');
-            });
-            confirmCloudLoadBtn.addEventListener('click', async () => {
-                if (cloudDataToLoad) {
-                    await applyCloudData(cloudDataToLoad);
-                }
-                cloudLoadConfirmModal.classList.remove('active');
-            });
         }
         // #endregion
 
         // #region Lógica de UI (Páginas, Modos, Notificações)
-        function applyViewMode() {
-            const body = document.body;
-            body.setAttribute('data-view-mode', currentViewMode);
-            viewModeText.textContent = currentViewMode === 'desktop' ? 'Modo Móvel' : 'Modo Desktop';
-            toggleViewModeBtn.querySelector('i').className = currentViewMode === 'desktop' ? 'fas fa-mobile-alt' : 'fas fa-desktop';
-        }
-
-        function toggleViewMode() {
-            currentViewMode = (currentViewMode === 'desktop') ? 'auto' : 'desktop';
-            localStorage.setItem(VIEW_MODE_KEY, currentViewMode);
-            applyViewMode();
-        }
-
         function applyDarkMode() {
             document.body.classList.toggle('dark-mode', isDarkMode);
             darkModeText.textContent = isDarkMode ? 'Modo Claro' : 'Modo Escuro';
@@ -2857,6 +2900,10 @@
             document.getElementById(pageId).classList.add('active');
             
             navBtns.forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
+            });
+
+            sidebarBtns.forEach(btn => {
                 btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
             });
             
@@ -2966,9 +3013,7 @@
             const year = parseInt("20" + code.substring(2, 4));
             const warrantyStatus = calculateWarrantyStatus(week, year);
 
-            // CORREÇÃO: Trata a data de forma robusta para evitar problemas de fuso horário.
-            // Cria a data em UTC para garantir consistência.
-            const dateParts = submissionDate.split('-'); // ex: ["2023", "12", "25"]
+            const dateParts = submissionDate.split('-');
             const submissionDateObj = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]));
             
             const newBattery = {
@@ -2996,20 +3041,19 @@
                 newBattery.technicalOpinionDate = new Date().toISOString();
                 showNotification(`Bateria ${code} finalizada automaticamente (Fora do Prazo).`, 'warning');
                 addActivity('fas fa-clock', `Bateria ${code} finalizada (Fora do Prazo).`);
-            } else if (recommendation) { // A chave é a existência de um parecer técnico
+            } else if (recommendation) {
                 newBattery.status = 'finalized';
                 if (recommendation.toUpperCase().includes('PROCEDENTE')) {
                     newBattery.finalAction = 'APROVADA - ENVIAR NOVA';
                 } else if (recommendation.toUpperCase().includes('RECARREGAR')) {
                     newBattery.finalAction = 'REPROVADA - DEVOLVER AO CLIENTE';
                 } else {
-                    // Ação genérica se o parecer não contiver palavras-chave
                     newBattery.finalAction = 'ANALISADA NO REGISTRO';
                 }
                 newBattery.technicalOpinionDate = new Date().toISOString();
                 showNotification(`Bateria ${code} finalizada no registro.`, 'success');
                 addActivity('fas fa-check-circle', `Bateria ${code} finalizada no registro.`);
-            } else { // Sem parecer, vai para a fila de análise
+            } else {
                 newBattery.status = 'in_analysis';
                 showNotification('Bateria adicionada para análise!', 'success');
                 addActivity('fas fa-battery-full', `Bateria ${code} adicionada para ${client}`);
@@ -3023,6 +3067,7 @@
             tempObservation = '';
             
             updateUI();
+            triggerAutoSync();
         }
 
         async function removeBattery(id) {
@@ -3034,6 +3079,7 @@
             updateUI();
             showNotification('Bateria removida com sucesso!', 'success');
             addActivity('fas fa-trash-alt', `Bateria removida: ${removed.code}`);
+            triggerAutoSync();
         }
 
         async function clearData() {
@@ -3054,6 +3100,7 @@
                 lastUpdate.textContent = "Nenhuma atualização";
                 showNotification('Todos os dados foram removidos.', 'success');
                 addActivity('fas fa-trash-alt', 'Todos os dados foram removidos');
+                triggerAutoSync();
             }
         }
         
@@ -3100,6 +3147,7 @@
 
                     showNotification(`${importedData.length} registros restaurados com sucesso! Os dados atuais foram substituídos.`, 'success');
                     addActivity('fas fa-upload', `${importedData.length} baterias restauradas do backup.`);
+                    triggerAutoSync();
 
                 } catch (error) {
                     showNotification('Erro ao importar. Arquivo inválido ou incompatível.', 'error');
@@ -3172,18 +3220,14 @@
             const inAnalysis = batteryData.filter(b => b.status === 'in_analysis').length;
             const finalized = batteryData.filter(b => b.status === 'finalized').length;
             
-            // Report Page
             if (totalCount) totalCount.textContent = batteryData.length;
             if (inAnalysisCountReport) inAnalysisCountReport.textContent = inAnalysis;
             if (finalizedCountReport) finalizedCountReport.textContent = finalized;
 
-            // Analysis Page
             if (inAnalysisCount) inAnalysisCount.textContent = inAnalysis;
 
-            // Finalized Page
             if (finalizadoCount) finalizadoCount.textContent = finalized;
 
-            // DETAILED STATS FOR FINALIZED PAGE
             if(finalizadoAprovadaCount) {
                 const approvedCount = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('APROVADA')).length;
                 finalizadoAprovadaCount.textContent = approvedCount;
@@ -3549,6 +3593,7 @@
             addActivity('fas fa-clipboard-check', `Análise da bateria ${battery.code} finalizada.`);
             analyzingBatteryId = null;
             updateUI();
+            triggerAutoSync();
         }
 
         async function saveBatchAnalysis() {
@@ -3578,8 +3623,9 @@
                 analysisModal.classList.remove('active');
                 showNotification(`${updatedCount} baterias analisadas em lote com sucesso!`, 'success');
                 addActivity('fas fa-layer-group', `${updatedCount} baterias analisadas em lote.`);
-                batchAnalysisIds = []; // Limpa o array após o uso
+                batchAnalysisIds = [];
                 updateUI();
+                triggerAutoSync();
             }
         }
 
@@ -3644,6 +3690,7 @@
             showNotification('Nomes atualizados em todos os registros!', 'success');
             addActivity('fas fa-pencil-alt', `Nomes '${oldClientName}/${oldSalesmanName}' atualizados.`);
             editingBatteryId = null;
+            triggerAutoSync();
         }
 
         function openObservationModal(currentObservation, callback) {
@@ -3900,7 +3947,6 @@
 
         function drawPdfHeader(doc, clientName, salesmanName) {
             if (logoBase64) {
-                // Ajustado para o novo logo SVG com proporção diferente
                 doc.addImage(logoBase64, 'SVG', 15, 10, 80, 16);
             }
             doc.setFontSize(18);
@@ -3923,13 +3969,12 @@
             doc.text('ANÁLISE DE GARANTIA: JENILTON CRUZ', 195, 65, { align: 'right' });
             doc.setFont(undefined, 'normal');
 
-            return 75; // Nova posição Y inicial
+            return 75;
         }
 
         function buildClientPDFPage(doc, clientName, clientBatteries, startY) {
             let currentY = startY;
 
-            // 1. Resumo por Ação
             const summary = {
                 approved: {},
                 rejected: {},
@@ -3985,7 +4030,6 @@
             createSummaryList('BATERIAS REPROVADAS', summary.rejected, [231, 76, 60]);
             createSummaryList('BATERIAS FORA DO PRAZO', summary.expired, [127, 140, 141]);
 
-            // 2. Tabela Detalhada de Baterias
             if (currentY > 240) {
                 doc.addPage();
                 currentY = 20;
@@ -4022,7 +4066,6 @@
             });
             currentY = doc.lastAutoTable.finalY + 15;
 
-            // 3. Critérios de Análise
             if (currentY > 240) {
                 doc.addPage();
                 currentY = 20;
@@ -4136,10 +4179,8 @@
 
             const ws = XLSX.utils.json_to_sheet(mappedData);
             
-            // Auto-filtro
             ws['!autofilter'] = { ref: XLSX.utils.encode_range(XLSX.utils.decode_range(ws['!ref'])) };
 
-            // Ajustar largura das colunas
             const colWidths = [];
             for (const key in mappedData[0]) {
                 colWidths.push({ wch: Math.max(key.length, ...mappedData.map(row => row[key] ? row[key].toString().length : 0)) + 2 });
@@ -4195,36 +4236,14 @@
 
             const knowledgeBase = `
                 **Sobre a FABRECK DO BRASIL:** A FABRECK DO BRASIL é especialista em baterias de alta performance para motocicletas, utilizando tecnologia de ponta para garantir durabilidade e confiança.
-
-                **Tipos de Bateria de Moto:**
-                - **Convencional (Chumbo-Ácido):** Requer ativação com a solução ácida que acompanha o produto. Manutenção periódica do nível da solução pode ser necessária (completar apenas com água destilada). É a tecnologia mais tradicional e com bom custo-benefício.
-                - **AGM (Absorbent Glass Mat) / Selada VRLA:** A solução ácida é absorvida por uma manta de fibra de vidro. Vem selada de fábrica e não requer manutenção de água. Oferece maior resistência à vibração e pode ser instalada em diferentes posições. É uma evolução da convencional.
-                - **Gel:** Similar à AGM, mas a solução é em forma de gel. Excelente resistência à vibração e a vazamentos, ideal para motos de alta performance e off-road.
-                - **Lítio (LiFePO4):** Tecnologia mais moderna. Extremamente leve (até 70% mais leve), vida útil muito superior, taxa de autodescarga baixíssima e alta capacidade de partida (CCA). Não sofre com sulfatação. É a escolha premium para performance.
-
-                **Termos Técnicos Importantes:**
-                - **Voltagem (V):** A maioria das motos usa 12V. É a tensão nominal do sistema elétrico.
-                - **Amperagem (Ah - Ampere-hora):** Indica a capacidade de armazenamento de energia. Quanto maior, mais tempo a bateria consegue fornecer energia.
-                - **CA (Cranking Amps):** A capacidade de partida da bateria. Um CA mais alto significa mais força para girar o motor de arranque. É um dos indicadores mais importantes de performance.
-                - **CCA (Cold Cranking Amps - Corrente de Arranque a Frio):** Medida do CA em baixas temperaturas (0°F ou -18°C).
-
-                **Diagnóstico de Problemas Comuns:**
-                - **Bateria não segura carga:** Pode ser sulfatação (cristais de sulfato de chumbo nas placas que impedem a reação química), fim da vida útil (desgaste natural) ou problema no sistema de recarga da moto (alternador/estator ou retificador/regulador de voltagem).
-                - **Moto não liga:** Primeiro, verificar se os terminais estão limpos e bem apertados. Medir a voltagem: abaixo de 12.4V em repouso indica necessidade de recarga; abaixo de 12V pode indicar um problema sério ou célula danificada. Testar o CA/CCA com equipamento adequado é a forma mais precisa de avaliar a saúde da bateria.
-                - **Sulfatação:** Ocorre principalmente quando a bateria de chumbo-ácido fica descarregada por longos períodos. Os cristais de sulfato de chumbo se solidificam nas placas, impedindo a recarga. É uma das maiores causas de falha prematura. Baterias de lítio não sofrem deste problema.
-
-                **Dicas de Manutenção e Vida Útil:**
-                - **Limpeza:** Mantenha os terminais (polos) limpos, apertados e livres de corrosão (zinabre). Pode-se usar uma escova de aço e aplicar graxa específica para polos após a limpeza.
-                - **Recarga:** Se a moto ficar parada por mais de 15 dias, o ideal é usar um carregador/mantenedor inteligente. Ele evita a descarga profunda e a sulfatação. A voltagem de recarga da moto deve ser verificada anualmente, devendo estar entre 13.5V e 14.5V com o motor em funcionamento.
-                - **Armazenamento:** Se for guardar a bateria fora da moto, armazene-a em local seco e fresco, e dê uma carga completa a cada 30-45 dias.
-
-                **Regras de Garantia Fabreck:**
-                - O código de série deve ter exatamente 9 caracteres.
-                - Formato: 4 números, 1 letra, 4 números (Ex: 3524A2623).
-                - A garantia é de 1 ano a partir da data de fabricação (codificada no número de série), com uma tolerância de 7 dias.
+                **Tipos de Bateria de Moto:** Convencional (Chumbo-Ácido), AGM (Selada VRLA), Gel, Lítio (LiFePO4).
+                **Termos Técnicos:** Voltagem (V), Amperagem (Ah), CA (Cranking Amps), CCA (Cold Cranking Amps).
+                **Diagnóstico de Problemas:** Causas para a bateria não segurar carga (sulfatação, fim da vida útil, problema na moto), passos para diagnosticar moto que não liga (terminais, voltagem, teste de CCA).
+                **Dicas de Manutenção:** Limpeza de terminais, uso de carregador inteligente, voltagem de recarga ideal (13.5V-14.5V), armazenamento correto.
+                **Regras de Garantia Fabreck:** Código de 9 caracteres (4 números, 1 letra, 4 números), garantia de 1 ano da fabricação + 7 dias de tolerância.
             `;
 
-            const systemPrompt = `Você é o "IA FABRECK DO BRASIL", um assistente técnico especialista em baterias de motocicleta da marca FABRECK DO BRASIL. Sua função é fornecer informações claras, precisas e úteis para os usuários do aplicativo de garantia. Responda de forma profissional, amigável e direta. Utilize a base de conhecimento a seguir para responder a todas as perguntas. Se a pergunta for fora do escopo de baterias ou do aplicativo, informe educadamente que você só pode ajudar com tópicos relacionados a baterias FABRECK DO BRASIL. Base de Conhecimento: ${knowledgeBase}`;
+            const systemPrompt = `Você é o "IA FABRECK DO BRASIL", um assistente técnico especialista em baterias de motocicleta. Responda de forma profissional e amigável, usando a base de conhecimento a seguir. Se a pergunta for fora do escopo, informe educadamente que só pode ajudar com tópicos relacionados a baterias FABRECK DO BRASIL. Base de Conhecimento: ${knowledgeBase}`;
 
             const fullHistory = [
                 { role: 'user', parts: [{ text: systemPrompt }] },
@@ -4235,7 +4254,7 @@
 
             try {
                 const payload = { contents: fullHistory };
-                const apiKey = ""; // A chave será injetada pelo ambiente
+                const apiKey = ""; 
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
@@ -4244,9 +4263,7 @@
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.statusText}`);
-                }
+                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
                 
                 const result = await response.json();
                 const aiResponse = result?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -4291,31 +4308,31 @@
                 Aja como um engenheiro técnico especialista em baterias da FABRECK DO BRASIL.
                 Crie um laudo técnico profissional, formal e bem estruturado em português do Brasil.
                 A análise é feita em bancada, na fábrica, sem acesso à motocicleta do cliente.
-                Use os seguintes dados brutos fornecidos por um técnico:
+                Use os seguintes dados brutos:
                 - Cliente: ${client}
                 - Código da Bateria: ${code}
                 - Modelo da Bateria: ${model}
                 - Teste de CA (Cranking Amps): ${ca} A
                 - Voltagem em Repouso: ${voltage} V
-                - Análise Visual da Bateria: ${visual}
-                - Observações Adicionais do Técnico: ${notes}
+                - Análise Visual: ${visual}
+                - Observações do Técnico: ${notes}
 
                 O laudo deve seguir esta estrutura:
                 1.  **CABEÇALHO:** "LAUDO TÉCNICO DE ANÁLISE DE BATERIA - FABRECK DO BRASIL"
-                2.  **DADOS DE IDENTIFICAÇÃO:** Liste claramente o Cliente, Código e Modelo da bateria.
-                3.  **PROCEDIMENTOS DE TESTE:** Descreva brevemente os testes realizados em bancada (inspeção visual, medição de tensão e teste de CA).
-                4.  **RESULTADOS OBTIDOS:** Apresente os valores numéricos dos testes (Voltagem, CA) e as observações da inspeção visual.
-                5.  **ANÁLISE TÉCNICA:** Com base nos dados, faça uma análise profissional. Utilize o seu conhecimento especializado para determinar se o valor de CA de ${ca}A é apropriado para uma bateria modelo ${model}. Se estiver baixo, mencione isso como um indicador de perda de performance ou fim de vida útil. Compare a voltagem com o padrão esperado (padrão de voltagem saudável: acima de 12.4V). Explique o que os resultados significam (ex: "A voltagem de ${voltage}V indica que a bateria está com a carga baixa").
-                6.  **DIAGNÓSTICO FINAL:** Conclua com um diagnóstico claro focado apenas na bateria, já que o sistema de carga do veículo não foi testado. Exemplos: "Bateria com desgaste natural no fim da sua vida útil", "Falha causada por sulfatação devido a longos períodos sem uso", "Nenhum defeito de fabricação encontrado, bateria apenas descarregada".
-                7.  **RECOMENDAÇÃO:** Dê uma recomendação técnica. Se o problema for da bateria, recomende a substituição. Se a bateria estiver apenas descarregada, recomende uma recarga lenta. Adicione a seguinte observação padrão em todas as recomendações: "É crucial que o sistema de recarga da motocicleta (alternador/retificador) seja verificado por um profissional qualificado antes da instalação de uma nova bateria, para evitar danos recorrentes."
+                2.  **DADOS DE IDENTIFICAÇÃO:** Cliente, Código e Modelo.
+                3.  **PROCEDIMENTOS DE TESTE:** Descreva os testes (inspeção visual, medição de tensão, teste de CA).
+                4.  **RESULTADOS OBTIDOS:** Apresente os valores e observações.
+                5.  **ANÁLISE TÉCNICA:** Faça uma análise profissional. Compare a voltagem com o padrão (>12.4V). Explique o que os resultados significam.
+                6.  **DIAGNÓSTICO FINAL:** Conclua com um diagnóstico focado apenas na bateria (ex: "Bateria com desgaste natural", "Nenhum defeito de fabricação encontrado, bateria apenas descarregada").
+                7.  **RECOMENDAÇÃO:** Dê uma recomendação técnica. Adicione a observação padrão: "É crucial que o sistema de recarga da motocicleta (alternador/retificador) seja verificado por um profissional qualificado antes da instalação de uma nova bateria, para evitar danos recorrentes."
                 8.  **RODAPÉ:** "Laudo gerado por IA FABRECK DO BRASIL em ${new Date().toLocaleDateString('pt-BR')}. Análise realizada em bancada."
 
-                Seja objetivo, use terminologia técnica apropriada e não adicione informações que não foram fornecidas.
+                Seja objetivo e use terminologia técnica apropriada.
             `;
             
             try {
                 const payload = { contents: [{ parts: [{ text: prompt }] }] };
-                const apiKey = ""; // A chave será injetada pelo ambiente
+                const apiKey = "";
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
@@ -4324,9 +4341,7 @@
                     body: JSON.stringify(payload)
                 });
 
-                if (!response.ok) {
-                    throw new Error(`API Error: ${response.statusText}`);
-                }
+                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
                 
                 const result = await response.json();
                 const aiResponse = result?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -4355,19 +4370,26 @@
         // #endregion
 
         // #region Sincronização em Nuvem
-        async function saveToCloud() {
+        function triggerAutoSync() {
+            debounce(() => saveToCloud(true), 2500);
+        }
+
+        function debounce(func, delay) {
+            clearTimeout(syncDebounceTimer);
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.textContent = 'A guardar alterações...';
+            syncStatus.style.color = '#F39C12';
+            syncDebounceTimer = setTimeout(func, delay);
+        }
+
+        async function saveToCloud(isSilent = false) {
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.textContent = 'A sincronizar...';
+            
             const dataToSave = {
                 batteries: await dbManager.getAll('batteries'),
                 savedAt: new Date().toISOString()
             };
-
-            if (dataToSave.batteries.length === 0) {
-                showNotification('Não há dados locais para atualizar na nuvem.', 'info');
-                return;
-            }
-            
-            cloudSaveBtn.disabled = true;
-            cloudSaveBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Atualizando...';
             
             try {
                 const response = await fetch(`https://jsonblob.com/api/jsonBlob/${FIXED_SYNC_KEY}`, {
@@ -4379,33 +4401,36 @@
                     body: JSON.stringify(dataToSave)
                 });
 
-                if (!response.ok) {
-                    throw new Error(`Erro na comunicação com o servidor: ${response.statusText}`);
-                }
+                if (!response.ok) throw new Error(`Erro no servidor: ${response.statusText}`);
 
-                showNotification('Dados atualizados na nuvem com sucesso!', 'success');
-                addActivity('fas fa-cloud-upload-alt', 'Dados atualizados na nuvem.');
+                if (isSilent) {
+                    const syncTime = new Date().toLocaleTimeString('pt-BR');
+                    syncStatus.textContent = `Sincronizado às ${syncTime}`;
+                    syncStatus.style.color = '#2ECC71';
+                } else {
+                    showNotification('Dados atualizados na nuvem com sucesso!', 'success');
+                }
+                addActivity('fas fa-cloud-upload-alt', 'Dados sincronizados com a nuvem.');
 
             } catch (error) {
                 console.error('Erro ao salvar na nuvem:', error);
-                showNotification('Falha ao salvar os dados. Verifique a sua conexão.', 'error');
-            } finally {
-                cloudSaveBtn.disabled = false;
-                cloudSaveBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Atualizar Nuvem';
+                if (isSilent) {
+                    syncStatus.textContent = 'Erro de sincronização';
+                    syncStatus.style.color = '#E74C3C';
+                }
+                showNotification('Falha ao sincronizar os dados. Verifique a sua ligação.', 'error');
             }
         }
 
-        async function loadFromCloud() {
-            cloudLoadBtn.disabled = true;
-            cloudLoadBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Carregando...';
+        async function loadFromCloud(isSilent = false) {
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.textContent = 'A carregar dados da nuvem...';
 
             try {
                 const response = await fetch(`https://jsonblob.com/api/jsonBlob/${FIXED_SYNC_KEY}`);
 
                 if (!response.ok) {
-                    if (response.status === 404) {
-                        throw new Error('Nenhum dado encontrado para esta chave.');
-                    }
+                    if (response.status === 404) throw new Error('Nenhum dado encontrado na nuvem.');
                     throw new Error(`Erro no servidor: ${response.statusText}`);
                 }
 
@@ -4415,15 +4440,18 @@
                     throw new Error('O formato dos dados na nuvem é inválido.');
                 }
 
-                cloudDataToLoad = data; // Armazena para confirmação
-                cloudLoadConfirmModal.classList.add('active');
+                if (isSilent) {
+                    await applyCloudData(data);
+                } else {
+                    cloudDataToLoad = data;
+                    cloudLoadConfirmModal.classList.add('active');
+                }
 
             } catch (error) {
                 console.error('Erro ao carregar da nuvem:', error);
                 showNotification(`Falha ao carregar: ${error.message}`, 'error');
-            } finally {
-                cloudLoadBtn.disabled = false;
-                cloudLoadBtn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Carregar da Nuvem';
+                syncStatus.textContent = 'Falha ao carregar da nuvem';
+                syncStatus.style.color = '#E74C3C';
             }
         }
 
@@ -4435,11 +4463,18 @@
                     await dbManager.set('batteries', battery);
                 }
 
-                await loadFromDB(); // Recarrega os dados do IndexedDB para a memória do app
+                await loadFromDB();
                 updateUI();
 
-                showNotification(`${data.batteries.length} registros carregados da nuvem!`, 'success');
+                if (data.batteries.length > 0) {
+                    showNotification(`${data.batteries.length} registros carregados da nuvem!`, 'success');
+                }
                 addActivity('fas fa-cloud-download-alt', 'Dados carregados da nuvem.');
+
+                const syncStatus = document.getElementById('syncStatus');
+                const syncTime = new Date(data.savedAt).toLocaleString('pt-BR');
+                syncStatus.textContent = `Sincronizado em ${syncTime}`;
+                syncStatus.style.color = '#2ECC71';
 
             } catch (error) {
                 console.error('Erro ao aplicar dados da nuvem:', error);
