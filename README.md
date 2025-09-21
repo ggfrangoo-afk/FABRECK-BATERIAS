@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FABRECK DO BRASIL - App de Garantia com IA</title>
+    <title>FABRECK DO BRASIL - App de Garantia</title>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
@@ -42,8 +42,8 @@
         }
         
         html, body {
-            min-height: 100%; /* CORRIGIDO: Permite que a página cresça com o conteúdo */
-            overflow-x: hidden; /* Previne apenas o scroll horizontal */
+            min-height: 100%; /* ALTERADO: Permite que o corpo cresça com o conteúdo */
+            overflow-x: hidden; /* Garante que não haja rolagem horizontal */
         }
 
         body {
@@ -102,7 +102,7 @@
         /* --- LAYOUT PRINCIPAL (DESKTOP/WEB) --- */
         #layoutContainer {
             display: flex;
-            min-height: 100vh; /* CORRIGIDO: Usa altura mínima para não cortar o conteúdo */
+            min-height: 100vh; /* ALTERADO: Altura mínima, permitindo crescer */
             width: 100%;
         }
 
@@ -114,9 +114,14 @@
             flex-direction: column;
             padding: 20px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.1);
-            transition: background 0.3s ease, width 0.3s ease;
-            position: relative; /* Adicionado para posicionar o botão */
+            transition: all 0.3s ease;
+            z-index: 200;
         }
+        body.computer-mode-active #sidebar {
+            position: fixed;
+            height: 100%;
+        }
+
         body.dark-mode #sidebar {
             background: var(--dark-card-bg);
             border-right: 1px solid var(--dark-border);
@@ -184,9 +189,12 @@
 
         #mainContentWrapper {
             flex: 1;
-            /* overflow-y: auto; REMOVIDO: Para usar a barra de rolagem principal do navegador */
+            /* overflow-y: auto; REMOVIDO para permitir rolagem da página inteira */
             position: relative;
             padding: 10px;
+        }
+        body.computer-mode-active #mainContentWrapper {
+            display: none; /* Esconde a visualização normal no modo computador */
         }
         /* --- FIM LAYOUT PRINCIPAL --- */
 
@@ -196,172 +204,36 @@
             color: var(--dark-text);
         }
 
-        body.dark-mode header {
-            background: linear-gradient(135deg, var(--dark-header-bg-start), var(--dark-header-bg-end));
-            border: 1px solid var(--dark-border);
+        body.dark-mode .status-badge {
+            color: #FFFFFF; /* Garante que o texto seja sempre branco para contraste */
         }
 
-        body.dark-mode .fabreck-pattern {
-            background: 
-                linear-gradient(135deg, var(--dark-blue-light) 25%, transparent 25%) -50px 0,
-                linear-gradient(225deg, var(--dark-blue-light) 25%, transparent 25%) -50px 0,
-                linear-gradient(315deg, var(--fabreck-red) 25%, transparent 25%),
-                linear-gradient(45deg, var(--fabreck-red) 25%, transparent 25%);
+        body.dark-mode .status-warranty,
+        body.dark-mode .action-approved {
+            background: #27ae60; /* Verde mais escuro e sólido */
+            border: none;
+        }
+        
+        body.dark-mode .status-expired,
+        body.dark-mode .action-rejected {
+            background: #c0392b; /* Vermelho mais escuro e sólido */
+            border: none;
         }
 
-        body.dark-mode .logo h1,
-        body.dark-mode .system-title,
-        body.dark-mode .company-info p,
-        body.dark-mode .active-salesman {
-            color: var(--dark-text);
+        body.dark-mode .status-factory {
+            background: #2980b9; /* Azul mais escuro e sólido */
+            border: none;
+        }
+        
+        body.dark-mode .status-in-analysis {
+            background: #f39c12; /* Laranja sólido */
+            border: none;
         }
 
-        body.dark-mode .card {
-            background: var(--dark-card-bg);
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--dark-border);
-        }
-
-        body.dark-mode .card-header {
-            border-bottom: 2px solid rgba(0, 71, 171, 0.3);
-        }
-
-        body.dark-mode .card-title {
-            color: var(--dark-blue-light);
-        }
-
-        body.dark-mode .form-group label {
-            color: var(--dark-light-text);
-        }
-
-        body.dark-mode .form-control {
-            background: var(--dark-bg);
-            color: var(--dark-text);
-            border: 1px solid var(--dark-border);
-        }
-
-        body.dark-mode .form-control:focus {
-            border-color: var(--dark-blue-light);
-            box-shadow: 0 0 0 3px rgba(0, 71, 171, 0.4);
-        }
-
-        body.dark-mode .btn-primary,
-        body.dark-mode .btn-info {
-            background: var(--dark-blue-light);
-        }
-
-        body.dark-mode .btn-danger {
-            background: var(--fabreck-danger);
-        }
-
-        body.dark-mode .btn-success {
-            background: var(--fabreck-success);
-        }
-
-        body.dark-mode .btn-warning {
-            background: var(--fabreck-warning);
-        }
-
-        body.dark-mode .code-preview {
-            color: var(--dark-light-text);
-        }
-
-        body.dark-mode .code-preview.valid {
-            color: var(--fabreck-success); /* Keep success color bright */
-        }
-        body.dark-mode .code-preview.invalid {
-            color: var(--fabreck-danger); /* Keep danger color bright */
-        }
-
-        body.dark-mode .scanner-status {
-            background: rgba(0, 0, 0, 0.7);
-            color: var(--dark-text);
-        }
-
-        body.dark-mode .scanned-history {
-            background: rgba(0, 71, 171, 0.1);
-            border: 1px solid rgba(0, 71, 171, 0.2);
-        }
-
-        body.dark-mode .scanned-item {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        body.dark-mode .scanned-code {
-            color: var(--dark-blue-light);
-        }
-
-        body.dark-mode .scanned-time {
-            color: var(--dark-light-text);
-        }
-
-        body.dark-mode .activity-log {
-            background: var(--dark-card-bg);
-            border: 1px solid var(--dark-border);
-        }
-
-        body.dark-mode .activity-item {
-            border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
-        }
-
-        body.dark-mode .activity-icon {
-            background: rgba(0, 71, 171, 0.2);
-            color: var(--dark-blue-light);
-        }
-
-        body.dark-mode .activity-content {
-            color: var(--dark-light-text);
-        }
-
-        body.dark-mode .activity-time {
-            color: var(--dark-gray);
-        }
-
-        body.dark-mode .info-section {
-            background: rgba(0, 71, 171, 0.1);
-            border: 1px solid rgba(0, 71, 171, 0.2);
-            color: var(--dark-light-text);
-        }
-
-        body.dark-mode .info-section h3 {
-            color: var(--dark-blue-light);
-        }
-
-        body.dark-mode .report-filters,
-        body.dark-mode .batch-actions {
-            background: rgba(0, 71, 171, 0.1);
-            border: 1px solid rgba(0, 71, 171, 0.2);
-        }
-
-        body.dark-mode table {
-            color: var(--dark-light-text);
-        }
-
-        body.dark-mode th {
-            background: rgba(0, 71, 171, 0.2);
-            color: var(--dark-blue-light);
-        }
-
-        body.dark-mode tr:nth-child(even) {
-            background: rgba(0, 71, 171, 0.05);
-        }
-
-        body.dark-mode .table-footer {
-            background: rgba(0, 71, 171, 0.2);
-            border-top: 2px solid var(--dark-blue-light);
-        }
-
-        body.dark-mode .total-box {
-            background: var(--dark-card-bg);
-            border: 1px solid var(--dark-border);
-        }
-
-        body.dark-mode .total-title {
-            color: var(--dark-blue-light);
-        }
-
-        body.dark-mode .total-value {
-            color: var(--dark-text);
+        body.dark-mode .status-finalized,
+        body.dark-mode .action-scrapped {
+            background: #8e44ad; /* Roxo sólido */
+            border: none;
         }
 
         body.dark-mode .footer {
@@ -535,6 +407,8 @@
             padding: 20px;
             border: 1px solid rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
+            display: flex; /* Adicionado para controle interno */
+            flex-direction: column; /* Adicionado para controle interno */
         }
         
         .card:hover {
@@ -668,59 +542,6 @@
             color: var(--fabreck-white);
         }
         
-        /* Estilos da câmera */
-        .camera-container {
-            position: relative;
-            width: 100%;
-            height: 250px;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            margin-bottom: 15px;
-            border: 2px solid var(--fabreck-blue);
-        }
-        
-        #video {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: cover;
-        }
-        
-        .scanner-status {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            font-size: 14px;
-            color: var(--fabreck-white);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 10;
-            background: rgba(0, 0, 0, 0.5);
-            padding: 6px 12px;
-            border-radius: 20px;
-        }
-        
-        .scanner-status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: var(--fabreck-danger);
-        }
-        
-        .scanner-status-indicator.active {
-            background: var(--fabreck-success);
-            box-shadow: 0 0 8px var(--fabreck-success);
-        }
-        
-        .camera-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
         /* Estilos da tabela de relatório */
         .table-container {
             overflow-x: auto;
@@ -730,6 +551,7 @@
             border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 12px;
             padding: 3px;
+            flex-grow: 1; /* Para preencher o espaço no card */
         }
         
         table {
@@ -758,6 +580,7 @@
             font-weight: 700;
             position: sticky;
             top: 0;
+            z-index: 1;
             font-size: 13px;
         }
         
@@ -993,18 +816,6 @@
             display: none;
         }
         
-        /* Indicador de câmera */
-        .camera-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-        }
-        
         /* Pré-visualização do código */
         .code-preview {
             font-size: 20px;
@@ -1015,47 +826,6 @@
             color: var(--fabreck-blue);
             font-family: monospace;
             transition: color 0.3s ease;
-        }
-        
-        /* Histórico de escaneamentos */
-        .scanned-history {
-            max-height: 150px;
-            overflow-y: auto;
-            margin-top: 15px;
-            border: 1px solid rgba(0, 71, 171, 0.1);
-            border-radius: 12px;
-            padding: 10px;
-            background: rgba(0, 71, 171, 0.03);
-            transition: background 0.3s ease, border 0.3s ease;
-        }
-        
-        .scanned-item {
-            padding: 10px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-            font-size: 14px;
-            display: flex;
-            justify-content: space-between;
-            border-radius: 8px;
-            transition: background 0.2s, border-bottom 0.3s ease;
-        }
-        
-        .scanned-item:hover {
-            background: rgba(0, 71, 171, 0.05);
-        }
-        
-        .scanned-item:last-child {
-            border-bottom: none;
-        }
-        
-        .scanned-code {
-            font-weight: bold;
-            color: var(--fabreck-blue);
-            font-family: monospace;
-        }
-        
-        .scanned-time {
-            color: var(--fabreck-gray);
-            font-size: 12px;
         }
         
         /* Ícone de ajuda */
@@ -1282,54 +1052,6 @@
             font-size: 12px;
             white-space: nowrap;
         }
-
-        /* Overlay de captura da câmera */
-        .capture-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 5;
-            cursor: pointer;
-        }
-        
-        .capture-indicator {
-            width: 70px;
-            height: 70px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(210, 38, 48, 0.7);
-            transition: transform 0.2s;
-        }
-        
-        .capture-indicator:active {
-            transform: scale(0.9);
-        }
-        
-        .capture-indicator i {
-            font-size: 30px;
-            color: white;
-        }
-        
-        .scanner-guide {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 80%;
-            height: 80px;
-            border: 3px dashed rgba(255, 255, 255, 0.5);
-            border-radius: 10px;
-            z-index: 2;
-            pointer-events: none;
-        }
         
         /* Estilos para os totais do relatório */
         .totals-container {
@@ -1407,233 +1129,74 @@
             display: block;
             font-size: 12px;
         }
-        
-        /* --- ESTILOS PARA LAUDO TÉCNICO --- */
-        #laudoResultContainer {
-            margin-top: 20px;
-            background-color: var(--fabreck-light);
-            border: 1px solid rgba(0, 71, 171, 0.2);
-            border-radius: 12px;
-            padding: 20px;
-        }
-        
-        body.dark-mode #laudoResultContainer {
-             background-color: var(--dark-bg);
-             border-color: var(--dark-border);
-        }
-        
-        #laudoResult {
-            white-space: pre-wrap; /* Mantém a formatação do texto */
-            font-family: monospace;
-            font-size: 14px;
-            line-height: 1.6;
-            color: var(--fabreck-dark);
-            background-color: transparent;
-            border: none;
-            width: 100%;
-            min-height: 200px;
-        }
-        
-        body.dark-mode #laudoResult {
-            color: var(--dark-text);
-        }
 
-        .laudo-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .form-section {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+         body.dark-mode .form-section {
+            border-bottom-color: var(--dark-border);
+         }
+        .form-section h3 {
+            color: var(--fabreck-blue);
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+         body.dark-mode .form-section h3 {
+            color: var(--dark-blue-light);
+         }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
             margin-bottom: 15px;
         }
-        
-        .laudo-title {
-            font-size: 18px;
-            color: var(--fabreck-blue);
-            font-weight: 700;
-        }
-
-        body.dark-mode .laudo-title {
-            color: var(--dark-blue-light);
-        }
-
-        /* --- NOVOS ESTILOS PARA ASSISTENTE DE IA --- */
-        .ai-assistant-fab {
-            position: fixed;
-            bottom: 90px;
-            right: 20px;
-            width: 60px;
-            height: 60px;
-            background-color: var(--fabreck-blue);
-            color: white;
-            border-radius: 50%;
+        .checkbox-group {
             display: flex;
             align-items: center;
-            justify-content: center;
-            font-size: 28px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            z-index: 1050;
-            transition: transform 0.2s ease;
+        }
+        .checkbox-group input {
+            margin-right: 10px;
         }
 
-        .ai-assistant-fab:hover {
-            transform: scale(1.1);
+        #laudoImagePreviews {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
         }
-
-        .ai-modal {
-            position: fixed;
+        .preview-container {
+            position: relative;
+            width: 100%;
+            padding-top: 100%; /* Aspect ratio 1:1 */
+            border: 1px dashed var(--fabreck-gray);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .preview-container img {
+            position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 2050;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.3s ease;
+            object-fit: cover;
         }
-
-        .ai-modal.active {
-            opacity: 1;
-            pointer-events: all;
-        }
-
-        .ai-modal-content {
-            width: 90%;
-            max-width: 500px;
-            height: 70vh;
-            background: var(--fabreck-white);
-            border-radius: 16px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        
-        body.dark-mode .ai-modal-content {
-             background: var(--dark-card-bg);
-        }
-
-        .ai-modal-header {
-            padding: 15px 20px;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        body.dark-mode .ai-modal-header {
-            border-bottom: 1px solid var(--dark-border);
-        }
-
-        .ai-modal-title {
-            color: var(--fabreck-blue);
-            font-size: 18px;
-            font-weight: 700;
-        }
-        
-        body.dark-mode .ai-modal-title {
-            color: var(--dark-blue-light);
-        }
-
-        .ai-modal-close {
-            font-size: 24px;
-            color: var(--fabreck-gray);
-            cursor: pointer;
-        }
-        
-        .ai-chat-box {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .ai-chat-message {
-            padding: 10px 15px;
-            border-radius: 12px;
-            max-width: 80%;
-            line-height: 1.5;
-        }
-        
-        .ai-chat-message.user {
-            background-color: var(--fabreck-blue);
+        .remove-img-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(231, 76, 60, 0.8);
             color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 4px;
-        }
-        
-        body.dark-mode .ai-chat-message.user {
-            background-color: var(--dark-blue-light);
-        }
-        
-        .ai-chat-message.assistant {
-            background-color: var(--fabreck-light);
-            color: var(--fabreck-dark);
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-        }
-        
-        body.dark-mode .ai-chat-message.assistant {
-            background-color: var(--dark-bg);
-            color: var(--dark-text);
-        }
-        
-        .ai-chat-message.assistant.thinking {
-            font-style: italic;
-        }
-        
-        .ai-chat-message.assistant.thinking .dot {
-            display: inline-block;
-            animation: aiblink 1.4s infinite;
-        }
-        .ai-chat-message.assistant.thinking .dot:nth-child(2) { animation-delay: 0.2s; }
-        .ai-chat-message.assistant.thinking .dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes aiblink {
-            0%, 80%, 100% { opacity: 0; }
-            40% { opacity: 1; }
-        }
-        
-        .ai-modal-footer {
-            padding: 15px;
-            border-top: 1px solid rgba(0,0,0,0.1);
-            display: flex;
-            gap: 10px;
-        }
-        
-        body.dark-mode .ai-modal-footer {
-            border-top: 1px solid var(--dark-border);
-        }
-
-        #ai-chat-input {
-            flex-grow: 1;
-            border-radius: 20px;
-            padding: 10px 15px;
-        }
-        
-        #ai-send-btn {
-            width: 50px;
-            height: 40px;
-            margin-top: 0;
-            border-radius: 20px;
-            padding: 0;
-        }
-        /* --- FIM DOS ESTILOS DE IA --- */
-
-        /* --- NOVOS ESTILOS PARA ANÁLISE EM LOTE --- */
-        .batch-actions {
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(0, 71, 171, 0.1);
-            background: rgba(0, 71, 171, 0.05);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 24px;
+            text-align: center;
         }
 
         @media (min-width: 600px) {
@@ -1678,7 +1241,8 @@
                 padding: 20px;
             }
             .container {
-                max-width: 1200px;
+                width: 95%; /* ADICIONADO: Faz o container ser fluido */
+                max-width: 1600px; /* ALTERADO: Aumenta a largura máxima para preencher mais a tela */
                 padding-bottom: 20px; /* Reduz padding do footer em desktop */
             }
             header {
@@ -1687,9 +1251,6 @@
             }
             .footer {
                 display: none; /* Esconde o footer de navegação mobile */
-            }
-            .ai-assistant-fab {
-                bottom: 20px; /* Ajusta posição do FAB sem o footer */
             }
             .card {
                 padding: 25px;
@@ -1714,6 +1275,57 @@
             }
             .filter-row {
                 grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* --- NOVOS ESTILOS PARA WIDESCREEN OTIMIZADO --- */
+        @media (min-width: 1200px) {
+            /* Aplica um layout de 2 colunas para a página de Registro */
+            #scanPage {
+                display: grid;
+                grid-template-columns: minmax(450px, 1.2fr) 1fr; /* Coluna do formulário um pouco maior */
+                gap: 20px;
+                align-items: start;
+            }
+            #scanPage .card, #settingsPage .card {
+                margin-bottom: 0;
+            }
+            
+            #laudoPage .card {
+                max-width: 900px;
+                margin: 0 auto;
+            }
+
+            /* Reorganiza a página de Análise para melhor uso do espaço */
+            #analysisPage > .card {
+                display: grid;
+                grid-template-columns: 300px 1fr; /* Coluna lateral para filtros e stats */
+                gap: 20px;
+                align-items: start;
+            }
+            /* Posiciona os elementos dentro do grid da página de Análise */
+            #analysisPage .card-header { grid-column: 1 / -1; } /* Header ocupa a largura toda */
+            #analysisPage .info-section { grid-column: 1 / 2; }
+            #analysisPage .stat-cards { grid-column: 1 / 2; }
+            #analysisPage .batch-actions { grid-column: 1 / 2; }
+            #analysisPage .table-container {
+                grid-column: 2 / 3;
+                grid-row: 2 / 6; /* Ocupa as linhas ao lado dos filtros */
+                margin-top: 0;
+                max-height: 70vh; /* Permite que a tabela cresça com a altura da tela */
+            }
+
+            /* Aplica layout de 2 colunas para a página de Ajustes */
+            #settingsPage {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                align-items: start;
+            }
+
+            /* Melhora o layout dos filtros no relatório em telas muito largas */
+            #reportPage .filter-row {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             }
         }
 
@@ -1785,6 +1397,9 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Entrar</button>
             </form>
+            <div style="margin-top: 15px; border-top: 1px solid #e0e0e0; padding-top: 15px;">
+                 <button id="viewerLoginBtn" class="btn btn-info" style="margin-top:0;">Acesso Rápido (Somente Consulta)</button>
+            </div>
         </div>
     </div>
 
@@ -1793,10 +1408,10 @@
         <nav id="sidebar">
             <div class="sidebar-header">
                 <img id="logo-img-sidebar" alt="Fabreck Logo" class="logo-img">
-                <h3>Garantia IA</h3>
+                <h3>Garantia</h3>
             </div>
             <div class="sidebar-nav">
-                <a href="#" class="sidebar-btn active" data-page="scanPage"><i class="fas fa-bolt"></i><span>Rápido</span></a>
+                <a href="#" class="sidebar-btn active" data-page="scanPage"><i class="fas fa-bolt"></i><span>Registo</span></a>
                 <a href="#" class="sidebar-btn" data-page="laudoPage"><i class="fas fa-file-invoice"></i><span>Laudo</span></a>
                 <a href="#" class="sidebar-btn" data-page="analysisPage"><i class="fas fa-clipboard-check"></i><span>Análise</span></a>
                 <a href="#" class="sidebar-btn" data-page="finalizadoPage"><i class="fas fa-check-double"></i><span>Finalizadas</span></a>
@@ -1818,7 +1433,7 @@
                     <div class="logo">
                         <img id="logo-img-header" alt="Fabreck Logo" class="logo-img">
                     </div>
-                    <div class="system-title">Sistema de Controle de Garantia com IA</div>
+                    <div class="system-title">Sistema de Controle de Garantia</div>
                     
                     <div class="company-info">
                         <p><strong>Encarregado de Produção: Reginaldo</strong></p>
@@ -1837,11 +1452,11 @@
                     </div>
                 </header>
             
-                <!-- Página de Registro Rápido -->
+                <!-- Página de Registo de Garantia -->
                 <div id="scanPage" class="page active">
                     <div class="card">
                         <div class="card-header">
-                            <h2 class="card-title">Registro Rápido</h2>
+                            <h2 class="card-title">Registo de Garantia</h2>
                             <div class="card-icon"><i class="fas fa-bolt"></i></div>
                         </div>
                         
@@ -1874,7 +1489,7 @@
                             </div>
                         </div>
                         
-                        <div id="videoAnalysisOptions" class="hidden">
+                        <div id="videoAnalysisOptions" class="hidden viewer-hidden">
                             <div class="form-group">
                                 <label>Parecer Rápido (Análise por Vídeo)</label>
                                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -1897,7 +1512,7 @@
                                 <div style="position: relative; flex: 1;">
                                     <input type="text" id="serialCode" class="form-control" placeholder="Ex: 3524A2623" maxlength="9">
                                 </div>
-                                <button id="addBtn" class="btn btn-primary">
+                                <button id="addBtn" class="btn btn-primary viewer-hidden">
                                     <i class="fas fa-plus-circle"></i> Adicionar
                                 </button>
                             </div>
@@ -1910,107 +1525,128 @@
                             </div>
                         </div>
                         
-                        <div class="form-row" style="margin-top: 10px;">
-                            <button id="scanBtn" class="btn btn-primary">
-                                <i class="fas fa-camera"></i> Usar Câmera com IA
-                            </button>
-                            <button id="clearFormBtn" class="btn btn-danger">
+                        <div class="form-row viewer-hidden" style="margin-top: 10px;">
+                             <button id="clearFormBtn" class="btn btn-danger">
                                 <i class="fas fa-eraser"></i> Limpar Código
                             </button>
                         </div>
                         
                         <div class="activity-log" id="activityLog"></div>
                     </div>
-                    
+
+                    <!-- NOVO CARD COM O LOG DE ÚLTIMOS REGISTOS -->
                     <div class="card">
                         <div class="card-header">
-                            <h2 class="card-title">Leitor por Câmera (IA)</h2>
-                            <div class="card-icon"><i class="fas fa-robot"></i></div>
+                            <h2 class="card-title">Últimos Registos</h2>
+                            <div class="card-icon"><i class="fas fa-history"></i></div>
                         </div>
-                        
-                        <div class="camera-container">
-                            <video id="video" autoplay playsinline></video>
-                            <div class="scanner-guide"></div>
-                            <div class="scanner-status">
-                                <div class="scanner-status-indicator" id="scannerIndicator"></div>
-                                <span id="scannerStatusText">Câmera desativada</span>
-                            </div>
-                            <div class="capture-overlay hidden" id="captureOverlay">
-                                <div class="capture-indicator">
-                                    <i class="fas fa-camera"></i>
-                                </div>
-                            </div>
+                        <div class="table-container" style="margin-top:0; max-height: 65vh;">
+                            <table id="recentRegistrationsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Código</th>
+                                        <th>Cliente</th>
+                                        <th>Vendedor</th>
+                                        <th>Data</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentRegistrationsBody"></tbody>
+                            </table>
                         </div>
-                        
-                        <div class="camera-controls">
-                            <button id="switchCamera" class="btn" style="display: none; background: rgba(0,0,0,0.1); color: var(--fabreck-dark);">
-                                <i class="fas fa-sync-alt"></i> Alternar
-                            </button>
-                            <button id="startCamera" class="btn btn-primary">
-                                <i class="fas fa-play"></i> Iniciar
-                            </button>
-                            <button id="stopCamera" class="btn btn-danger" disabled>
-                                <i class="fas fa-stop"></i> Parar
-                            </button>
-                        </div>
-                        
-                        <div class="scanned-history" id="scannedHistory"></div>
                     </div>
                 </div>
 
-                <!-- ***** NOVA PÁGINA DE LAUDO TÉCNICO ***** -->
+                <!-- PÁGINA DE LAUDO TÉCNICO (AGORA SEM IA) -->
                 <div id="laudoPage" class="page">
                     <div class="card">
                         <div class="card-header">
-                            <h2 class="card-title">Gerador de Laudo Técnico com IA</h2>
-                            <div class="card-icon"><i class="fas fa-file-invoice"></i></div>
+                            <h2 class="card-title">Gerador de Laudo Técnico Profissional</h2>
+                            <div class="card-icon"><i class="fas fa-file-alt"></i></div>
                         </div>
                         <div class="info-section">
-                            <p>Preencha os dados abaixo para que a Inteligência Artificial gere um laudo técnico profissional e detalhado.</p>
+                            <p>Preencha os dados abaixo para gerar um laudo técnico detalhado em PDF para o cliente.</p>
                         </div>
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="laudoClientName">Nome do Cliente</label>
-                                <input type="text" id="laudoClientName" class="form-control" placeholder="Nome completo do cliente">
+
+                        <div class="form-section">
+                            <h3>1. Dados de Identificação</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="laudoClientName">Nome do Cliente</label>
+                                    <input type="text" id="laudoClientName" class="form-control" placeholder="Nome completo do cliente">
+                                </div>
+                                <div class="form-group">
+                                    <label for="laudoBatteryCode">Código de Série da Bateria</label>
+                                    <input type="text" id="laudoBatteryCode" class="form-control" placeholder="Ex: 3524A2623" maxlength="9">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label for="laudoBatteryCode">Código de Série da Bateria</label>
-                                <input type="text" id="laudoBatteryCode" class="form-control" placeholder="Ex: 3524A2623" maxlength="9">
-                            </div>
-                        </div>
-                         <div class="form-row">
                             <div class="form-group">
                                 <label for="laudoBatteryModel">Modelo da Bateria</label>
                                 <input type="text" id="laudoBatteryModel" class="form-control" placeholder="Ex: FA6AD">
                             </div>
-                            <div class="form-group">
-                                <label for="laudoCA">CA Medido (A)</label>
-                                <input type="number" id="laudoCA" class="form-control" placeholder="Valor do teste de Cranking Amps">
-                            </div>
                         </div>
-                         <div class="form-row">
-                             <div class="form-group">
-                                <label for="laudoVoltage">Voltagem em Repouso (V)</label>
-                                <input type="number" id="laudoVoltage" class="form-control" placeholder="Ex: 12.5">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="laudoVisualInspection">Inspeção Visual</label>
-                            <textarea id="laudoVisualInspection" class="form-control" rows="3" placeholder="Ex: Caixa estufada, polos oxidados, vazamento de solução..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label for="laudoTechnicianNotes">Observações Adicionais do Técnico</label>
-                            <textarea id="laudoTechnicianNotes" class="form-control" rows="3" placeholder="Qualquer outra informação relevante sobre o teste."></textarea>
-                        </div>
-                        <button id="generateLaudoBtn" class="btn btn-primary"><i class="fas fa-cogs"></i> Gerar Laudo com IA</button>
 
-                        <div id="laudoResultContainer" class="hidden">
-                            <div class="laudo-header">
-                                <h3 class="laudo-title">Laudo Técnico Gerado</h3>
-                                <button id="copyLaudoBtn" class="btn btn-info" style="width:auto; margin-top:0;"><i class="fas fa-copy"></i> Copiar</button>
+                        <div class="form-section">
+                            <h3>2. Parâmetros de Teste</h3>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="laudoBatteryCCA_Nominal">CA Nominal (Padrão)</label>
+                                    <input type="number" id="laudoBatteryCCA_Nominal" class="form-control" value="120">
+                                </div>
+                                <div class="form-group">
+                                    <label for="laudoCA_Medido">CA Medido (A)</label>
+                                    <input type="number" id="laudoCA_Medido" class="form-control" placeholder="Valor do teste">
+                                </div>
                             </div>
-                            <textarea id="laudoResult" class="form-control" rows="15" readonly></textarea>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="laudoBatteryVoltage_Nominal">Tensão Nominal (V)</label>
+                                    <input type="text" id="laudoBatteryVoltage_Nominal" class="form-control" value="12.4V" readonly>
+                                </div>
+                                <div class="form-group">
+                                    <label for="laudoVoltage_Medida">Tensão Medida (V)</label>
+                                    <input type="number" id="laudoVoltage_Medida" class="form-control" placeholder="Ex: 12.5">
+                                </div>
+                            </div>
                         </div>
+
+                        <div class="form-section">
+                            <h3>3. Inspeção Visual</h3>
+                            <div class="checkbox-grid">
+                                <div class="checkbox-group"><input type="checkbox" id="checkEstufada"> <label for="checkEstufada">Caixa Estufada/Danificada</label></div>
+                                <div class="checkbox-group"><input type="checkbox" id="checkPolos"> <label for="checkPolos">Polos Danificados/Oxidados</label></div>
+                                <div class="checkbox-group"><input type="checkbox" id="checkVazamento"> <label for="checkVazamento">Sinais de Vazamento</label></div>
+                            </div>
+                            <div class="form-group">
+                                <label for="laudoVisualInspection">Outras Observações Visuais</label>
+                                <textarea id="laudoVisualInspection" class="form-control" rows="2" placeholder="Ex: Caixa riscada, falta de etiqueta..."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-section">
+                            <h3>4. Diagnósticos Técnicos Adicionais</h3>
+                            <p class="info-section" style="margin-top:0; font-size:12px;">Selecione os diagnósticos relevantes. Eles serão formatados e adicionados ao laudo.</p>
+                            <div class="checkbox-grid">
+                                <div class="checkbox-group"><input type="checkbox" id="checkFugaCorrente"> <label for="checkFugaCorrente">Veículo com fuga de corrente</label></div>
+                                <div class="checkbox-group"><input type="checkbox" id="checkSobretensao"> <label for="checkSobretensao">Sistema de recarga com sobretensão</label></div>
+                                <div class="checkbox-group"><input type="checkbox" id="checkSubtensao"> <label for="checkSubtensao">Sistema de recarga com subtensão</label></div>
+                                <div class="checkbox-group"><input type="checkbox" id="checkAplicacaoIncorreta"> <label for="checkAplicacaoIncorreta">Aplicação incorreta para o veículo</label></div>
+                                <div class="checkbox-group"><input type="checkbox" id="checkLongoDesuso"> <label for="checkLongoDesuso">Sinais de longo período sem uso</label></div>
+                            </div>
+                             <div class="form-group">
+                                <label for="laudoTechnicianNotes">Outras Notas (Opcional)</label>
+                                <textarea id="laudoTechnicianNotes" class="form-control" rows="2" placeholder="Adicione aqui qualquer detalhe único não listado acima..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="form-section">
+                            <h3>5. Evidências Fotográficas</h3>
+                            <p class="info-section" style="margin-top:0; font-size:12px;">Adicione até 3 imagens do produto. Elas serão incluídas no PDF final.</p>
+                            <button id="addLaudoImageBtn" class="btn btn-info"><i class="fas fa-camera"></i> Adicionar Imagens</button>
+                            <input type="file" id="laudoImageUpload" accept="image/*" multiple style="display: none;">
+                            <div id="laudoImagePreviews"></div>
+                        </div>
+
+                        <button id="generateLaudoPdfBtn" class="btn btn-primary" style="margin-top: 20px;"><i class="fas fa-file-pdf"></i> Visualizar Laudo em PDF</button>
                     </div>
                 </div>
 
@@ -2036,7 +1672,7 @@
                                 <label for="analysisClientFilter">Agrupar por Cliente:</label>
                                 <select id="analysisClientFilter" class="form-control"></select>
                             </div>
-                            <button id="batchAnalyzeBtn" class="btn btn-success" disabled>
+                            <button id="batchAnalyzeBtn" class="btn btn-success viewer-hidden" disabled>
                                 <i class="fas fa-layer-group"></i> Analisar Selecionados
                             </button>
                         </div>
@@ -2051,7 +1687,7 @@
                                         <th>Modelo</th>
                                         <th>Data Envio</th>
                                         <th>Status Garantia</th>
-                                        <th>Ação</th>
+                                        <th class="actions-cell">Ação</th>
                                     </tr>
                                 </thead>
                                 <tbody id="analysisBody"></tbody>
@@ -2113,7 +1749,7 @@
                             <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
                         </div>
                         <div class="info-section">
-                            <p>Esta é a lista completa de <strong>todas</strong> as garantias registradas. Use os filtros abaixo para visualizar grupos específicos.</p>
+                            <p>Esta é a lista completa de <strong>todas</strong> as garantias registadas. Use os filtros abaixo para visualizar grupos específicos.</p>
                         </div>
                         <div class="stat-cards">
                             <div class="stat-card">
@@ -2162,11 +1798,11 @@
                                     <input type="text" id="codeFilter" class="form-control" placeholder="Código de série">
                                 </div>
                                 <div class="filter-group">
-                                    <label for="startDate">Data Inicial (Registro):</label>
+                                    <label for="startDate">Data Inicial (Registo):</label>
                                     <input type="date" id="startDate" class="form-control">
                                 </div>
                                 <div class="filter-group">
-                                    <label for="endDate">Data Final (Registro):</label>
+                                    <label for="endDate">Data Final (Registo):</label>
                                     <input type="date" id="endDate" class="form-control">
                                 </div>
                             </div>
@@ -2190,7 +1826,7 @@
                                         <th>Ação Final</th>
                                         <th>Parecer Técnico</th>
                                         <th>Data Análise</th>
-                                        <th>Ações</th>
+                                        <th class="actions-cell">Ações</th>
                                     </tr>
                                 </thead>
                                 <tbody id="reportBody"></tbody>
@@ -2213,7 +1849,7 @@
                             <button id="pdfBtn" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Baixar PDF Único</button>
                             <button id="batchPdfBtn" class="btn btn-success"><i class="fas fa-file-archive"></i> Baixar Todos (PDF por Cliente)</button>
                             <button id="excelBtn" class="btn btn-primary"><i class="fas fa-file-excel"></i> Baixar Excel</button>
-                            <button id="clearBtn" class="btn btn-danger"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
+                            <button id="clearBtn" class="btn btn-danger viewer-hidden"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
                         </div>
                     </div>
                 </div>
@@ -2226,7 +1862,7 @@
                             <div class="card-icon"><i class="fas fa-database"></i></div>
                         </div>
                         
-                        <div class="form-row">
+                        <div class="form-row viewer-hidden">
                             <button id="backupBtn" class="btn btn-primary"><i class="fas fa-download"></i> Exportar Dados (Backup Local)</button>
                             <button id="restoreBtn" class="btn btn-primary"><i class="fas fa-upload"></i> Importar Dados (Restaurar Backup)</button>
                         </div>
@@ -2247,13 +1883,24 @@
                         </div>
                     </div>
 
+                    <div class="card viewer-hidden">
+                        <div class="card-header">
+                            <h2 class="card-title">Segurança</h2>
+                            <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                        </div>
+                        <div class="info-section" style="margin-top:0;">
+                            <p>Altere a sua palavra-passe de administrador regularmente para manter a segurança da sua conta.</p>
+                        </div>
+                        <button id="changePasswordBtn" class="btn btn-warning" style="margin-top: 20px;"><i class="fas fa-key"></i> Alterar Palavra-passe</button>
+                    </div>
+
                 </div>
             </div>
             
             <div class="footer">
                 <div class="nav-btn active" data-page="scanPage">
                     <div><i class="fas fa-bolt"></i></div>
-                    <span>Rápido</span>
+                    <span>Registo</span>
                 </div>
                 <div class="nav-btn" data-page="laudoPage">
                     <div><i class="fas fa-file-invoice"></i></div>
@@ -2339,7 +1986,7 @@
         <div class="edit-content">
             <span class="edit-close" id="closeNameEditModal">&times;</span>
             <h3 class="edit-title">Editar Nomes</h3>
-            <p style="text-align: center; font-size: 14px; margin-bottom: 15px;">A alteração será aplicada a todos os registros com estes nomes.</p>
+            <p style="text-align: center; font-size: 14px; margin-bottom: 15px;">A alteração será aplicada a todos os registos com estes nomes.</p>
             
             <div class="form-group">
                 <label for="editClientName">Nome do Cliente</label>
@@ -2400,27 +2047,6 @@
         </div>
     </div>
 
-    <!-- Botão Flutuante do Assistente de IA -->
-    <div class="ai-assistant-fab" id="aiAssistantFab">
-        <i class="fas fa-robot"></i>
-    </div>
-
-    <!-- Modal do Assistente de IA -->
-    <div class="ai-modal" id="aiModal">
-        <div class="ai-modal-content">
-            <div class="ai-modal-header">
-                <h3 class="ai-modal-title">Assistente FABRECK DO BRASIL</h3>
-                <span class="ai-modal-close" id="aiModalClose">&times;</span>
-            </div>
-            <div class="ai-chat-box" id="aiChatBox">
-            </div>
-            <div class="ai-modal-footer">
-                <input type="text" id="aiChatInput" class="form-control" placeholder="Faça uma pergunta...">
-                <button id="aiSendBtn" class="btn btn-primary"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
-
     <div class="edit-modal" id="cloudLoadConfirmModal">
         <div class="edit-content">
             <h3 class="edit-title">Confirmar Carregamento</h3>
@@ -2435,19 +2061,37 @@
         </div>
     </div>
 
+    <!-- NOVO MODAL PARA ALTERAR PALAVRA-PASSE -->
+    <div class="edit-modal" id="passwordModal">
+        <div class="edit-content">
+            <span class="edit-close" id="closePasswordModal">&times;</span>
+            <h3 class="edit-title">Alterar Palavra-passe</h3>
+            <form id="passwordChangeForm">
+                <div class="form-group">
+                    <label for="currentPassword">Palavra-passe Atual</label>
+                    <input type="password" id="currentPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="newPassword">Nova Palavra-passe</label>
+                    <input type="password" id="newPassword" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="confirmNewPassword">Confirmar Nova Palavra-passe</label>
+                    <input type="password" id="confirmNewPassword" class="form-control" required>
+                </div>
+                <button type="submit" id="savePasswordBtn" class="btn btn-success"><i class="fas fa-save"></i> Guardar Nova Palavra-passe</button>
+            </form>
+        </div>
+    </div>
+
 
     <script>
         // #region Elementos DOM
-        const video = document.getElementById('video');
-        const startCameraBtn = document.getElementById('startCamera');
-        const stopCameraBtn = document.getElementById('stopCamera');
-        const switchCameraBtn = document.getElementById('switchCamera');
         const clientNameInput = document.getElementById('clientName');
         const salesmanNameInput = document.getElementById('salesmanName');
         const serialCodeInput = document.getElementById('serialCode');
         const addBtn = document.getElementById('addBtn');
         const clearFormBtn = document.getElementById('clearFormBtn');
-        const scanBtn = document.getElementById('scanBtn');
         const pdfBtn = document.getElementById('pdfBtn');
         const previewPdfBtn = document.getElementById('previewPdfBtn');
         const batchPdfBtn = document.getElementById('batchPdfBtn');
@@ -2466,9 +2110,6 @@
         const navBtns = document.querySelectorAll('.nav-btn');
         const sidebarBtns = document.querySelectorAll('.sidebar-btn');
         const pages = document.querySelectorAll('.page');
-        const scannerIndicator = document.getElementById('scannerIndicator');
-        const scannerStatusText = document.getElementById('scannerStatusText');
-        const scannedHistory = document.getElementById('scannedHistory');
         const codePreview = document.getElementById('codePreview');
         const activityLog = document.getElementById('activityLog');
         const currentSalesman = document.getElementById('currentSalesman');
@@ -2485,7 +2126,6 @@
         const analyzedOption = document.getElementById('analyzedOption');
         const codeFilter = document.getElementById('codeFilter');
         const recommendationInput = document.getElementById('recommendation');
-        const captureOverlay = document.getElementById('captureOverlay');
         const totalsContainer = document.getElementById('totalsContainer');
         const warrantyDebugInfo = document.getElementById('warrantyDebugInfo');
         const debugManufDate = document.getElementById('debugManufDate');
@@ -2502,6 +2142,9 @@
         const analysisClientFilter = document.getElementById('analysisClientFilter');
         const selectAllCheckbox = document.getElementById('selectAllCheckbox');
         const batchAnalyzeBtn = document.getElementById('batchAnalyzeBtn');
+
+        // NOVO: Elemento para o log de registos
+        const recentRegistrationsBody = document.getElementById('recentRegistrationsBody');
 
         // Elementos da página Finalizado e Relatório
         const finalizadoBody = document.getElementById('finalizadoBody');
@@ -2556,20 +2199,9 @@
         const restoreConfirmModal = document.getElementById('restoreConfirmModal');
         const confirmRestoreBtn = document.getElementById('confirmRestoreBtn');
         const cancelRestoreBtn = document.getElementById('cancelRestoreBtn');
-
-        // Elementos do Assistente de IA
-        const aiAssistantFab = document.getElementById('aiAssistantFab');
-        const aiModal = document.getElementById('aiModal');
-        const aiModalClose = document.getElementById('aiModalClose');
-        const aiChatBox = document.getElementById('aiChatBox');
-        const aiChatInput = document.getElementById('aiChatInput');
-        const aiSendBtn = document.getElementById('aiSendBtn');
         
         // Elementos do Laudo Técnico
-        const generateLaudoBtn = document.getElementById('generateLaudoBtn');
-        const laudoResultContainer = document.getElementById('laudoResultContainer');
-        const laudoResult = document.getElementById('laudoResult');
-        const copyLaudoBtn = document.getElementById('copyLaudoBtn');
+        const generateLaudoPdfBtn = document.getElementById('generateLaudoPdfBtn');
         
         // Elementos do Login e Layout
         const loginOverlay = document.getElementById('loginOverlay');
@@ -2579,11 +2211,21 @@
         const passwordInput = document.getElementById('passwordInput');
         const logoutBtn = document.getElementById('logoutBtn');
         const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+        const viewerLoginBtn = document.getElementById('viewerLoginBtn');
+        
+        // Elementos de alteração de senha
+        const changePasswordBtn = document.getElementById('changePasswordBtn');
+        const passwordModal = document.getElementById('passwordModal');
+            const closePasswordModal = document.getElementById('closePasswordModal');
+            const passwordChangeForm = document.getElementById('passwordChangeForm');
+            
+            // Elementos do Laudo
+            const addLaudoImageBtn = document.getElementById('addLaudoImageBtn');
+            const laudoImageUpload = document.getElementById('laudoImageUpload');
+            const laudoImagePreviews = document.getElementById('laudoImagePreviews');
         // #endregion
 
         // #region Estado do Sistema
-        let stream = null;
-        let scanning = false;
         const DB_KEY = 'fabreck_battery_db_v21'; // Versão antiga para migração
         const ACTIVITY_KEY = 'fabreck_activity_log_v12';
         const LAST_SALESMAN_KEY = 'fabreck_last_salesman_v12';
@@ -2603,8 +2245,6 @@
             code: ''
         };
         let warrantyInstructions = {};
-        let currentFacingMode = 'environment';
-        let scanHistory = [];
         let audioContext = null;
         let beepSound = null;
         let rulesShown = localStorage.getItem('rulesShown') === 'true';
@@ -2618,16 +2258,15 @@
         let observationCallback = null; // Callback para salvar observação
         let tempObservation = '';
         let isDarkMode = localStorage.getItem(DARK_MODE_KEY) === 'true';
-        let aiChatHistory = [];
         let cloudDataToLoad = null; 
         let syncDebounceTimer = null;
+        let laudoImages = []; // Array para guardar as imagens do laudo
 
-        // Credenciais e Chave Fixa
-        const ADMIN_USER = 'ADMIN';
-        const ADMIN_PASS = 'FABRECK2024';
+        // Credenciais Chave
+        const ADMIN_USERS_KEY = 'fabreck_admin_users';
         const FIXED_SYNC_KEY = '1418850998876823552';
         
-        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCAyNDAgNDAiPjxyZWN0IHdpZHRoPSIyNDAiIGhlaWdodD0iNDAiIGZpbGw9IiMwMDQ7QUIiLz48dGV4dCB4PSIxMjAiIHk9IjI1IiBmb250LWZhbWlseT0iU2Vnb2UgVUksIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIGZvbnQtd2VpZ-Gh0PSJib2xkIiBmaWxsPSIjRkZGRkZGIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5GQUJSRUNLIERPIEJSQVNJTDwvdGV4dD48L3N2Zz4=';
+        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjgyIiB2aWV3Qm94PSIwIDAgMzIwIDgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGlkPSJMb2dvIj48cmVjdCBpZD0iQm90dG9tQmFyIiB5PSI1NyIgd2lkdGg9IjMyMCIgaGVpZGg0PSIyNSIgZmlsbD0iIzAwNDdhYiIvPjxwYXRoIGlkPSJTdHJpcGUxMiIgZD0iTTI5MCA1N0gzMTVMMzA1IDgySDI4MFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTExIiBkPSJNMjQ1IDU3SDI3MEwyNjAgODJIMjM1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlMTAiIGQ9Ik0yMDAgNTdIMjI1TDIxNSA4MkgxOTBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGU5IiBkPSJNMTU1IDU3SDE4MEwxNzAgODJIMTQ1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlOCIgZD0iTTExMCA1N0gxMzVMMTI1IDgySDEwMFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTciIGQ9Ik02NSA1N0g5MEw4MCA4Mkg0NVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTYiIGQ9Ik0yMCA1N0g0NUwzNSA4MkgxMFoiIGZpbGw9IndoaXRlIi8+PHJlY3QgaWQ9IlRvcEJhciIgd2lkdGg9IjMyMCIgaGVpZGg0PSIyNSIgZmlsbD0iIzAwNDdhYiIvPjxwYXRoIGlkPSJTdHJpcGU1IiBkPSJNMjkwIDBIMzE1TDMwNSAyNUgyODBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGU0IiBkPSJNMjQ1IDBIMjcwTDI2MCAyNUgyMzVaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGUzIiBkPSJNMjAwIDBIMjI1TDIxNSAyNUgxOTBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGUyIiBkPSJNMTU1IDBIMTgwTDE3MCAyNUgxNDVaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGUxIiBkPSJNMTEwIDBIMTM1TDEyNSAyNUgxMDBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGUwIiBkPSJNNjUgMEg5MEw4MCAyNUg0NVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZS0xIiBkPSJNMjAgMEg0NUwzNSAyNUgxMFoiIGZpbGw9IndoaXRlIi8+PHRleHQgaWQ9IlRleHQiIHg9IjE2MCIgeT0iNTQiIGZvbnQtZmFtaWx5PSJJbXBhY3QsIEFyaWFsIEJsYWNrLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjM4IiBmaWxsPSIjRDIyNjMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMi41IiBwYWludC1vcmRlcj0ic3Ryb2tlIj5GQUJSRUNLPC90ZXh0PjwvZz48L3N2Zz4=';
 
         const batteryModelMap = {
             'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
@@ -2733,6 +2372,7 @@
             setupEventListeners();
             applySidebarState();
             await dbPromise; // Garante que a BD está pronta antes de qualquer operação
+            await initializeCredentials();
             checkAuth(); // Verifica o login e inicia o carregamento de dados
         }
 
@@ -2750,7 +2390,6 @@
             updateLastUpdate();
             setupAudio();
             loadLastUsedData(); 
-            updateScanHistory();
             applyDarkMode(); 
 
             const today = new Date();
@@ -2764,6 +2403,7 @@
             if (sessionStorage.getItem('isAuthenticated') === 'true') {
                 loginOverlay.classList.add('hidden');
                 layoutContainer.classList.remove('hidden');
+                applyUIRestrictions();
                 if (batteryData.length === 0) { // Só inicializa se os dados ainda não estiverem na memória
                      initializeAppData();
                 }
@@ -2792,153 +2432,173 @@
         function setupEventListeners() {
             console.log("Configurando event listeners...");
 
-            loginForm.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const user = usernameInput.value.trim().toUpperCase();
-                const pass = passwordInput.value.trim();
-                if (user === ADMIN_USER && pass === ADMIN_PASS) {
-                    sessionStorage.setItem('isAuthenticated', 'true');
-                    await initializeAppData();
-                    checkAuth();
-                } else {
-                    showNotification('Utilizador ou palavra-passe incorretos.', 'error');
-                }
-            });
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const user = usernameInput.value.trim().toUpperCase();
+                    const pass = passwordInput.value.trim();
 
-            logoutBtn.addEventListener('click', () => {
-                sessionStorage.removeItem('isAuthenticated');
-                checkAuth();
-            });
+                    const adminUsersData = await dbManager.get('settings', ADMIN_USERS_KEY);
+                    const adminUsers = adminUsersData ? adminUsersData.value : [];
+                    
+                    const foundUser = adminUsers.find(admin => admin.user === user && admin.pass === pass);
+                    
+                    if (foundUser) {
+                        sessionStorage.setItem('isAuthenticated', 'true');
+                        sessionStorage.setItem('userType', 'admin');
+                        sessionStorage.setItem('currentUser', user); // Guarda o utilizador atual
+                        checkAuth();
+                    } else {
+                        showNotification('Utilizador ou palavra-passe incorretos.', 'error');
+                    }
+                });
+            }
+
+            if (viewerLoginBtn) {
+                viewerLoginBtn.addEventListener('click', () => {
+                    sessionStorage.setItem('isAuthenticated', 'true');
+                    sessionStorage.setItem('userType', 'viewer');
+                    checkAuth();
+                });
+            }
+
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    sessionStorage.removeItem('isAuthenticated');
+                    sessionStorage.removeItem('userType');
+                    sessionStorage.removeItem('currentUser');
+                    checkAuth();
+                });
+            }
             
             navBtns.forEach(btn => {
-                btn.addEventListener('click', () => showPage(btn.getAttribute('data-page')));
+                if (btn) btn.addEventListener('click', () => showPage(btn.getAttribute('data-page')));
             });
 
             sidebarBtns.forEach(btn => {
-                btn.addEventListener('click', (e) => {
+                if (btn) btn.addEventListener('click', (e) => {
                     e.preventDefault();
                     showPage(btn.getAttribute('data-page'));
                 });
             });
             
-            serialCodeInput.addEventListener('input', handleSerialInput);
-            serialCodeInput.addEventListener('keypress', e => { if (e.key === 'Enter') addBattery(); });
-            salesmanNameInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-            clientNameInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-            salesmanNameInput.addEventListener('blur', async () => {
-                const name = salesmanNameInput.value.trim().toUpperCase();
-                if (name) {
-                    currentSalesman.textContent = name;
-                    await dbManager.set('settings', { key: LAST_SALESMAN_KEY, value: name });
-                }
-            });
-            clientNameInput.addEventListener('blur', async () => {
-                const name = clientNameInput.value.trim().toUpperCase();
-                if (name) await dbManager.set('settings', { key: LAST_CLIENT_KEY, value: name });
-            });
-            scanBtn.addEventListener('click', handleScanClick);
-            clearFormBtn.addEventListener('click', clearCode);
-            addBtn.addEventListener('click', addBattery);
+            if (serialCodeInput) {
+                serialCodeInput.addEventListener('input', handleSerialInput);
+                serialCodeInput.addEventListener('keypress', e => { if (e.key === 'Enter') addBattery(); });
+            }
+            if (salesmanNameInput) {
+                salesmanNameInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+                salesmanNameInput.addEventListener('blur', async () => {
+                    const name = salesmanNameInput.value.trim().toUpperCase();
+                    if (name) {
+                        currentSalesman.textContent = name;
+                        await dbManager.set('settings', { key: LAST_SALESMAN_KEY, value: name });
+                    }
+                });
+            }
+            if (clientNameInput) {
+                clientNameInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+                clientNameInput.addEventListener('blur', async () => {
+                    const name = clientNameInput.value.trim().toUpperCase();
+                    if (name) await dbManager.set('settings', { key: LAST_CLIENT_KEY, value: name });
+                });
+            }
             
-            factoryOption.addEventListener('click', () => selectWarrantyType('factory'));
-            analyzedOption.addEventListener('click', () => selectWarrantyType('analyzed'));
+            if (clearFormBtn) clearFormBtn.addEventListener('click', clearCode);
+            if (addBtn) addBtn.addEventListener('click', addBattery);
             
-            startCameraBtn.addEventListener('click', startCamera);
-            stopCameraBtn.addEventListener('click', stopCamera);
-            switchCameraBtn.addEventListener('click', switchCamera);
-            captureOverlay.addEventListener('click', captureImage);
+            if (factoryOption) factoryOption.addEventListener('click', () => selectWarrantyType('factory'));
+            if (analyzedOption) analyzedOption.addEventListener('click', () => selectWarrantyType('analyzed'));
             
-            applyFilterBtn.addEventListener('click', applyFilters);
-            clearFilterBtn.addEventListener('click', clearFilters);
-            previewPdfBtn.addEventListener('click', previewPDF);
-            pdfBtn.addEventListener('click', downloadPDF);
-            batchPdfBtn.addEventListener('click', generateBatchPDFs);
-            excelBtn.addEventListener('click', exportToFormattedExcel);
-            clearBtn.addEventListener('click', clearData);
-            codeFilter.addEventListener('input', applyFilters);
+            if (applyFilterBtn) applyFilterBtn.addEventListener('click', applyFilters);
+            if (clearFilterBtn) clearFilterBtn.addEventListener('click', clearFilters);
+            if (previewPdfBtn) previewPdfBtn.addEventListener('click', previewPDF);
+            if (pdfBtn) pdfBtn.addEventListener('click', downloadPDF);
+            if (batchPdfBtn) batchPdfBtn.addEventListener('click', generateBatchPDFs);
+            if (excelBtn) excelBtn.addEventListener('click', exportToFormattedExcel);
+            if (clearBtn) clearBtn.addEventListener('click', clearData);
+            if (codeFilter) codeFilter.addEventListener('input', applyFilters);
             
-            backupBtn.addEventListener('click', exportData);
-            restoreBtn.addEventListener('click', () => restoreFileInput.click());
+            if (backupBtn) backupBtn.addEventListener('click', exportData);
+            if (restoreBtn) restoreBtn.addEventListener('click', () => restoreFileInput.click());
 
-            restoreFileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    fileToRestore = e.target.files[0];
-                    restoreConfirmModal.classList.add('active');
-                }
-                e.target.value = ''; 
-            });
+            if (restoreFileInput) {
+                restoreFileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        fileToRestore = e.target.files[0];
+                        if (restoreConfirmModal) restoreConfirmModal.classList.add('active');
+                    }
+                    e.target.value = ''; 
+                });
+            }
 
-            cancelRestoreBtn.addEventListener('click', () => {
+            if (cancelRestoreBtn) cancelRestoreBtn.addEventListener('click', () => {
                 fileToRestore = null;
-                restoreConfirmModal.classList.remove('active');
+                if (restoreConfirmModal) restoreConfirmModal.classList.remove('active');
             });
 
-            confirmRestoreBtn.addEventListener('click', () => {
-                restoreConfirmModal.classList.remove('active');
+            if (confirmRestoreBtn) confirmRestoreBtn.addEventListener('click', () => {
+                if (restoreConfirmModal) restoreConfirmModal.classList.remove('active');
                 if (fileToRestore) {
                     handleRestoreFile(fileToRestore);
                 }
             });
             
-            helpBtn.addEventListener('click', showRulesModal);
-            closeRulesModal.addEventListener('click', () => rulesModal.classList.remove('active'));
-            confirmRules.addEventListener('click', () => rulesModal.classList.remove('active'));
+            if (helpBtn) helpBtn.addEventListener('click', showRulesModal);
+            if (closeRulesModal) closeRulesModal.addEventListener('click', () => rulesModal.classList.remove('active'));
+            if (confirmRules) confirmRules.addEventListener('click', () => rulesModal.classList.remove('active'));
             
-            closeAnalysisModal.addEventListener('click', () => analysisModal.classList.remove('active'));
-            saveAnalysisBtn.addEventListener('click', saveAnalysis);
-            analysisClientFilter.addEventListener('change', updateAnalysisTable);
-            selectAllCheckbox.addEventListener('change', handleSelectAll);
-            batchAnalyzeBtn.addEventListener('click', openBatchAnalysisModal);
+            if (closeAnalysisModal) closeAnalysisModal.addEventListener('click', () => analysisModal.classList.remove('active'));
+            if (saveAnalysisBtn) saveAnalysisBtn.addEventListener('click', saveAnalysis);
+            if (analysisClientFilter) analysisClientFilter.addEventListener('change', updateAnalysisTable);
+            if (selectAllCheckbox) selectAllCheckbox.addEventListener('change', handleSelectAll);
+            if (batchAnalyzeBtn) batchAnalyzeBtn.addEventListener('click', openBatchAnalysisModal);
 
-            closeNameEditModal.addEventListener('click', () => nameEditModal.classList.remove('active'));
-            saveNameEditBtn.addEventListener('click', saveEditedNames);
+            if (closeNameEditModal) closeNameEditModal.addEventListener('click', () => nameEditModal.classList.remove('active'));
+            if (saveNameEditBtn) saveNameEditBtn.addEventListener('click', saveEditedNames);
 
-            closeObservationModal.addEventListener('click', () => observationModal.classList.remove('active'));
-            saveObservationBtn.addEventListener('click', () => {
+            if (closeObservationModal) closeObservationModal.addEventListener('click', () => observationModal.classList.remove('active'));
+            if (saveObservationBtn) saveObservationBtn.addEventListener('click', () => {
                 if (observationCallback) observationCallback(observationText.value);
             });
 
-            procedenteBtn.addEventListener('click', () => procedenteModal.classList.add('active'));
-            closeProcedenteModal.addEventListener('click', () => procedenteModal.classList.remove('active'));
-            capacidadeBaixaBtn.addEventListener('click', () => {
-                recommendationInput.value = 'PROCEDENTE - CAPACIDADE BAIXA';
-                procedenteModal.classList.remove('active');
+            if (procedenteBtn) procedenteBtn.addEventListener('click', () => procedenteModal.classList.add('active'));
+            if (closeProcedenteModal) closeProcedenteModal.addEventListener('click', () => procedenteModal.classList.remove('active'));
+            if (capacidadeBaixaBtn) capacidadeBaixaBtn.addEventListener('click', () => {
+                if(recommendationInput) recommendationInput.value = 'PROCEDENTE - CAPACIDADE BAIXA';
+                if(procedenteModal) procedenteModal.classList.remove('active');
             });
-            ccaBaixoBtn.addEventListener('click', () => {
-                recommendationInput.value = 'PROCEDENTE - CCA BAIXO';
-                procedenteModal.classList.remove('active');
+            if (ccaBaixoBtn) ccaBaixoBtn.addEventListener('click', () => {
+                if(recommendationInput) recommendationInput.value = 'PROCEDENTE - CCA BAIXO';
+                if(procedenteModal) procedenteModal.classList.remove('active');
             });
 
-            descarregadaBtn.addEventListener('click', () => {
-                recommendationInput.value = 'RECARREGAR A BATERIA POR 6H EM CARGA LENTA E REFAZER O TESTE';
+            if (descarregadaBtn) descarregadaBtn.addEventListener('click', () => {
+                if(recommendationInput) recommendationInput.value = 'RECARREGAR A BATERIA POR 6H EM CARGA LENTA E REFAZER O TESTE';
             });
-            addObservationBtn.addEventListener('click', () => openObservationModal(tempObservation, (obs) => {
+            if (addObservationBtn) addObservationBtn.addEventListener('click', () => openObservationModal(tempObservation, (obs) => {
                 tempObservation = obs;
-                observationModal.classList.remove('active');
+                if(observationModal) observationModal.classList.remove('active');
                 showNotification('Observação salva temporariamente.', 'info');
             }));
-            analysisAddObservationBtn.addEventListener('click', async () => {
+            if (analysisAddObservationBtn) analysisAddObservationBtn.addEventListener('click', async () => {
                  const battery = await dbManager.get('batteries', analyzingBatteryId);
                  if(battery) openObservationModal(battery.observations, async (obs) => {
                      battery.observations = obs;
                      await dbManager.set('batteries', battery);
-                     observationModal.classList.remove('active');
+                     if(observationModal) observationModal.classList.remove('active');
                      showNotification('Observação atualizada.', 'info');
                  });
             });
 
-            toggleDarkModeBtn.addEventListener('click', toggleDarkMode);
-
-            aiAssistantFab.addEventListener('click', openAIAssistant);
-            aiModalClose.addEventListener('click', closeAIAssistant);
-            aiSendBtn.addEventListener('click', sendAIChatMessage);
-            aiChatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') sendAIChatMessage();
-            });
-            
-            generateLaudoBtn.addEventListener('click', generateLaudo);
-            copyLaudoBtn.addEventListener('click', copyLaudo);
-            sidebarToggleBtn.addEventListener('click', toggleSidebar);
+            if (toggleDarkModeBtn) toggleDarkModeBtn.addEventListener('click', toggleDarkMode);
+            if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebar);
+            if (generateLaudoPdfBtn) generateLaudoPdfBtn.addEventListener('click', previewLaudoPDF);
+            if (changePasswordBtn) changePasswordBtn.addEventListener('click', () => passwordModal.classList.add('active'));
+            if (closePasswordModal) closePasswordModal.addEventListener('click', () => passwordModal.classList.remove('active'));
+            if (passwordChangeForm) passwordChangeForm.addEventListener('submit', saveNewPassword);
+            if (addLaudoImageBtn) addLaudoImageBtn.addEventListener('click', () => laudoImageUpload.click());
+            if (laudoImageUpload) laudoImageUpload.addEventListener('change', handleLaudoImageUpload);
         }
         // #endregion
 
@@ -2970,9 +2630,6 @@
             if (['reportPage', 'analysisPage', 'finalizadoPage', 'settingsPage'].includes(pageId)) {
                 updateUI();
             }
-            if (pageId !== 'scanPage' && stream) {
-                stopCamera();
-            }
         }
 
         function showNotification(message, type) {
@@ -2999,6 +2656,119 @@
                 document.body.classList.add('sidebar-collapsed');
             }
         }
+
+        function applyUIRestrictions() {
+            const userType = sessionStorage.getItem('userType');
+            const isViewer = userType === 'viewer';
+
+            // 1. Esconde todos os elementos de ação que têm a classe .viewer-hidden
+            document.querySelectorAll('.viewer-hidden').forEach(el => {
+                el.style.display = isViewer ? 'none' : '';
+            });
+
+            // 2. Esconde as colunas de ação nas tabelas
+            document.querySelectorAll('.actions-cell').forEach(cell => {
+                cell.style.display = isViewer ? 'none' : '';
+            });
+            
+            // 3. Desativa os campos de formulário, exceto os de filtro, para o visualizador
+            if (isViewer) {
+                document.querySelectorAll('input, textarea, select').forEach(el => {
+                    // Verifica se o elemento NÃO está dentro da área de filtros do relatório
+                    if (!el.closest('.report-filters')) {
+                        el.disabled = true;
+                    }
+                });
+                 // Remove a interação de clique nas opções de tipo de garantia
+                 document.querySelectorAll('.warranty-option').forEach(option => {
+                    option.style.pointerEvents = 'none';
+                    option.style.opacity = '0.7';
+                 });
+            } else {
+                // Garante que os campos estão reativados para o admin
+                 document.querySelectorAll('input, textarea, select').forEach(el => {
+                    el.disabled = false;
+                });
+                 document.querySelectorAll('.warranty-option').forEach(option => {
+                    option.style.pointerEvents = 'auto';
+                    option.style.opacity = '1';
+                });
+            }
+
+            // 4. Garante que todos os botões de navegação fiquem visíveis para todos os tipos de utilizador
+            document.querySelectorAll('.sidebar-btn, .nav-btn').forEach(btn => {
+                btn.style.display = '';
+            });
+
+            // 5. Define a página inicial
+            if (isViewer) {
+                showPage('reportPage'); // O visualizador começa nos relatórios, que é o mais útil para consulta
+            } else {
+                 // Garante que o admin comece na página de registo se nenhuma outra estiver ativa
+                if (!document.querySelector('.page.active')) {
+                     showPage('scanPage');
+                }
+            }
+        }
+        // #endregion
+
+        // #region Lógica de Segurança e Credenciais
+        async function initializeCredentials() {
+            const adminUsers = await dbManager.get('settings', ADMIN_USERS_KEY);
+            if (!adminUsers) {
+                const initialAdmins = [
+                    { user: 'JENILTON', pass: '32582190' },
+                    { user: 'REGINALDO', pass: '123456' }
+                ];
+                await dbManager.set('settings', { key: ADMIN_USERS_KEY, value: initialAdmins });
+                console.log('Credenciais de administrador iniciais definidas.');
+            }
+        }
+
+        async function saveNewPassword(e) {
+            e.preventDefault();
+            const currentPasswordInput = document.getElementById('currentPassword');
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
+
+            const currentPassword = currentPasswordInput.value;
+            const newPassword = newPasswordInput.value;
+            const confirmNewPassword = confirmNewPasswordInput.value;
+
+            const loggedInUser = sessionStorage.getItem('currentUser');
+            if (!loggedInUser) {
+                showNotification('Erro: Utilizador não identificado. Por favor, inicie sessão novamente.', 'error');
+                return;
+            }
+
+            const adminUsersData = await dbManager.get('settings', ADMIN_USERS_KEY);
+            let adminUsers = adminUsersData.value;
+            
+            const userToUpdate = adminUsers.find(admin => admin.user === loggedInUser);
+
+            if (!userToUpdate || currentPassword !== userToUpdate.pass) {
+                showNotification('A palavra-passe atual está incorreta.', 'error');
+                return;
+            }
+            if (newPassword.length < 6) {
+                showNotification('A nova palavra-passe deve ter pelo menos 6 caracteres.', 'error');
+                return;
+            }
+            if (newPassword !== confirmNewPassword) {
+                showNotification('As novas palavras-passe não coincidem.', 'error');
+                return;
+            }
+
+            // Atualiza a palavra-passe para o utilizador correto
+            userToUpdate.pass = newPassword;
+
+            await dbManager.set('settings', { key: ADMIN_USERS_KEY, value: adminUsers });
+            showNotification('Palavra-passe alterada com sucesso!', 'success');
+            passwordModal.classList.remove('active');
+            currentPasswordInput.value = '';
+            newPasswordInput.value = '';
+            confirmNewPasswordInput.value = '';
+        }
         // #endregion
 
         // #region Lógica de Dados (CRUD e Persistência)
@@ -3020,28 +2790,11 @@
                     console.error("Erro na migração de dados:", e);
                 }
             }
-            const oldScanHistory = localStorage.getItem('fabreck_scan_history');
-            if (oldScanHistory) {
-                try {
-                    const historyToMigrate = JSON.parse(oldScanHistory);
-                    if (Array.isArray(historyToMigrate)) {
-                        await dbManager.set('settings', { key: 'fabreck_scan_history', value: historyToMigrate });
-                        localStorage.removeItem('fabreck_scan_history');
-                        console.log('Migração do histórico de scan concluída.');
-                    }
-                } catch (e) {
-                    console.error("Erro na migração do histórico de scan:", e);
-                }
-            }
         }
 
         async function loadFromDB() {
             batteryData = await dbManager.getAll('batteries');
             activityData = await dbManager.getAll('activity');
-            const savedScanHistory = await dbManager.get('settings', 'fabreck_scan_history');
-            if (savedScanHistory) {
-                scanHistory = savedScanHistory.value;
-            }
             const instructions = await dbManager.get('settings', INSTRUCTIONS_KEY);
             if(instructions) {
                 warrantyInstructions = instructions.value;
@@ -3076,7 +2829,7 @@
                 return;
             }
             if (batteryData.some(b => b.code === code)) {
-                showNotification('Este código de série já foi registrado.', 'error');
+                showNotification('Este código de série já foi registado.', 'error');
                 return;
             }
             
@@ -3119,11 +2872,11 @@
                 } else if (recommendation.toUpperCase().includes('RECARREGAR')) {
                     newBattery.finalAction = 'REPROVADA - DEVOLVER AO CLIENTE';
                 } else {
-                    newBattery.finalAction = 'ANALISADA NO REGISTRO';
+                    newBattery.finalAction = 'ANALISADA NO REGISTO';
                 }
                 newBattery.technicalOpinionDate = new Date().toISOString();
-                showNotification(`Bateria ${code} finalizada no registro.`, 'success');
-                addActivity('fas fa-check-circle', `Bateria ${code} finalizada no registro.`);
+                showNotification(`Bateria ${code} finalizada no registo.`, 'success');
+                addActivity('fas fa-check-circle', `Bateria ${code} finalizada no registo.`);
             } else {
                 newBattery.status = 'in_analysis';
                 showNotification('Bateria adicionada para análise!', 'success');
@@ -3161,13 +2914,10 @@
             if (confirm('TEM CERTEZA? Todos os dados de garantia serão apagados permanentemente.')) {
                 await dbManager.clear('batteries');
                 await dbManager.clear('activity');
-                await dbManager.delete('settings', 'fabreck_scan_history');
                 batteryData = [];
                 activityData = [];
-                scanHistory = [];
                 updateUI();
                 updateActivityLog();
-                updateScanHistory();
                 lastUpdate.textContent = "Nenhuma atualização";
                 showNotification('Todos os dados foram removidos.', 'success');
                 addActivity('fas fa-trash-alt', 'Todos os dados foram removidos');
@@ -3216,7 +2966,7 @@
                     updateUI();
                     updateActivityLog();
 
-                    showNotification(`${importedData.length} registros restaurados com sucesso! Os dados atuais foram substituídos.`, 'success');
+                    showNotification(`${importedData.length} registos restaurados com sucesso! Os dados atuais foram substituídos.`, 'success');
                     addActivity('fas fa-upload', `${importedData.length} baterias restauradas do backup.`);
                     triggerAutoSync();
 
@@ -3275,6 +3025,36 @@
             }
         }
         // #endregion
+        
+        // #region Formulário e Leitura de Código
+        function handleSerialInput() {
+            const code = this.value.trim().toUpperCase();
+            codePreview.textContent = code;
+            codePreview.style.color = validateSerialCode(code) ? 'var(--fabreck-blue)' : 'var(--fabreck-danger)';
+            updateWarrantyDebugInfo(code);
+            if (!rulesShown && code.length >= 4 && !validateSerialCode(code)) {
+                showRulesModal();
+                rulesShown = true;
+                localStorage.setItem('rulesShown', 'true');
+            }
+        }
+        
+        function clearCode() {
+            serialCodeInput.value = '';
+            codePreview.textContent = '';
+            warrantyDebugInfo.style.display = 'none';
+            serialCodeInput.focus();
+        }
+
+        async function selectWarrantyType(type) {
+            factoryRadio.checked = type === 'factory';
+            analyzedRadio.checked = type === 'analyzed';
+            factoryOption.classList.toggle('selected', type === 'factory');
+            analyzedOption.classList.toggle('selected', type === 'analyzed');
+            videoAnalysisOptions.classList.toggle('hidden', type !== 'analyzed');
+            await dbManager.set('settings', { key: LAST_WARRANTY_TYPE_KEY, value: type });
+        }
+        // #endregion
 
         // #region Atualização da UI (Tabelas, Stats)
         function updateUI() {
@@ -3285,6 +3065,7 @@
             updateFinalizadoTable();
             updateStats();
             updateWarrantyInstructionsUI();
+            updateRecentRegistrationsLog(); // Atualiza o novo log
         }
         
         function updateStats() {
@@ -3318,6 +3099,31 @@
                 ).length;
                 finalizadoReprovadaForaCount.textContent = rejectedExpiredCount;
             }
+        }
+        
+        function updateRecentRegistrationsLog() {
+            if (!recentRegistrationsBody) return;
+
+            recentRegistrationsBody.innerHTML = '';
+            const recentBatteries = [...batteryData]
+                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                .slice(0, 10); // Pega os últimos 10 registos
+
+            if (recentBatteries.length === 0) {
+                recentRegistrationsBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">Nenhum registo ainda.</td></tr>`;
+                return;
+            }
+
+            recentBatteries.forEach(battery => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${battery.code}</td>
+                    <td>${battery.client}</td>
+                    <td>${battery.salesman}</td>
+                    <td>${new Date(battery.timestamp).toLocaleDateString('pt-BR')}</td>
+                `;
+                recentRegistrationsBody.appendChild(row);
+            });
         }
         
         function updateClientFilter() {
@@ -3358,10 +3164,10 @@
         
         function getFilteredData() {
             return batteryData.filter(b => {
-                const clientMatch = !currentFilters.client || b.client.toLowerCase().includes(currentFilters.client.toLowerCase());
+                const clientMatch = !currentFilters.client || (b.client && b.client.toLowerCase().includes(currentFilters.client.toLowerCase()));
                 const statusMatch = !currentFilters.status || b.warranty_period_status === currentFilters.status;
                 const workflowMatch = !currentFilters.workflowStatus || b.status === currentFilters.workflowStatus;
-                const codeMatch = !currentFilters.code || b.code.toLowerCase().includes(currentFilters.code.toLowerCase());
+                const codeMatch = !currentFilters.code || (b.code && b.code.toLowerCase().includes(currentFilters.code.toLowerCase()));
                 
                 let dateMatch = true;
                 if (currentFilters.startDate && currentFilters.endDate) {
@@ -3410,7 +3216,7 @@
                     <td>${finalActionBadge}</td>
                     <td style="white-space: normal; max-width: 150px;">${battery.recommendation || '-'}</td>
                     <td>${battery.technicalOpinionDate ? new Date(battery.technicalOpinionDate).toLocaleDateString('pt-BR') : '-'}</td>
-                    <td style="display: flex; gap: 8px;">
+                    <td class="actions-cell" style="display: flex; gap: 8px;">
                         <button class="name-edit-btn btn btn-info" data-id="${battery.id}" title="Editar Nomes" style="padding: 5px 10px; width: auto; margin: 0;">
                             <i class="fas fa-pencil-alt"></i>
                         </button>
@@ -3501,7 +3307,7 @@
                 return '';
             };
 
-            html += createSummaryLine('BATERIAS APROVADAS (TROCA)', summary.approved);
+            html += createSummaryLine('BATERIAS APROVADAS (PARA TROCA)', summary.approved);
             html += createSummaryLine('BATERIAS REPROVADAS', summary.rejected);
             html += createSummaryLine('BATERIAS PARA RECARREGAR', summary.recharge);
             html += createSummaryLine('BATERIAS FORA DO PRAZO', summary.expired);
@@ -3537,7 +3343,7 @@
                     <td>${battery.batteryModel}</td>
                     <td>${new Date(battery.submissionDate).toLocaleDateString('pt-BR')}</td>
                     <td>${warrantyStatus}</td>
-                    <td>
+                    <td class="actions-cell">
                         <button class="analyze-btn btn btn-primary" data-id="${battery.id}" style="padding: 8px 12px; width: auto; margin: 0;">
                             <i class="fas fa-edit"></i> Analisar
                         </button>
@@ -3758,7 +3564,7 @@
             batteryData = await dbManager.getAll('batteries');
             updateUI();
             nameEditModal.classList.remove('active');
-            showNotification('Nomes atualizados em todos os registros!', 'success');
+            showNotification('Nomes atualizados em todos os registos!', 'success');
             addActivity('fas fa-pencil-alt', `Nomes '${oldClientName}/${oldSalesmanName}' atualizados.`);
             editingBatteryId = null;
             triggerAutoSync();
@@ -3771,7 +3577,7 @@
         }
         // #endregion
 
-        // #region Formulário e Câmera com IA
+        // #region Formulário e Leitura de Código
         function handleSerialInput() {
             const code = this.value.trim().toUpperCase();
             codePreview.textContent = code;
@@ -3799,119 +3605,7 @@
             videoAnalysisOptions.classList.toggle('hidden', type !== 'analyzed');
             await dbManager.set('settings', { key: LAST_WARRANTY_TYPE_KEY, value: type });
         }
-
-        function handleScanClick() {
-            if (stream) {
-                showNotification('Toque na tela da câmera para capturar.', 'info');
-            } else {
-                startCamera();
-            }
-        }
         
-        async function startCamera() {
-            try {
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('API de câmera não suportada');
-                if (stream) stream.getTracks().forEach(track => track.stop());
-                
-                const constraints = { video: { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } } };
-                stream = await navigator.mediaDevices.getUserMedia(constraints);
-                video.srcObject = stream;
-                
-                startCameraBtn.disabled = true;
-                stopCameraBtn.disabled = false;
-                switchCameraBtn.style.display = 'block';
-                captureOverlay.classList.remove('hidden');
-                scannerIndicator.classList.add('active');
-                scannerStatusText.textContent = 'Toque na tela para capturar';
-                scanning = true;
-            } catch (err) {
-                console.error('Erro ao acessar a câmera:', err);
-                showNotification('Erro ao acessar a câmera. Verifique as permissões.', 'error');
-                stopCamera();
-            }
-        }
-        
-        function stopCamera() {
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                stream = null;
-            }
-            startCameraBtn.disabled = false;
-            stopCameraBtn.disabled = true;
-            switchCameraBtn.style.display = 'none';
-            captureOverlay.classList.add('hidden');
-            scannerIndicator.classList.remove('active');
-            scannerStatusText.textContent = 'Câmera desativada';
-            scanning = false;
-        }
-        
-        function switchCamera() {
-            currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
-            stopCamera();
-            setTimeout(startCamera, 100);
-        }
-        
-        async function captureImage() {
-            if (!stream || !scanning) return;
-            
-            scannerStatusText.textContent = 'Processando com IA...';
-            
-            try {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                
-                const base64ImageData = canvas.toDataURL('image/png').split(',')[1];
-                
-                const prompt = "Extraia o número de série de 9 caracteres desta imagem. O formato é 4 dígitos, 1 letra e 4 dígitos (ex: 3524A2623). Forneça apenas o código, sem texto adicional.";
-
-                const payload = {
-                    contents: [{
-                        parts: [
-                            { text: prompt },
-                            { inlineData: { mimeType: "image/png", data: base64ImageData } }
-                        ]
-                    }]
-                };
-                
-                const apiKey = ""; // A chave será injetada pelo ambiente
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro na API: ${response.statusText}`);
-                }
-
-                const result = await response.json();
-                const text = result?.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
-
-                if (text && validateSerialCode(text)) {
-                    serialCodeInput.value = text;
-                    handleSerialInput();
-                    playBeep();
-                    await addToScanHistory(text);
-                    scannerStatusText.textContent = 'Código reconhecido!';
-                    showNotification(`Código reconhecido pela IA: ${text}`, 'success');
-                    clientNameInput.focus();
-                } else {
-                    scannerStatusText.textContent = 'Código não encontrado. Tente novamente.';
-                    showNotification('IA não encontrou um código válido. Melhore a iluminação ou o enquadramento.', 'error');
-                }
-
-            } catch (error) {
-                console.error('Erro no OCR com IA:', error);
-                scannerStatusText.textContent = 'Erro no reconhecimento';
-                showNotification('Ocorreu um erro ao processar a imagem.', 'error');
-            } finally {
-                setTimeout(() => { if (scanning) scannerStatusText.textContent = 'Toque na tela para capturar'; }, 2000);
-            }
-        }
         // #endregion
 
         // #region Histórico e Log de Atividades
@@ -3968,26 +3662,6 @@
             updateActivityLog();
         }
 
-        async function addToScanHistory(code) {
-            scanHistory.unshift({ code, time: new Date().toLocaleTimeString('pt-BR') });
-            if (scanHistory.length > 10) scanHistory.pop();
-            await dbManager.set('settings', { key: 'fabreck_scan_history', value: scanHistory });
-            updateScanHistory();
-        }
-
-        function updateScanHistory() {
-            scannedHistory.innerHTML = '';
-            if (scanHistory.length === 0) {
-                scannedHistory.innerHTML = '<div class="scanned-item"><span>Nenhum código escaneado</span></div>';
-                return;
-            }
-            scanHistory.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'scanned-item';
-                div.innerHTML = `<span class="scanned-code">${item.code}</span><span class="scanned-time">${item.time}</span>`;
-                scannedHistory.appendChild(div);
-            });
-        }
         // #endregion
 
         // #region Filtros e PDF/Excel
@@ -4017,9 +3691,7 @@
         }
 
         function drawPdfHeader(doc, clientName, salesmanName) {
-            if (logoBase64) {
-                doc.addImage(logoBase64, 'SVG', 15, 10, 80, 16);
-            }
+            // A linha do logótipo foi removida para garantir estabilidade
             doc.setFontSize(18);
             doc.text('FABRECK DO BRASIL', 195, 15, { align: 'right' });
             doc.setFontSize(12);
@@ -4116,11 +3788,11 @@
             currentY += 10;
 
             const tableBodyData = clientBatteries.map(b => [
-                b.code,
-                b.batteryModel,
-                new Date(b.submissionDate).toLocaleDateString('pt-BR'),
-                b.finalAction || (b.status === 'in_analysis' ? 'Em Análise' : '-'),
-                b.recommendation || '-'
+                String(b.code || '-').substring(0, 20),
+                String(b.batteryModel || '-').substring(0, 20),
+                b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : '-',
+                String(b.finalAction || (b.status === 'in_analysis' ? 'Em Análise' : '-')).substring(0, 40),
+                String(b.recommendation || '-').substring(0, 100)
             ]);
 
             doc.autoTable({
@@ -4157,76 +3829,117 @@
 
 
         function generatePDF() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const filteredData = getFilteredData();
-
-            const groupedByClient = filteredData.reduce((acc, battery) => {
-                (acc[battery.client] = acc[battery.client] || []).push(battery);
-                return acc;
-            }, {});
-            
-            let firstClient = true;
-            for (const clientName in groupedByClient) {
-                if (!firstClient) {
-                    doc.addPage();
+            try {
+                if (!window.jspdf || !window.jspdf.jsPDF) {
+                    showNotification('Erro: A biblioteca PDF (jsPDF) não carregou corretamente.', 'error');
+                    console.error('jsPDF library is not available on window.jspdf');
+                    return null;
                 }
-                const clientBatteries = groupedByClient[clientName];
-                const salesmanName = clientBatteries.length > 0 ? clientBatteries[0].salesman : 'N/A';
-                const startY = drawPdfHeader(doc, clientName, salesmanName);
-                buildClientPDFPage(doc, clientName, clientBatteries, startY);
-                firstClient = false;
+                const doc = new window.jspdf.jsPDF();
+                if (typeof doc.autoTable !== 'function') {
+                    showNotification('Erro: O plugin de tabelas para PDF (autoTable) não carregou.', 'error');
+                    console.error('jsPDF autoTable plugin is not available on the doc instance.');
+                    return null;
+                }
+
+                const filteredData = getFilteredData();
+                if (filteredData.length === 0) {
+                    showNotification('Nenhum dado no filtro para gerar o relatório.', 'error');
+                    return null;
+                }
+
+                const validData = filteredData.filter(b => b && b.client);
+                if (validData.length === 0) {
+                    showNotification('Nenhum registo com cliente válido para gerar o relatório.', 'error');
+                    return null;
+                }
+
+                const groupedByClient = validData.reduce((acc, battery) => {
+                    (acc[battery.client] = acc[battery.client] || []).push(battery);
+                    return acc;
+                }, {});
+                
+                let firstClient = true;
+                for (const clientName in groupedByClient) {
+                    if (!firstClient) {
+                        doc.addPage();
+                    }
+                    const clientBatteries = groupedByClient[clientName];
+                    const salesmanName = clientBatteries.length > 0 ? (clientBatteries[0].salesman || 'N/A') : 'N/A';
+                    const startY = drawPdfHeader(doc, clientName, salesmanName);
+                    buildClientPDFPage(doc, clientName, clientBatteries, startY);
+                    firstClient = false;
+                }
+                
+                return doc;
+            } catch (error) {
+                console.error("Falha catastrófica ao gerar PDF:", error);
+                showNotification(`Ocorreu um erro inesperado ao gerar o PDF. Verifique a consola.`, 'error');
+                return null;
             }
-            
-            return doc;
         }
         
         function generateBatchPDFs() {
-            // MELHORIA: Usa todos os dados (batteryData) em vez dos dados filtrados (getFilteredData)
-            // para garantir que o lote seja gerado para todos os clientes, independentemente do filtro aplicado na tela.
-            const dataToProcess = batteryData;
-             if (dataToProcess.length === 0) {
-                showNotification('Nenhum dado para gerar os relatórios.', 'error');
-                return;
-            }
+            try {
+                if (!window.jspdf || !window.jspdf.jsPDF) {
+                    showNotification('Erro: A biblioteca PDF (jsPDF) não carregou corretamente.', 'error');
+                    console.error('jsPDF library is not available on window.jspdf');
+                    return;
+                }
+                if (typeof (new window.jspdf.jsPDF()).autoTable !== 'function') {
+                    showNotification('Erro: O plugin de tabelas para PDF (autoTable) não carregou.', 'error');
+                    console.error('jsPDF autoTable plugin is not available on the doc instance.');
+                    return;
+                }
 
-            const groupedByClient = dataToProcess.reduce((acc, battery) => {
-                (acc[battery.client] = acc[battery.client] || []).push(battery);
-                return acc;
-            }, {});
+                const dataToProcess = batteryData;
+                if (dataToProcess.length === 0) {
+                    showNotification('Nenhum dado para gerar os relatórios.', 'error');
+                    return;
+                }
 
-            showNotification(`Gerando ${Object.keys(groupedByClient).length} relatórios...`, 'info');
+                const validData = dataToProcess.filter(b => b && b.client);
+                 if (validData.length === 0) {
+                    showNotification('Nenhum registo com cliente válido para gerar relatórios.', 'error');
+                    return;
+                }
 
-            for (const clientName in groupedByClient) {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                const clientBatteries = groupedByClient[clientName];
-                const salesmanName = clientBatteries.length > 0 ? clientBatteries[0].salesman : 'N/A';
+                const groupedByClient = validData.reduce((acc, battery) => {
+                    (acc[battery.client] = acc[battery.client] || []).push(battery);
+                    return acc;
+                }, {});
 
-                const startY = drawPdfHeader(doc, clientName, salesmanName);
-                buildClientPDFPage(doc, clientName, clientBatteries, startY);
-                
-                const safeFileName = clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-                doc.save(`relatorio_garantia_${safeFileName}.pdf`);
+                showNotification(`Gerando ${Object.keys(groupedByClient).length} relatórios...`, 'info');
+
+                for (const clientName in groupedByClient) {
+                    const doc = new window.jspdf.jsPDF();
+                    const clientBatteries = groupedByClient[clientName];
+                    const salesmanName = clientBatteries.length > 0 ? (clientBatteries[0].salesman || 'N/A') : 'N/A';
+
+                    const startY = drawPdfHeader(doc, clientName, salesmanName);
+                    buildClientPDFPage(doc, clientName, clientBatteries, startY);
+                    
+                    const safeFileName = String(clientName).replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                    doc.save(`relatorio_garantia_${safeFileName}.pdf`);
+                }
+            } catch (error) {
+                 console.error("Falha catastrófica ao gerar PDFs em lote:", error);
+                showNotification(`Ocorreu um erro inesperado ao gerar os PDFs. Verifique a consola.`, 'error');
             }
         }
 
         function previewPDF() {
-            if (getFilteredData().length === 0) {
-                showNotification('Nenhum dado para gerar o relatório.', 'error');
-                return;
-            }
             const doc = generatePDF();
-            doc.output('dataurlnewwindow');
+            if (doc) { 
+                doc.output('dataurlnewwindow');
+            }
         }
         
         function downloadPDF() {
-             if (getFilteredData().length === 0) {
-                showNotification('Nenhum dado para gerar o relatório.', 'error');
-                return;
-            }
             const doc = generatePDF();
-            doc.save(`relatorio_consolidado_${new Date().toISOString().slice(0,10)}.pdf`);
+            if (doc) { 
+                doc.save(`relatorio_consolidado_${new Date().toISOString().slice(0,10)}.pdf`);
+            }
         }
         
         function exportToFormattedExcel() {
@@ -4241,7 +3954,7 @@
                 'Modelo': b.batteryModel,
                 'Cliente': b.client,
                 'Vendedor': b.salesman,
-                'Data de Registro': new Date(b.timestamp).toLocaleString('pt-BR'),
+                'Data de Registo': new Date(b.timestamp).toLocaleString('pt-BR'),
                 'Data de Envio': b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : '',
                 'Status da Garantia': b.warranty_period_status === 'warranty' ? 'Em Garantia' : 'Fora do Prazo',
                 'Status da Análise': b.status === 'in_analysis' ? 'Em Análise' : 'Finalizado',
@@ -4267,179 +3980,298 @@
         }
         // #endregion
 
-        // #region Lógica do Assistente e Laudo de IA
-        function openAIAssistant() {
-            aiModal.classList.add('active');
-            if (aiChatBox.children.length === 0) {
-                const welcomeMessage = "Olá! Sou o assistente técnico da FABRECK DO BRASIL. Posso fornecer informações detalhadas sobre tipos de bateria, diagnósticos, manutenção e as regras de garantia. Como posso ajudar?";
-                addMessageToAIChat('assistant', welcomeMessage);
-                aiChatHistory.push({ role: 'model', parts: [{ text: welcomeMessage }] });
+        // #region Lógica do Laudo Padrão (Offline)
+        function getLaudoData() {
+            const data = {
+                client: document.getElementById('laudoClientName').value.trim().toUpperCase(),
+                code: document.getElementById('laudoBatteryCode').value.trim().toUpperCase(),
+                model: document.getElementById('laudoBatteryModel').value.trim().toUpperCase(),
+                ccaNominal: document.getElementById('laudoBatteryCCA_Nominal').value,
+                ccaMedido: document.getElementById('laudoCA_Medido').value,
+                voltageNominal: document.getElementById('laudoBatteryVoltage_Nominal').value,
+                voltageMedida: document.getElementById('laudoVoltage_Medida').value,
+                visual: {
+                    estufada: document.getElementById('checkEstufada').checked,
+                    polos: document.getElementById('checkPolos').checked,
+                    vazamento: document.getElementById('checkVazamento').checked,
+                    outros: document.getElementById('laudoVisualInspection').value.trim()
+                },
+                diagnostics: {
+                    fugaCorrente: document.getElementById('checkFugaCorrente').checked,
+                    sobretensao: document.getElementById('checkSobretensao').checked,
+                    subtensao: document.getElementById('checkSubtensao').checked,
+                    aplicacaoIncorreta: document.getElementById('checkAplicacaoIncorreta').checked,
+                    longoDesuso: document.getElementById('checkLongoDesuso').checked,
+                },
+                notes: document.getElementById('laudoTechnicianNotes').value.trim(),
+                images: laudoImages, // Adiciona as imagens
+            };
+
+            // Validação
+            if(!data.client || !data.code || !data.model || !data.ccaNominal || !data.ccaMedido || !data.voltageMedida) {
+                showNotification('Por favor, preencha todos os campos do laudo.', 'error');
+                return null;
             }
+            return data;
         }
 
-        function closeAIAssistant() {
-            aiModal.classList.remove('active');
-        }
+        function generateLaudoDiagnosis(data) {
+            let analysis = [];
+            let diagnosis = "Diagnóstico Pendente";
 
-        function addMessageToAIChat(sender, message) {
-            const messageEl = document.createElement('div');
-            messageEl.classList.add('ai-chat-message', sender);
-            
-            if (sender === 'assistant' && message === 'thinking') {
-                messageEl.classList.add('thinking');
-                messageEl.innerHTML = `<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>`;
+            const voltage = parseFloat(data.voltageMedida);
+            const ccaNominal = parseFloat(data.ccaNominal);
+            const ccaMedido = parseFloat(data.ccaMedido);
+
+            // Análise da Tensão
+            if (voltage < 10.5) {
+                analysis.push("A Tensão em Circuito Aberto (VCA) encontra-se em nível crítico, sugerindo a possibilidade de uma ou mais células em curto-circuito ou em estado de descarga profunda irreversível.");
+            } else if (voltage < 12.4) {
+                analysis.push("A Tensão em Circuito Aberto (VCA) está abaixo do mínimo especificado (12.4V), o que indica um baixo Estado de Carga (SoC - State of Charge), requerendo análise aprofundada.");
             } else {
-                messageEl.textContent = message;
+                analysis.push("A Tensão em Circuito Aberto (VCA) está em conformidade com os parâmetros nominais, indicando uma adequada capacidade de retenção de carga.");
             }
-            
-            aiChatBox.appendChild(messageEl);
-            aiChatBox.scrollTop = aiChatBox.scrollHeight;
-            return messageEl;
+
+            // Análise do CA (CCA)
+            if (ccaMedido < (ccaNominal * 0.7)) {
+                 analysis.push(`A Corrente de Arranque (CA) medida de ${ccaMedido}A está significativamente abaixo do especificado (${ccaNominal}A), denotando uma perda acentuada e irrecuperável da capacidade de arranque, indicativo de sulfatação avançada das placas internas.`);
+            } else {
+                analysis.push(`A Corrente de Arranque (CA) medida de ${ccaMedido}A mostra-se compatível com o valor nominal de ${ccaNominal}A, demonstrando capacidade de arranque adequada.`);
+            }
+
+            // Análise Visual
+            let visualProblems = [];
+            if (data.visual.estufada) visualProblems.push("deformação ou estufamento da caixa");
+            if (data.visual.polos) visualProblems.push("danos ou oxidação nos polos");
+            if (data.visual.vazamento) visualProblems.push("sinais de vazamento de eletrólito");
+
+            if (visualProblems.length > 0) {
+                analysis.push(`Adicionalmente, a inspeção visual constatou: ${visualProblems.join(', ')}.`);
+                diagnosis = `IMPROCEDENTE. Identificada avaria física (${visualProblems.join(', ')}), condição característica de falha no sistema de recarga do veículo (sobretensão/subtensão) ou manuseio inadequado, não configurando defeito de fabricação.`;
+            } else if (voltage < 12.4 && ccaMedido >= (ccaNominal * 0.7)) {
+                diagnosis = "IMPROCEDENTE. Nenhum defeito de fabricação foi detectado. A bateria apresenta-se apenas com baixo estado de carga (SoC). Recomenda-se a aplicação de recarga lenta conforme especificações técnicas e a verificação do sistema elétrico do veículo.";
+            } else if (voltage >= 12.4 && ccaMedido < (ccaNominal * 0.7)) {
+                diagnosis = "PROCEDENTE. A bateria exibe perda de capacidade de arranque (CA) não recuperável por processo de recarga, mesmo com tensão em repouso adequada, o que caracteriza um defeito de fabricação nas células internas.";
+            } else if (voltage < 12.4 && ccaMedido < (ccaNominal * 0.7)) {
+                 diagnosis = "PROCEDENTE. A bateria apresenta falha crítica e simultânea de retenção de carga e capacidade de arranque, caracterizando um defeito de fabricação conclusivo.";
+            }
+            else {
+                diagnosis = "IMPROCEDENTE. Os parâmetros elétricos de Tensão em Circuito Aberto (VCA) e Corrente de Arranque (CA) estão em conformidade com as especificações técnicas do produto. Nenhuma anomalia de fabricação foi detectada durante os ensaios.";
+            }
+
+            return { analysis: analysis.join(' '), diagnosis };
         }
 
-        async function sendAIChatMessage() {
-            const userInput = aiChatInput.value.trim();
-            if (!userInput) return;
-
-            addMessageToAIChat('user', userInput);
-            aiChatHistory.push({ role: 'user', parts: [{ text: userInput }] });
-            aiChatInput.value = '';
-            
-            const thinkingEl = addMessageToAIChat('assistant', 'thinking');
-
-            const knowledgeBase = `
-                **Sobre a FABRECK DO BRASIL:** A FABRECK DO BRASIL é especialista em baterias de alta performance para motocicletas, utilizando tecnologia de ponta para garantir durabilidade e confiança.
-                **Tipos de Bateria de Moto:** Convencional (Chumbo-Ácido), AGM (Selada VRLA), Gel, Lítio (LiFePo4).
-                **Termos Técnicos:** Voltagem (V), Amperagem (Ah), CA (Cranking Amps), CCA (Cold Cranking Amps).
-                **Diagnóstico de Problemas:** Causas para a bateria não segurar carga (sulfatação, fim da vida útil, problema na moto), passos para diagnosticar moto que não liga (terminais, voltagem, teste de CCA).
-                **Dicas de Manutenção:** Limpeza de terminais, uso de carregador inteligente, voltagem de recarga ideal (13.5V-14.5V), armazenamento correto.
-                **Regras de Garantia Fabreck:** Código de 9 caracteres (4 números, 1 letra, 4 números), garantia de 1 ano da fabricação + 7 dias de tolerância.
-            `;
-
-            const systemPrompt = `Você é o "IA FABRECK DO BRASIL", um assistente técnico especialista em baterias de motocicleta. Responda de forma profissional e amigável, usando a base de conhecimento a seguir. Se a pergunta for fora do escopo, informe educadamente que só pode ajudar com tópicos relacionados a baterias FABRECK DO BRASIL. Base de Conhecimento: ${knowledgeBase}`;
-
-            const fullHistory = [
-                { role: 'user', parts: [{ text: systemPrompt }] },
-                { role: 'model', parts: [{ text: 'Entendido. Sou o IA FABRECK DO BRASIL, especialista em baterias. Estou pronto para ajudar.' }] },
-                ...aiChatHistory
-            ];
-
-
+        function generateLaudoPDF(data) {
             try {
-                const payload = { contents: fullHistory };
-                const apiKey = ""; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                if (!window.jspdf || !window.jspdf.jsPDF) {
+                    showNotification('Erro: A biblioteca PDF (jsPDF) não carregou corretamente.', 'error');
+                    return null;
+                }
+                const doc = new window.jspdf.jsPDF();
+                const { analysis, diagnosis } = generateLaudoDiagnosis(data);
 
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                // --- Cabeçalho ---
+                // A linha do logótipo foi removida para garantir estabilidade
+                doc.setFontSize(18);
+                doc.text('FABRECK DO BRASIL', 200, 15, { align: 'right' });
+                doc.setFontSize(12);
+                doc.text('Laudo Técnico de Análise de Garantia', 200, 22, { align: 'right' });
+                doc.setLineWidth(0.5);
+                doc.line(15, 30, 200, 30);
+                
+                let y = 40;
+
+                // --- Seção 1: Dados ---
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('1. DADOS DE IDENTIFICAÇÃO', 15, y);
+                y += 7;
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(`Cliente: ${data.client}`, 17, y);
+                doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 200, y, {align: 'right'});
+                y += 5;
+                doc.text(`Bateria S/N: ${data.code}`, 17, y);
+                doc.text(`Modelo: ${data.model}`, 100, y);
+                y += 10;
+
+                // --- Seção 2: Testes ---
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('2. PARÂMETROS DE TESTE', 15, y);
+                y += 5;
+                doc.autoTable({
+                    startY: y,
+                    theme: 'grid',
+                    head: [['Parâmetro', 'Valor Padrão', 'Valor Medido', 'Resultado']],
+                    body: [
+                        [`Tensão em Circuito Aberto (VCA)`, `${data.voltageNominal}`, `${data.voltageMedida}V`, parseFloat(data.voltageMedida) >= 12.4 ? 'CONFORME' : 'NÃO CONFORME'],
+                        [`Corrente de Arranque (CA / CCA)`, `${data.ccaNominal}A`, `${data.ccaMedido}A`, parseFloat(data.ccaMedido) >= (parseFloat(data.ccaNominal) * 0.7) ? 'CONFORME' : 'NÃO CONFORME']
+                    ],
+                    headStyles: { fillColor: [22, 49, 72] },
                 });
+                y = doc.lastAutoTable.finalY + 10;
 
-                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                
-                const result = await response.json();
-                const aiResponse = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-                
-                if (aiResponse) {
-                    thinkingEl.remove();
-                    addMessageToAIChat('assistant', aiResponse);
-                    aiChatHistory.push({ role: 'model', parts: [{ text: aiResponse }] });
-                } else {
-                    throw new Error("No response from AI.");
+                // --- Seção 3: Inspeção Visual ---
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('3. INSPEÇÃO VISUAL', 15, y);
+                y += 7;
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(`- Carcaça estufada/danificada: ${data.visual.estufada ? 'SIM' : 'NÃO'}`, 17, y);
+                doc.text(`- Polos danificados/oxidados: ${data.visual.polos ? 'SIM' : 'NÃO'}`, 100, y);
+                y += 5;
+                doc.text(`- Sinais de vazamento de eletrólito: ${data.visual.vazamento ? 'SIM' : 'NÃO'}`, 17, y);
+                y += 5;
+                if (data.visual.outros) doc.text(`- Outras observações: ${data.visual.outros}`, 17, y);
+                y += 10;
+
+                // --- Seção 4: Diagnóstico ---
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('4. ANÁLISE E DIAGNÓSTICO TÉCNICO', 15, y);
+                y += 7;
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text(doc.splitTextToSize(analysis, 180), 17, y);
+                y = doc.lastAutoTable.finalY > y ? doc.lastAutoTable.finalY + 10 : y + 20;
+
+                // --- Seção 5: Parecer ---
+                doc.setFontSize(12);
+                doc.setFont(undefined, 'bold');
+                doc.text('5. PARECER FINAL', 15, y);
+                y += 7;
+                doc.setFont(undefined, 'bold');
+                doc.setFillColor(diagnosis.includes('PROCEDENTE') ? '#2ecc71' : '#e74c3c');
+                doc.rect(17, y - 4, 60, 6, 'F');
+                doc.setTextColor(255,255,255);
+                doc.text(diagnosis.split('.')[0], 20, y);
+                doc.setTextColor(0,0,0);
+                y += 7;
+                doc.setFont(undefined, 'normal');
+                doc.text(doc.splitTextToSize(diagnosis, 180), 17, y);
+                y = doc.lastAutoTable.finalY > y ? doc.lastAutoTable.finalY + 20 : y + 20;
+
+                // --- Seção 6: Observações ---
+                const diagnosticNotes = [];
+                if (data.diagnostics.fugaCorrente) diagnosticNotes.push("- Veículo apresenta indícios de fuga de corrente, resultando em descarga prematura da bateria.");
+                if (data.diagnostics.sobretensao) diagnosticNotes.push("- Sistema de recarga (alternador/retificador) opera com sobretensão, causando sobrecarga e danos internos à bateria.");
+                if (data.diagnostics.subtensao) diagnosticNotes.push("- Sistema de recarga (alternador/retificador) opera com subtensão, impedindo a recarga completa da bateria.");
+                if (data.diagnostics.aplicacaoIncorreta) diagnosticNotes.push("- A bateria instalada não corresponde à aplicação recomendada para o modelo do veículo.");
+                if (data.diagnostics.longoDesuso) diagnosticNotes.push("- Identificada evidência de longo período sem uso, o que pode levar à descarga profunda e sulfatação.");
+                if (data.notes) diagnosticNotes.push(`- Outras notas: ${data.notes}`);
+
+                if (diagnosticNotes.length > 0) {
+                     doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('6. OBSERVAÇÕES TÉCNICAS ADICIONAIS', 15, y);
+                    y += 7;
+                    doc.setFontSize(10);
+                    doc.setFont(undefined, 'normal');
+                    doc.text(doc.splitTextToSize(diagnosticNotes.join('\n'), 180), 17, y);
+                    y = doc.lastAutoTable.finalY > y ? doc.lastAutoTable.finalY + 15 : y + 15;
                 }
 
+                 // --- Seção 7: Evidências Fotográficas ---
+                if (data.images && data.images.length > 0) {
+                    if (y > 180) { // Adiciona nova página se não houver espaço suficiente
+                        doc.addPage();
+                        y = 20;
+                    }
+                    doc.setFontSize(12);
+                    doc.setFont(undefined, 'bold');
+                    doc.text('7. EVIDÊNCIAS FOTOGRÁFICAS', 15, y);
+                    y += 10;
+                    
+                    const imgWidth = 55;
+                    const imgHeight = 55;
+                    let x = 15;
+
+                    data.images.forEach((imgData, index) => {
+                        doc.addImage(imgData.src, 'JPEG', x, y, imgWidth, imgHeight);
+                        x += imgWidth + 5; // Move para a próxima imagem
+                        if ((index + 1) % 3 === 0) { // Quebra a linha a cada 3 imagens
+                            x = 15;
+                            y += imgHeight + 5;
+                        }
+                    });
+                    y += imgHeight + 10;
+                }
+
+
+                // --- Assinatura ---
+                const signatureY = doc.internal.pageSize.height - 40;
+                doc.line(60, signatureY, 150, signatureY);
+                doc.setFontSize(10);
+                doc.text('JENILTON CRUZ', 105, signatureY + 5, { align: 'center'});
+                doc.setFontSize(8);
+                doc.text('Técnico Responsável', 105, signatureY + 9, { align: 'center'});
+                
+                return doc;
+
             } catch (error) {
-                console.error("Erro no chat com IA:", error);
-                thinkingEl.remove();
-                addMessageToAIChat('assistant', 'Desculpe, ocorreu um erro. Tente novamente mais tarde.');
+                console.error("Falha ao gerar o PDF do laudo:", error);
+                showNotification(`Ocorreu um erro inesperado ao gerar o laudo.`, 'error');
+                return null;
             }
         }
         
-        async function generateLaudo() {
-            const client = document.getElementById('laudoClientName').value.trim();
-            const code = document.getElementById('laudoBatteryCode').value.trim();
-            const model = document.getElementById('laudoBatteryModel').value.trim();
-            const ca = document.getElementById('laudoCA').value;
-            const voltage = document.getElementById('laudoVoltage').value;
-            const visual = document.getElementById('laudoVisualInspection').value.trim();
-            const notes = document.getElementById('laudoTechnicianNotes').value.trim();
+        function previewLaudoPDF() {
+            const data = getLaudoData();
+            if (!data) return;
+            
+            const doc = generateLaudoPDF(data);
+            if(doc) {
+                doc.output('dataurlnewwindow');
+            }
+        }
+        
+        function handleLaudoImageUpload(event) {
+            const files = event.target.files;
+            if (!files) return;
 
-            if(!client || !code || !model || !ca || !voltage || !visual) {
-                showNotification('Por favor, preencha todos os campos do laudo.', 'error');
+            if (laudoImages.length + files.length > 3) {
+                showNotification('Pode adicionar no máximo 3 imagens.', 'error');
                 return;
             }
 
-            const btn = document.getElementById('generateLaudoBtn');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Gerando...';
-            
-            laudoResultContainer.classList.remove('hidden');
-            laudoResult.value = "A IA está a redigir o laudo técnico com base nos dados fornecidos. Por favor, aguarde...";
-
-            const prompt = `
-                Aja como um engenheiro técnico especialista em baterias da FABRECK DO BRASIL.
-                Crie um laudo técnico profissional, formal e bem estruturado em português do Brasil.
-                A análise é feita em bancada, na fábrica, sem acesso à motocicleta do cliente.
-                Use os seguintes dados brutos:
-                - Cliente: ${client}
-                - Código da Bateria: ${code}
-                - Modelo da Bateria: ${model}
-                - Teste de CA (Cranking Amps): ${ca} A
-                - Voltagem em Repouso: ${voltage} V
-                - Análise Visual: ${visual}
-                - Observações do Técnico: ${notes}
-
-                O laudo deve seguir esta estrutura:
-                1.  **CABEÇALHO:** "LAUDO TÉCNICO DE ANÁLISE DE BATERIA - FABRECK DO BRASIL"
-                2.  **DADOS DE IDENTIFICAÇÃO:** Cliente, Código e Modelo.
-                3.  **PROCEDIMENTOS DE TESTE:** Descreva os testes (inspeção visual, medição de tensão, teste de CA).
-                4.  **RESULTADOS OBTIDOS:** Apresente os valores e observações.
-                5.  **ANÁLISE TÉCNICA:** Faça uma análise profissional. Compare a voltagem com o padrão (>12.4V). Explique o que os resultados significam.
-                6.  **DIAGNÓSTICO FINAL:** Conclua com um diagnóstico focado apenas na bateria (ex: "Bateria com desgaste natural", "Nenhum defeito de fabricação encontrado, bateria apenas descarregada").
-                7.  **RECOMENDAÇÃO:** Dê uma recomendação técnica. Adicione a observação padrão: "É crucial que o sistema de recarga da motocicleta (alternador/retificador) seja verificado por um profissional qualificado antes da instalação de uma nova bateria, para evitar danos recorrentes."
-                8.  **RODAPÉ:** "Laudo gerado por IA FABRECK DO BRASIL em ${new Date().toLocaleDateString('pt-BR')}. Análise realizada em bancada."
-
-                Seja objetivo e use terminologia técnica apropriada.
-            `;
-            
-            try {
-                const payload = { contents: [{ parts: [{ text: prompt }] }] };
-                const apiKey = "";
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-
-                const response = await fetch(apiUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) throw new Error(`API Error: ${response.statusText}`);
-                
-                const result = await response.json();
-                const aiResponse = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-
-                if(aiResponse) {
-                    laudoResult.value = aiResponse;
-                } else {
-                    throw new Error("Resposta da IA vazia.");
-                }
-
-            } catch(error) {
-                console.error("Erro ao gerar laudo:", error);
-                laudoResult.value = "Ocorreu um erro ao comunicar com a IA. Por favor, tente novamente.";
-                showNotification("Erro ao gerar laudo.", 'error');
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-cogs"></i> Gerar Laudo com IA';
+            for (const file of files) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    laudoImages.push({ id: Date.now() + Math.random(), src: e.target.result });
+                    renderLaudoImagePreviews();
+                };
+                reader.readAsDataURL(file);
             }
+            // Limpa o input para permitir selecionar o mesmo ficheiro novamente
+            event.target.value = '';
         }
 
-        function copyLaudo() {
-            laudoResult.select();
-            document.execCommand('copy');
-            showNotification('Laudo copiado para a área de transferência!', 'success');
+        function renderLaudoImagePreviews() {
+            laudoImagePreviews.innerHTML = '';
+            laudoImages.forEach(image => {
+                const container = document.createElement('div');
+                container.className = 'preview-container';
+
+                const img = document.createElement('img');
+                img.src = image.src;
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'remove-img-btn';
+                removeBtn.innerHTML = '&times;';
+                removeBtn.onclick = () => {
+                    laudoImages = laudoImages.filter(i => i.id !== image.id);
+                    renderLaudoImagePreviews();
+                };
+
+                container.appendChild(img);
+                container.appendChild(removeBtn);
+                laudoImagePreviews.appendChild(container);
+            });
         }
+        
         // #endregion
 
         // #region Sincronização em Nuvem
@@ -4540,7 +4372,7 @@
                 updateUI();
 
                 if (data.batteries.length > 0) {
-                    showNotification(`${data.batteries.length} registros carregados da nuvem!`, 'success');
+                    showNotification(`${data.batteries.length} registos carregados da nuvem!`, 'success');
                 }
                 addActivity('fas fa-cloud-download-alt', 'Dados carregados da nuvem.');
 
@@ -4562,6 +4394,11 @@
     </script>
 </body>
 </html>
+
+
+
+
+
 
 
 
