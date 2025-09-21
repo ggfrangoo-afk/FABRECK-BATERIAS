@@ -2179,7 +2179,6 @@
 
         // Credenciais Chave
         const ADMIN_USERS_KEY = 'fabreck_admin_users';
-        const FIXED_SYNC_KEY = '1418850998876823552';
         
         const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjgwIDYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSW1wYWN0LCBBcmlhbCBCbGFjaywgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI1MiIgZmlsbD0iI0QyMjYzMCIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjIuNSIgcGFpbnQtb3JkZXI9InN0cm9rZSI+RkFCUkVDSzwvdGV4dD48L3N2Zz4=';
 
@@ -4240,7 +4239,7 @@
                     await applyCloudData(data);
                 } else {
                     cloudDataToLoad = data;
-                    cloudLoadConfirmModal.classList.add('active');
+                    if (cloudLoadConfirmModal) cloudLoadConfirmModal.classList.add('active');
                 }
 
             } catch (error) {
@@ -4289,10 +4288,4 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
 
