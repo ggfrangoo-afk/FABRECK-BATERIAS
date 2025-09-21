@@ -21,15 +21,15 @@
             --fabreck-warning: #F39C12;
             --fabreck-danger: #E74C3C;
 
-            /* Cores para o Modo Escuro */
-            --dark-bg: #121212;
-            --dark-card-bg: #1E1E1E;
+            /* Cores para o Modo Escuro Aprimorado */
+            --dark-bg: #0d0d0d;
+            --dark-card-bg: #1a1a1a;
             --dark-text: #E0E0E0;
             --dark-light-text: #B0B0B0;
             --dark-border: #333333;
-            --dark-header-bg-start: #003366;
-            --dark-header-bg-end: #0A0A0A;
-            --dark-blue-light: #0056B3;
+            --dark-header-bg-start: #002244;
+            --dark-header-bg-end: #000000;
+            --dark-blue-light: #0066cc;
         }
         
         /* Reset e fontes */
@@ -42,8 +42,8 @@
         }
         
         html, body {
-            min-height: 100%; /* ALTERADO: Permite que o corpo cresça com o conteúdo */
-            overflow-x: hidden; /* Garante que não haja rolagem horizontal */
+            height: 100%;
+            overflow: hidden; /* Previne scroll no body, a rolagem será interna */
         }
 
         body {
@@ -99,10 +99,10 @@
         }
          /* --- FIM ESTILOS DO LOGIN --- */
 
-        /* --- LAYOUT PRINCIPAL (DESKTOP/WEB) --- */
+        /* --- LAYOUT PRINCIPAL DINÂMICO --- */
         #layoutContainer {
             display: flex;
-            min-height: 100vh; /* ALTERADO: Altura mínima, permitindo crescer */
+            height: 100vh;
             width: 100%;
         }
 
@@ -110,23 +110,87 @@
             width: 260px;
             background: var(--fabreck-dark);
             color: var(--fabreck-white);
-            display: none; /* Escondido por padrão em mobile */
+            display: none; /* Escondido por padrão, visível em desktop */
             flex-direction: column;
             padding: 20px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            z-index: 200;
+            transition: background 0.3s ease;
         }
-        body.computer-mode-active #sidebar {
+        
+        #mainContentWrapper {
+            flex: 1;
+            overflow-y: auto; /* Permite scroll apenas na área de conteúdo */
+            position: relative;
+            padding: 10px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* Footer de navegação (Mobile) */
+        .footer {
             position: fixed;
-            height: 100%;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--fabreck-white);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 5px;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+            transition: background 0.3s ease, border-top 0.3s ease;
         }
+        
+        /* Controle de páginas (abas) */
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- MODO DESKTOP (Telas > 992px) --- */
+        @media (min-width: 992px) {
+            #sidebar {
+                display: flex; /* Mostra a sidebar */
+            }
+            .footer {
+                display: none; /* Esconde o footer mobile */
+            }
+            #mainContentWrapper {
+                padding: 20px;
+            }
+             .container {
+                width: 100%;
+                max-width: none;
+                margin: 0;
+            }
+        }
+        
+        /* --- MODO MOBILE (Telas < 992px) --- */
+        @media (max-width: 991px) {
+            #mainContentWrapper {
+                padding-bottom: 90px; /* Garante espaço para o footer não sobrepor o conteúdo */
+            }
+        }
+
 
         body.dark-mode #sidebar {
             background: var(--dark-card-bg);
             border-right: 1px solid var(--dark-border);
         }
-
+        
+        /* ... (restante do seu CSS permanece o mesmo) ... */
         .sidebar-header {
             text-align: center;
             margin-bottom: 30px;
@@ -187,16 +251,6 @@
             border-top-color: var(--dark-border);
         }
 
-        #mainContentWrapper {
-            flex: 1;
-            /* overflow-y: auto; REMOVIDO para permitir rolagem da página inteira */
-            position: relative;
-            padding: 10px;
-        }
-        body.computer-mode-active #mainContentWrapper {
-            display: none; /* Esconde a visualização normal no modo computador */
-        }
-        /* --- FIM LAYOUT PRINCIPAL --- */
 
         /* Estilos para o Modo Escuro */
         body.dark-mode {
@@ -290,12 +344,6 @@
             background: rgba(46, 204, 113, 0.2);
         }
         
-        .container {
-            max-width: 100%; /* Default for mobile */
-            margin: 0 auto;
-            padding-bottom: 80px; /* Espaço para o footer */
-        }
-        
         /* Estilos do cabeçalho */
         header {
             background: linear-gradient(135deg, var(--fabreck-blue), var(--fabreck-dark));
@@ -304,9 +352,6 @@
             margin-bottom: 15px;
             text-align: center;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            position: sticky;
-            top: 0;
-            z-index: 10;
             border: 1px solid rgba(255, 255, 255, 0.1);
             overflow: hidden;
             position: relative;
@@ -392,14 +437,6 @@
             display: inline-block;
         }
         
-        /* Estilos para o conteúdo principal */
-        .main-content {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
         .card {
             background: var(--fabreck-white);
             border-radius: 16px;
@@ -407,8 +444,7 @@
             padding: 20px;
             border: 1px solid rgba(0, 0, 0, 0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
-            display: flex; /* Adicionado para controle interno */
-            flex-direction: column; /* Adicionado para controle interno */
+            margin-bottom: 15px;
         }
         
         .card:hover {
@@ -546,12 +582,9 @@
         .table-container {
             overflow-x: auto;
             margin-top: 15px;
-            max-height: 500px;
-            overflow-y: auto;
             border: 1px solid rgba(0, 0, 0, 0.1);
             border-radius: 12px;
             padding: 3px;
-            flex-grow: 1; /* Para preencher o espaço no card */
         }
         
         table {
@@ -683,22 +716,6 @@
             color: var(--fabreck-blue);
         }
         
-        /* Footer de navegação */
-        .footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--fabreck-white);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 5px;
-            border-top: 1px solid rgba(0, 0, 0, 0.08);
-            z-index: 100;
-            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
-            transition: background 0.3s ease, border-top 0.3s ease, box-shadow 0.3s ease;
-        }
-        
         .nav-btn {
             display: flex;
             flex-direction: column;
@@ -801,15 +818,6 @@
             grid-template-columns: 1fr 1fr;
             gap: 8px;
             margin-top: 8px;
-        }
-        
-        /* Controle de páginas */
-        .page {
-            display: none;
-        }
-        
-        .page.active {
-            display: block;
         }
         
         .hidden {
@@ -1231,45 +1239,6 @@
 
         /* Media query para telas de desktop (a partir de 992px) - MODO WEB */
         @media (min-width: 992px) {
-            #sidebar {
-                display: flex;
-            }
-            #sidebar-toggle-btn {
-                display: flex;
-            }
-            #mainContentWrapper {
-                padding: 20px;
-            }
-            .container {
-                width: 95%; /* ADICIONADO: Faz o container ser fluido */
-                max-width: 1600px; /* ALTERADO: Aumenta a largura máxima para preencher mais a tela */
-                padding-bottom: 20px; /* Reduz padding do footer em desktop */
-            }
-            header {
-                position: static; /* Header normal no fluxo da página */
-                top: auto;
-            }
-            .footer {
-                display: none; /* Esconde o footer de navegação mobile */
-            }
-            .card {
-                padding: 25px;
-            }
-            .card-title {
-                font-size: 20px;
-            }
-            .form-control {
-                padding: 16px 18px;
-                font-size: 17px;
-            }
-            .btn {
-                padding: 16px;
-                font-size: 17px;
-            }
-            table th, table td {
-                font-size: 15px;
-                padding: 14px 18px;
-            }
             .total-box {
                 min-width: 200px;
             }
@@ -1287,7 +1256,7 @@
                 gap: 20px;
                 align-items: start;
             }
-            #scanPage .card, #settingsPage .card {
+            #scanPage .card {
                 margin-bottom: 0;
             }
             
@@ -1327,57 +1296,6 @@
             #reportPage .filter-row {
                 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             }
-        }
-
-        /* --- NOVOS ESTILOS PARA MENU RECOLHÍVEL --- */
-        #sidebar-toggle-btn {
-            position: absolute;
-            top: 50%;
-            right: -15px;
-            transform: translateY(-50%);
-            width: 30px;
-            height: 30px;
-            background-color: var(--fabreck-dark);
-            color: var(--fabreck-white);
-            border: 2px solid var(--fabreck-light);
-            border-radius: 50%;
-            display: none; /* Escondido em mobile */
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            z-index: 201;
-            transition: transform 0.3s ease, background-color 0.3s ease;
-            border: none;
-            padding: 0;
-        }
-        #sidebar-toggle-btn:hover {
-            background-color: var(--fabreck-blue);
-        }
-        body.dark-mode #sidebar-toggle-btn {
-            background-color: var(--dark-card-bg);
-            border-color: var(--dark-bg);
-        }
-
-        /* Estado Recolhido */
-        body.sidebar-collapsed #sidebar {
-            width: 90px;
-        }
-        body.sidebar-collapsed #sidebar .sidebar-header .logo-img {
-            width: 60px;
-        }
-        body.sidebar-collapsed #sidebar .sidebar-header h3,
-        body.sidebar-collapsed #sidebar .sidebar-btn span,
-        body.sidebar-collapsed #sidebar .sidebar-footer p {
-            display: none;
-        }
-        body.sidebar-collapsed #sidebar .sidebar-btn {
-            justify-content: center;
-        }
-        body.sidebar-collapsed #sidebar .sidebar-btn i {
-            margin-right: 0;
-        }
-        body.sidebar-collapsed #sidebar-toggle-btn i {
-            transform: rotate(180deg);
         }
     </style>
 </head>
@@ -1421,13 +1339,10 @@
             <div class="sidebar-footer">
                 <p>&copy; 2024 FABRECK DO BRASIL</p>
             </div>
-            <button id="sidebar-toggle-btn" title="Recolher menu"><i class="fas fa-chevron-left"></i></button>
         </nav>
 
         <!-- Conteúdo Principal -->
         <div id="mainContentWrapper">
-            <div class="fabreck-pattern"></div>
-            
             <div class="container">
                 <header>
                     <div class="logo">
@@ -3576,37 +3491,7 @@
             observationModal.classList.add('active');
         }
         // #endregion
-
-        // #region Formulário e Leitura de Código
-        function handleSerialInput() {
-            const code = this.value.trim().toUpperCase();
-            codePreview.textContent = code;
-            codePreview.style.color = validateSerialCode(code) ? 'var(--fabreck-blue)' : 'var(--fabreck-danger)';
-            updateWarrantyDebugInfo(code);
-            if (!rulesShown && code.length >= 4 && !validateSerialCode(code)) {
-                showRulesModal();
-                rulesShown = true;
-                localStorage.setItem('rulesShown', 'true');
-            }
-        }
         
-        function clearCode() {
-            serialCodeInput.value = '';
-            codePreview.textContent = '';
-            warrantyDebugInfo.style.display = 'none';
-            serialCodeInput.focus();
-        }
-
-        async function selectWarrantyType(type) {
-            factoryRadio.checked = type === 'factory';
-            analyzedRadio.checked = type === 'analyzed';
-            factoryOption.classList.toggle('selected', type === 'factory');
-            analyzedOption.classList.toggle('selected', type === 'analyzed');
-            videoAnalysisOptions.classList.toggle('hidden', type !== 'analyzed');
-            await dbManager.set('settings', { key: LAST_WARRANTY_TYPE_KEY, value: type });
-        }
-        // #endregion
-
         // #region Histórico e Log de Atividades
         function setupAudio() {
             try {
@@ -4404,6 +4289,7 @@
     </script>
 </body>
 </html>
+
 
 
 
