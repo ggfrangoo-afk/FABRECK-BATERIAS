@@ -2216,13 +2216,13 @@
         // Elementos de alteração de senha
         const changePasswordBtn = document.getElementById('changePasswordBtn');
         const passwordModal = document.getElementById('passwordModal');
-            const closePasswordModal = document.getElementById('closePasswordModal');
-            const passwordChangeForm = document.getElementById('passwordChangeForm');
-            
-            // Elementos do Laudo
-            const addLaudoImageBtn = document.getElementById('addLaudoImageBtn');
-            const laudoImageUpload = document.getElementById('laudoImageUpload');
-            const laudoImagePreviews = document.getElementById('laudoImagePreviews');
+        const closePasswordModal = document.getElementById('closePasswordModal');
+        const passwordChangeForm = document.getElementById('passwordChangeForm');
+        
+        // Elementos do Laudo
+        const addLaudoImageBtn = document.getElementById('addLaudoImageBtn');
+        const laudoImageUpload = document.getElementById('laudoImageUpload');
+        const laudoImagePreviews = document.getElementById('laudoImagePreviews');
         // #endregion
 
         // #region Estado do Sistema
@@ -2266,7 +2266,7 @@
         const ADMIN_USERS_KEY = 'fabreck_admin_users';
         const FIXED_SYNC_KEY = '1418850998876823552';
         
-        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjgyIiB2aWV3Qm94PSIwIDAgMzIwIDgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGlkPSJMb2dvIj48cmVjdCBpZD0iQm90dG9tQmFyIiB5PSI1NyIgd2lkdGg9IjMyMCIgaGVpZGg0PSIyNSIgZmlsbD0iIzAwNDdhYiIvPjxwYXRoIGlkPSJTdHJpcGUxMiIgZD0iTTI5MCA1N0gzMTVMMzA1IDgySDI4MFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTExIiBkPSJNMjQ1IDU3SDI3MEwyNjAgODJIMjM1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlMTAiIGQ9Ik0yMDAgNTdIMjI1TDIxNSA4MkgxOTBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGU5IiBkPSJNMTU1IDU3SDE4MEwxNzAgODJIMTQ1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlOCIgZD0iTTExMCA1N0gxMzVMMTI1IDgySDEwMFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTciIGQ9Ik02NSA1N0g5MEw4MCA4Mkg0NVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTYiIGQ9Ik0yMCA1N0g0NUwzNSA4MkgxMFoiIGZpbGw9IndoaXRlIi8+PHJlY3QgaWQ9IlRvcEJhciIgd2lkdGg9IjMyMCIgaGVpZGg0PSIyNSIgZmlsbD0iIzAwNDdhYiIvPjxwYXRoIGlkPSJTdHJpcGU1IiBkPSJNMjkwIDBIMzE1TDMwNSAyNUgyODBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGU0IiBkPSJNMjQ1IDBIMjcwTDI2MCAyNUgyMzVaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGUzIiBkPSJNMjAwIDBIMjI1TDIxNSAyNUgxOTBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGUyIiBkPSJNMTU1IDBIMTgwTDE3MCAyNUgxNDVaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGUxIiBkPSJNMTEwIDBIMTM1TDEyNSAyNUgxMDBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGUwIiBkPSJNNjUgMEg5MEw4MCAyNUg0NVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZS0xIiBkPSJNMjAgMEg0NUwzNSAyNUgxMFoiIGZpbGw9IndoaXRlIi8+PHRleHQgaWQ9IlRleHQiIHg9IjE2MCIgeT0iNTQiIGZvbnQtZmFtaWx5PSJJbXBhY3QsIEFyaWFsIEJsYWNrLCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjM4IiBmaWxsPSIjRDIyNjMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMi41IiBwYWludC1vcmRlcj0ic3Ryb2tlIj5GQUJSRUNLPC90ZXh0PjwvZz48L3N2Zz4=';
+        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjgwIDYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSW1wYWN0LCBBcmlhbCBCbGFjaywgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI1MiIgZmlsbD0iI0QyMjYzMCIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjIuNSIgcGFpbnQtb3JkZXI9InN0cm9rZSI+RkFCUkVDSzwvdGV4dD48L3N2Zz4=';
 
         const batteryModelMap = {
             'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
@@ -3605,7 +3605,6 @@
             videoAnalysisOptions.classList.toggle('hidden', type !== 'analyzed');
             await dbManager.set('settings', { key: LAST_WARRANTY_TYPE_KEY, value: type });
         }
-        
         // #endregion
 
         // #region Histórico e Log de Atividades
@@ -4072,7 +4071,6 @@
                 const { analysis, diagnosis } = generateLaudoDiagnosis(data);
 
                 // --- Cabeçalho ---
-                // A linha do logótipo foi removida para garantir estabilidade
                 doc.setFontSize(18);
                 doc.text('FABRECK DO BRASIL', 200, 15, { align: 'right' });
                 doc.setFontSize(12);
@@ -4289,7 +4287,9 @@
 
         async function saveToCloud(isSilent = false) {
             const syncStatus = document.getElementById('syncStatus');
-            syncStatus.textContent = 'A sincronizar...';
+            if (syncStatus) {
+                syncStatus.textContent = 'A sincronizar...';
+            }
             
             const dataToSave = {
                 batteries: await dbManager.getAll('batteries'),
@@ -4310,8 +4310,10 @@
 
                 if (isSilent) {
                     const syncTime = new Date().toLocaleTimeString('pt-BR');
-                    syncStatus.textContent = `Sincronizado às ${syncTime}`;
-                    syncStatus.style.color = '#2ECC71';
+                    if(syncStatus) {
+                        syncStatus.textContent = `Sincronizado às ${syncTime}`;
+                        syncStatus.style.color = '#2ECC71';
+                    }
                 } else {
                     showNotification('Dados atualizados na nuvem com sucesso!', 'success');
                 }
@@ -4320,8 +4322,10 @@
             } catch (error) {
                 console.error('Erro ao salvar na nuvem:', error);
                 if (isSilent) {
-                    syncStatus.textContent = 'Erro de sincronização';
-                    syncStatus.style.color = '#E74C3C';
+                    if(syncStatus) {
+                        syncStatus.textContent = 'Erro de sincronização';
+                        syncStatus.style.color = '#E74C3C';
+                    }
                 }
                 showNotification('Falha ao sincronizar os dados. Verifique a sua ligação.', 'error');
             }
@@ -4329,7 +4333,9 @@
 
         async function loadFromCloud(isSilent = false) {
             const syncStatus = document.getElementById('syncStatus');
-            syncStatus.textContent = 'A carregar dados da nuvem...';
+            if (syncStatus) {
+                syncStatus.textContent = 'A carregar dados da nuvem...';
+            }
 
             try {
                 const response = await fetch(`https://jsonblob.com/api/jsonBlob/${FIXED_SYNC_KEY}`);
@@ -4355,8 +4361,10 @@
             } catch (error) {
                 console.error('Erro ao carregar da nuvem:', error);
                 showNotification(`Falha ao carregar: ${error.message}`, 'error');
-                syncStatus.textContent = 'Falha ao carregar da nuvem';
-                syncStatus.style.color = '#E74C3C';
+                if (syncStatus) {
+                    syncStatus.textContent = 'Falha ao carregar da nuvem';
+                    syncStatus.style.color = '#E74C3C';
+                }
             }
         }
 
@@ -4377,9 +4385,11 @@
                 addActivity('fas fa-cloud-download-alt', 'Dados carregados da nuvem.');
 
                 const syncStatus = document.getElementById('syncStatus');
-                const syncTime = new Date(data.savedAt).toLocaleString('pt-BR');
-                syncStatus.textContent = `Sincronizado em ${syncTime}`;
-                syncStatus.style.color = '#2ECC71';
+                if (syncStatus) {
+                    const syncTime = new Date(data.savedAt).toLocaleString('pt-BR');
+                    syncStatus.textContent = `Sincronizado em ${syncTime}`;
+                    syncStatus.style.color = '#2ECC71';
+                }
 
             } catch (error) {
                 console.error('Erro ao aplicar dados da nuvem:', error);
@@ -4394,9 +4404,6 @@
     </script>
 </body>
 </html>
-
-
-
 
 
 
