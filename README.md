@@ -14,7 +14,7 @@
             --fabreck-red: #D22630;
             --fabreck-blue: #0047AB;
             --fabreck-white: #FFFFFF;
-            --fabreck-light: #F5F7FA;
+            --fabreck-light: #F0F2F5; /* Cinza um pouco mais escuro para o fundo */
             --fabreck-dark: #1A2A3A;
             --fabreck-gray: #7F8C8D;
             --fabreck-success: #2ECC71;
@@ -122,6 +122,10 @@
             overflow-y: auto; /* Permite scroll apenas na área de conteúdo */
             position: relative;
             padding: 10px;
+            background-color: var(--fabreck-light);
+        }
+        body.dark-mode #mainContentWrapper {
+            background-color: var(--dark-bg);
         }
 
         .container {
@@ -385,66 +389,17 @@
             z-index: 1;
         }
         
-        .logo-img {
-            width: 150px; 
-            height: auto;
-        }
-
-        .logo h1 {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--fabreck-white);
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-        
-        .system-title {
-            font-size: 16px;
-            opacity: 0.9;
-            color: rgba(255, 255, 255, 0.85);
-            margin-top: 5px;
-            font-weight: 500;
-            position: relative;
-            z-index: 1;
-        }
-        
-        .company-info {
-            margin-top: 10px;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            font-size: 13px;
-            backdrop-filter: blur(5px);
-            position: relative;
-            z-index: 1;
-        }
-        
-        .company-info p {
-            margin: 3px 0;
-            color: var(--fabreck-white);
-        }
-        
-        .active-salesman {
-            font-weight: bold;
-            color: var(--fabreck-white);
-            margin-top: 5px;
-            display: block;
-            font-size: 13px;
-            background: var(--fabreck-red);
-            padding: 4px 8px;
-            border-radius: 20px;
-            display: inline-block;
-        }
-        
         .card {
             background: var(--fabreck-white);
             border-radius: 16px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra mais suave */
             padding: 20px;
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            border: 1px solid #EAECEE;
             transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease, color 0.3s ease;
-            margin-bottom: 15px;
+            margin-bottom: 20px; /* Aumenta o espaçamento entre cards */
+        }
+        body.dark-mode .card {
+            border-color: var(--dark-border);
         }
         
         .card:hover {
@@ -608,7 +563,7 @@
         }
         
         th {
-            background: rgba(0, 71, 171, 0.1);
+            background: rgba(0, 71, 171, 0.05); /* Fundo do header da tabela mais suave */
             color: var(--fabreck-blue);
             font-weight: 700;
             position: sticky;
@@ -618,7 +573,11 @@
         }
         
         tr:nth-child(even) {
-            background: rgba(0, 71, 171, 0.03);
+            background: rgba(0, 71, 171, 0.02); /* Zebra stripes mais suaves */
+        }
+
+        tr:hover {
+            background-color: rgba(0, 71, 171, 0.07); /* Efeito hover nas linhas da tabela */
         }
         
         /* Badges de status */
@@ -1161,13 +1120,6 @@
             gap: 10px;
             margin-bottom: 15px;
         }
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-        }
-        .checkbox-group input {
-            margin-right: 10px;
-        }
 
         #laudoImagePreviews {
             display: grid;
@@ -1206,6 +1158,24 @@
             line-height: 24px;
             text-align: center;
         }
+
+        /* --- NOVOS ESTILOS PARA O DASHBOARD --- */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .dashboard-main-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .quick-actions .btn {
+            padding: 20px;
+            font-size: 18px;
+            height: 80px;
+        }
+        /* --- FIM DOS ESTILOS DO DASHBOARD --- */
 
         @media (min-width: 600px) {
             .batch-actions {
@@ -1329,8 +1299,9 @@
                 <h3>Garantia</h3>
             </div>
             <div class="sidebar-nav">
-                <a href="#" class="sidebar-btn active" data-page="scanPage"><i class="fas fa-bolt"></i><span>Registo</span></a>
-                <a href="#" class="sidebar-btn" data-page="laudoPage"><i class="fas fa-file-invoice"></i><span>Laudo</span></a>
+                <a href="#" class="sidebar-btn active" data-page="homePage"><i class="fas fa-home"></i><span>Início</span></a>
+                <a href="#" class="sidebar-btn" data-page="scanPage"><i class="fas fa-plus-circle"></i><span>Registo</span></a>
+                <a href="#" class="sidebar-btn" data-page="laudoPage"><i class="fas fa-file-signature"></i><span>Laudo</span></a>
                 <a href="#" class="sidebar-btn" data-page="analysisPage"><i class="fas fa-clipboard-check"></i><span>Análise</span></a>
                 <a href="#" class="sidebar-btn" data-page="finalizadoPage"><i class="fas fa-check-double"></i><span>Finalizadas</span></a>
                 <a href="#" class="sidebar-btn" data-page="reportPage"><i class="fas fa-chart-bar"></i><span>Geral</span></a>
@@ -1367,12 +1338,58 @@
                     </div>
                 </header>
             
+                 <!-- PÁGINA INICIAL (DASHBOARD) -->
+                <div id="homePage" class="page active">
+                     <div class="dashboard-grid">
+                        <div class="dashboard-main-column">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2 class="card-title">Atalhos Rápidos</h2>
+                                </div>
+                                <div class="quick-actions form-row">
+                                    <button id="goToRegisterBtn" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Novo Registo</button>
+                                    <button id="goToReportBtn" class="btn btn-info"><i class="fas fa-chart-bar"></i> Ver Relatório Geral</button>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2 class="card-title">Atividade Recente</h2>
+                                     <div class="card-icon"><i class="fas fa-history"></i></div>
+                                </div>
+                                <div class="activity-log" id="dashboardActivityLog" style="max-height: 400px;"></div>
+                            </div>
+                        </div>
+                        <div class="dashboard-side-column">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2 class="card-title">Visão Geral</h2>
+                                    <div class="card-icon"><i class="fas fa-chart-pie"></i></div>
+                                </div>
+                                 <div class="stat-cards" style="grid-template-columns: 1fr; text-align: left;">
+                                    <div class="stat-card">
+                                        <div class="stat-title">EM ANÁLISE</div>
+                                        <div class="stat-value" id="dashboardInAnalysis">0</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-title">FINALIZADAS (ESTE MÊS)</div>
+                                        <div class="stat-value" id="dashboardFinalizedMonth">0</div>
+                                    </div>
+                                    <div class="stat-card">
+                                        <div class="stat-title">APROVADAS / REPROVADAS</div>
+                                        <div class="stat-value" id="dashboardRatio">0 / 0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Página de Registo de Garantia -->
-                <div id="scanPage" class="page active">
+                <div id="scanPage" class="page">
                     <div class="card">
                         <div class="card-header">
                             <h2 class="card-title">Registo de Garantia</h2>
-                            <div class="card-icon"><i class="fas fa-bolt"></i></div>
+                            <div class="card-icon"><i class="fas fa-plus-circle"></i></div>
                         </div>
                         
                         <div class="form-row">
@@ -1813,12 +1830,16 @@
             </div>
             
             <div class="footer">
-                <div class="nav-btn active" data-page="scanPage">
-                    <div><i class="fas fa-bolt"></i></div>
+                <div class="nav-btn active" data-page="homePage">
+                    <div><i class="fas fa-home"></i></div>
+                    <span>Início</span>
+                </div>
+                <div class="nav-btn" data-page="scanPage">
+                    <div><i class="fas fa-plus-circle"></i></div>
                     <span>Registo</span>
                 </div>
                 <div class="nav-btn" data-page="laudoPage">
-                    <div><i class="fas fa-file-invoice"></i></div>
+                    <div><i class="fas fa-file-signature"></i></div>
                     <span>Laudo</span>
                 </div>
                 <div class="nav-btn" data-page="analysisPage">
@@ -1999,6 +2020,18 @@
         </div>
     </div>
 
+    <!-- Modal de Confirmação Genérico -->
+    <div class="edit-modal" id="confirmModal">
+        <div class="edit-content">
+            <h3 class="edit-title" id="confirmModalTitle">Confirmar Ação</h3>
+            <p id="confirmModalText" style="text-align: center; font-size: 14px; margin-bottom: 20px;">Tem a certeza?</p>
+            <div style="display: flex; gap: 10px;">
+                 <button id="cancelConfirmBtn" class="btn btn-info" style="margin-top:0;">Cancelar</button>
+                 <button id="confirmActionBtn" class="btn btn-danger" style="margin-top:0;">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
 
     <script>
         // #region Elementos DOM
@@ -2136,8 +2169,23 @@
         
         // Elementos do Laudo
         const addLaudoImageBtn = document.getElementById('addLaudoImageBtn');
-        const laudoImageUpload = document.getElementById('laudoImageUpload');
-        const laudoImagePreviews = document.getElementById('laudoImagePreviews');
+            const laudoImageUpload = document.getElementById('laudoImageUpload');
+            const laudoImagePreviews = document.getElementById('laudoImagePreviews');
+
+            // Elementos do Modal de Confirmação
+            const confirmModal = document.getElementById('confirmModal');
+            const confirmModalTitle = document.getElementById('confirmModalTitle');
+            const confirmModalText = document.getElementById('confirmModalText');
+            const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
+            const confirmActionBtn = document.getElementById('confirmActionBtn');
+
+            // Elementos do Dashboard
+            const goToRegisterBtn = document.getElementById('goToRegisterBtn');
+            const goToReportBtn = document.getElementById('goToReportBtn');
+            const dashboardInAnalysis = document.getElementById('dashboardInAnalysis');
+            const dashboardFinalizedMonth = document.getElementById('dashboardFinalizedMonth');
+            const dashboardRatio = document.getElementById('dashboardRatio');
+            const dashboardActivityLog = document.getElementById('dashboardActivityLog');
         // #endregion
 
         // #region Estado do Sistema
@@ -2176,12 +2224,13 @@
         let cloudDataToLoad = null; 
         let syncDebounceTimer = null;
         let laudoImages = []; // Array para guardar as imagens do laudo
+        let confirmCallback = null; // Para o novo modal de confirmação
 
         // Credenciais Chave
         const ADMIN_USERS_KEY = 'fabreck_admin_users';
         const FIXED_SYNC_KEY = '1418850998876823552';
         
-        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjgyIiB2aWV3Qm94PSIwIDAgMzIwIDgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGlkPSJMb2dvIj48cmVjdCBpZD0iQm90dG9tQmFyIiB5PSI1NyIgd2lkdGg9IjMyMCIgaGVpZGg0PSIyNSIgZmlsbD0iIzAwNDdhYiIvPjxwYXRoIGlkPSJTdHJpcGUxMiIgZD0iTTI5MCA1N0gzMTVMMzA1IDgySDI4MFoiIGZpbGw9IndoaXRlIiAvPjxwYXRoIGlkPSJTdHJpcGUxMSIgZD0iTTI0NSA1N0gyNzBMMjYwIDgySDIzNVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTEwIiBkPSJNMjAwIDU3SDIyNUwyMTUgODJIMTkwWiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlOSIgZD0iTTE1NSA1N0gxODBMMTcwIDgySDE0NVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTgiIGQ9Ik0xMTAgNTdIMTM1TDEyNSA4MkgxMDBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGU3IiBkPSJNNjUgNTdIOU9MDgwIDgySDQ1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlNiIgZD0iTTIwIDU3SDQ1TDM1IDgySDEwWiIgZmlsbD0id2hpdGUiLz48cmVjdCBpZD0iVG9wQmFyIiB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI1IiBmaWxsPSIjMDA0N2FiIi8+PHBhdGggaWQ9IlN0cmlwZTUiIGQ9Ik0yOTAgMEgzMTVMMzA1IDI1SDI4MFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTQiIGQ9Ik0yNDUgMEgyNzBMMjYwIDI1SDIzNVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTMiIGQ9Ik0yMDAgMEgyMjVMMjE1IDI1SDE5MFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTIiIGQ9Ik0xNTUgMEgxODBMMTcwIDI1SDE0NVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTEiIGQ9Ik0xMTAgMEgxMzVMMTI1IDI1SDEwMFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTAiIGQ9Ik02NSAwSDkwTDgwIDI1SDQ1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlLTEiIGQ9Ik0yMCAwSDQ1TDM1IDI1SDEwWiIgZmlsbD0id2hpdGUiLz48dGV4dCBpZD0iVGV4dCIgeD0iMTYwIiB5PSI1OCIgZm9udC1mYW1pbHk9IkltcGFjdCwgQXJpYWwgQmxhY2ssIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtcIzI9IjQ4IiBmaWxsPSIjRDIyNjMwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBzdHJva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMi41IiBwYWludC1vcmRlcj0ic3Ryb2tlIj5GQUJSRUNLPC90ZXh0PjwvZz48L3N2Zz4=';
+        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjgwIDYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSW1wYWN0LCBBcmlhbCBCbGFjaywgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI1MiIgZmlsbD0iI0QyMjYzMCIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjIuNSIgcGFpbnQtb3JkZXI9InN0cm9rZSI+RkFCUkVDSzwvdGV4dD48L3N2Zz4=';
 
         const batteryModelMap = {
             'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
@@ -2304,7 +2353,7 @@
             updateUI();
             updateLastUpdate();
             setupAudio();
-            loadLastUsedData(); 
+            await loadLastUsedData(); 
             applyDarkMode(); 
 
             const today = new Date();
@@ -2314,13 +2363,13 @@
             submissionDateInput.value = `${year}-${month}-${day}`;
         }
 
-        function checkAuth() {
+        async function checkAuth() {
             if (sessionStorage.getItem('isAuthenticated') === 'true') {
                 loginOverlay.classList.add('hidden');
                 layoutContainer.classList.remove('hidden');
                 applyUIRestrictions();
                 if (batteryData.length === 0) { // Só inicializa se os dados ainda não estiverem na memória
-                     initializeAppData();
+                     await initializeAppData();
                 }
             } else {
                 loginOverlay.classList.remove('hidden');
@@ -2341,7 +2390,7 @@
             }
             
             const lastWarrantyType = await dbManager.get('settings', LAST_WARRANTY_TYPE_KEY);
-            selectWarrantyType(lastWarrantyType ? lastWarrantyType.value : 'factory');
+            await selectWarrantyType(lastWarrantyType ? lastWarrantyType.value : 'factory');
         }
         
         function setupEventListeners() {
@@ -2362,7 +2411,7 @@
                         sessionStorage.setItem('isAuthenticated', 'true');
                         sessionStorage.setItem('userType', 'admin');
                         sessionStorage.setItem('currentUser', user); // Guarda o utilizador atual
-                        checkAuth();
+                        await checkAuth();
                     } else {
                         showNotification('Utilizador ou palavra-passe incorretos.', 'error');
                     }
@@ -2370,10 +2419,10 @@
             }
 
             if (viewerLoginBtn) {
-                viewerLoginBtn.addEventListener('click', () => {
+                viewerLoginBtn.addEventListener('click', async () => {
                     sessionStorage.setItem('isAuthenticated', 'true');
                     sessionStorage.setItem('userType', 'viewer');
-                    checkAuth();
+                    await checkAuth();
                 });
             }
 
@@ -2514,6 +2563,19 @@
             if (passwordChangeForm) passwordChangeForm.addEventListener('submit', saveNewPassword);
             if (addLaudoImageBtn) addLaudoImageBtn.addEventListener('click', () => laudoImageUpload.click());
             if (laudoImageUpload) laudoImageUpload.addEventListener('change', handleLaudoImageUpload);
+
+            // Listeners para o novo modal de confirmação
+            if(cancelConfirmBtn) cancelConfirmBtn.addEventListener('click', () => confirmModal.classList.remove('active'));
+            if(confirmActionBtn) confirmActionBtn.addEventListener('click', () => {
+                if (confirmCallback) {
+                    confirmCallback();
+                }
+                confirmModal.classList.remove('active');
+            });
+
+            // Listeners do Dashboard
+            if(goToRegisterBtn) goToRegisterBtn.addEventListener('click', () => showPage('scanPage'));
+            if(goToReportBtn) goToReportBtn.addEventListener('click', () => showPage('reportPage'));
         }
         // #endregion
 
@@ -2621,8 +2683,17 @@
             } else {
                  // Garante que o admin comece na página de registo se nenhuma outra estiver ativa
                 if (!document.querySelector('.page.active')) {
-                     showPage('scanPage');
+                     showPage('homePage');
                 }
+            }
+        }
+
+        function showConfirmModal(title, message, onConfirm) {
+            if(confirmModal) {
+                confirmModalTitle.textContent = title;
+                confirmModalText.textContent = message;
+                confirmCallback = onConfirm;
+                confirmModal.classList.add('active');
             }
         }
         // #endregion
@@ -2810,15 +2881,21 @@
         }
 
         async function removeBattery(id) {
-            if (!confirm('Tem certeza que deseja remover esta bateria? A ação é irreversível.')) return;
-            
-            const removed = batteryData.find(b => b.id === id);
-            await dbManager.delete('batteries', id);
-            batteryData = batteryData.filter(b => b.id !== id);
-            updateUI();
-            showNotification('Bateria removida com sucesso!', 'success');
-            addActivity('fas fa-trash-alt', `Bateria removida: ${removed.code}`);
-            triggerAutoSync();
+            const batteryToRemove = batteryData.find(b => b.id === id);
+            if (!batteryToRemove) return;
+
+            showConfirmModal(
+                'Remover Registo',
+                `Tem a certeza de que deseja remover a bateria com o código ${batteryToRemove.code}? A ação é irreversível.`,
+                async () => {
+                    await dbManager.delete('batteries', id);
+                    batteryData = batteryData.filter(b => b.id !== id);
+                    updateUI();
+                    showNotification('Bateria removida com sucesso!', 'success');
+                    addActivity('fas fa-trash-alt', `Bateria removida: ${batteryToRemove.code}`);
+                    triggerAutoSync();
+                }
+            );
         }
 
         async function clearData() {
@@ -2826,18 +2903,23 @@
                 showNotification('Não há dados para limpar', 'info');
                 return;
             }
-            if (confirm('TEM CERTEZA? Todos os dados de garantia serão apagados permanentemente.')) {
-                await dbManager.clear('batteries');
-                await dbManager.clear('activity');
-                batteryData = [];
-                activityData = [];
-                updateUI();
-                updateActivityLog();
-                lastUpdate.textContent = "Nenhuma atualização";
-                showNotification('Todos os dados foram removidos.', 'success');
-                addActivity('fas fa-trash-alt', 'Todos os dados foram removidos');
-                triggerAutoSync();
-            }
+            
+            showConfirmModal(
+                'Apagar Todos os Dados',
+                'TEM A CERTEZA? Todos os dados de garantia serão apagados permanentemente. Esta ação não pode ser desfeita.',
+                async () => {
+                    await dbManager.clear('batteries');
+                    await dbManager.clear('activity');
+                    batteryData = [];
+                    activityData = [];
+                    updateUI();
+                    updateActivityLog();
+                    lastUpdate.textContent = "Nenhuma atualização";
+                    showNotification('Todos os dados foram removidos.', 'success');
+                    addActivity('fas fa-trash-alt', 'Todos os dados foram removidos');
+                    triggerAutoSync();
+                }
+            );
         }
         
         async function exportData() {
@@ -2981,6 +3063,42 @@
             updateStats();
             updateWarrantyInstructionsUI();
             updateRecentRegistrationsLog(); // Atualiza o novo log
+            updateDashboard(); // ATUALIZA O NOVO DASHBOARD
+        }
+
+        function updateDashboard() {
+            if (!document.getElementById('homePage').classList.contains('active')) return;
+
+            const inAnalysis = batteryData.filter(b => b.status === 'in_analysis').length;
+            
+            const now = new Date();
+            const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            const finalizedThisMonth = batteryData.filter(b => {
+                return b.status === 'finalized' && b.technicalOpinionDate && new Date(b.technicalOpinionDate) >= startOfMonth;
+            }).length;
+
+            const approvedCount = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('APROVADA')).length;
+            const rejectedCount = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('REPROVADA')).length;
+
+            if(dashboardInAnalysis) dashboardInAnalysis.textContent = inAnalysis;
+            if(dashboardFinalizedMonth) dashboardFinalizedMonth.textContent = finalizedThisMonth;
+            if(dashboardRatio) dashboardRatio.textContent = `${approvedCount} / ${rejectedCount}`;
+
+            // Copia o log de atividades para o dashboard
+            if(activityLog && dashboardActivityLog) {
+                const recentActivities = [...activityData].slice(-5).reverse();
+                 dashboardActivityLog.innerHTML = '';
+                 if (recentActivities.length === 0) {
+                    dashboardActivityLog.innerHTML = `<div class="activity-item"><div class="activity-icon"><i class="fas fa-info-circle"></i></div><div class="activity-content">Nenhuma atividade recente</div></div>`;
+                    return;
+                }
+                recentActivities.forEach(activity => {
+                    const item = document.createElement('div');
+                    item.className = 'activity-item';
+                    item.innerHTML = `<div class="activity-icon"><i class="${activity.icon}"></i></div><div class="activity-content">${activity.message}</div><div class="activity-time">${activity.time}</div>`;
+                    dashboardActivityLog.appendChild(item);
+                });
+            }
         }
         
         function updateStats() {
@@ -4289,5 +4407,7 @@
     </script>
 </body>
 </html>
+
+
 
 
