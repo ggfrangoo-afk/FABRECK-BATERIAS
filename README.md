@@ -172,8 +172,8 @@
             }
              .container {
                 width: 100%;
-                max-width: none;
-                margin: 0;
+                max-width: none; /* Remove a largura máxima */
+                margin: 0; /* Remove as margens automáticas */
             }
         }
         
@@ -4289,6 +4289,7 @@
     </script>
 </body>
 </html>
+
 
 
 
