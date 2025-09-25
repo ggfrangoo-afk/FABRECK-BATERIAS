@@ -172,8 +172,8 @@
             }
              .container {
                 width: 100%;
-                max-width: none; /* Remove a largura máxima */
-                margin: 0; /* Remove as margens automáticas */
+                max-width: none;
+                margin: 0;
             }
         }
         
@@ -190,7 +190,6 @@
             border-right: 1px solid var(--dark-border);
         }
         
-        /* ... (restante do seu CSS permanece o mesmo) ... */
         .sidebar-header {
             text-align: center;
             margin-bottom: 30px;
@@ -357,24 +356,6 @@
             position: relative;
         }
 
-        /* Padrão de fundo no cabeçalho */
-        .fabreck-pattern {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.03;
-            pointer-events: none;
-            background: 
-                linear-gradient(135deg, var(--fabreck-blue) 25%, transparent 25%) -50px 0,
-                linear-gradient(225deg, var(--fabreck-blue) 25%, transparent 25%) -50px 0,
-                linear-gradient(315deg, var(--fabreck-red) 25%, transparent 25%),
-                linear-gradient(45deg, var(--fabreck-red) 25%, transparent 25%);
-            background-size: 100px 100px;
-            background-color: transparent;
-        }
-        
         .logo {
             display: flex;
             flex-direction: column;
@@ -649,12 +630,6 @@
             border: 1px solid rgba(52, 152, 219, 0.3);
         }
         
-        .status-analyzed {
-            background: rgba(155, 89, 182, 0.15);
-            color: #9B59B6;
-            border: 1px solid rgba(155, 89, 182, 0.3);
-        }
-
         .status-in-analysis {
             background: rgba(243, 156, 18, 0.15);
             color: var(--fabreck-warning);
@@ -852,8 +827,8 @@
             justify-content: center;
         }
         
-        /* Modal de regras */
-        .rules-modal, .edit-modal {
+        /* Modais */
+        .modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -869,12 +844,12 @@
             transition: opacity 0.3s;
         }
         
-        .rules-modal.active, .edit-modal.active {
+        .modal.active {
             opacity: 1;
             pointer-events: all;
         }
         
-        .rules-content, .edit-content {
+        .modal-content {
             background: var(--fabreck-white);
             border-radius: 16px;
             padding: 25px;
@@ -886,7 +861,7 @@
             transition: background 0.3s ease, border 0.3s ease;
         }
         
-        .rules-close, .edit-close {
+        .modal-close {
             position: absolute;
             top: 15px;
             right: 15px;
@@ -896,11 +871,11 @@
             transition: transform 0.2s;
         }
         
-        .rules-close:hover, .edit-close:hover {
+        .modal-close:hover {
             transform: scale(1.1);
         }
         
-        .rules-title, .edit-title {
+        .modal-title {
             color: var(--fabreck-blue);
             margin-bottom: 15px;
             text-align: center;
@@ -974,11 +949,6 @@
             border-radius: 10px;
         }
         
-        /* Campo de parecer técnico */
-        #recommendationField {
-            display: none; /* Hide by default */
-        }
-        
         /* Linha de input de código */
         .code-input-row {
             display: flex;
@@ -994,22 +964,6 @@
             flex: 0 0 auto;
             margin-top: 0;
             padding: 14px 20px;
-        }
-        
-        /* Footer da tabela */
-        .table-footer {
-            font-weight: bold;
-            background: rgba(0, 71, 171, 0.1);
-        }
-        
-        .table-footer td {
-            padding: 10px 15px;
-            border-top: 2px solid var(--fabreck-blue);
-        }
-        
-        .table-footer .total-label {
-            text-align: right;
-            padding-right: 20px;
         }
         
         /* Log de atividades */
@@ -1104,15 +1058,6 @@
         
         .total-all {
             color: var(--fabreck-blue);
-        }
-
-        /* Estilos para o modal de edição */
-        .edit-modal .form-group {
-            margin-bottom: 10px;
-        }
-
-        .edit-modal .warranty-option {
-            margin-bottom: 5px;
         }
 
         /* Informações da bateria no modal de análise */
@@ -1222,7 +1167,6 @@
                 margin-top: 0;
             }
         }
-        /* --- FIM DOS ESTILOS DE LOTE --- */
 
         /* Media query para tablets (a partir de 600px) */
         @media (min-width: 600px) {
@@ -1249,7 +1193,7 @@
 
         /* --- NOVOS ESTILOS PARA WIDESCREEN OTIMIZADO --- */
         @media (min-width: 1200px) {
-            /* Aplica um layout de 2 colunas para a página de Registro */
+            /* Aplica um layout de 2 colunas para a página de Registo */
             #scanPage {
                 display: grid;
                 grid-template-columns: minmax(450px, 1.2fr) 1fr; /* Coluna do formulário um pouco maior */
@@ -1292,7 +1236,6 @@
                 align-items: start;
             }
 
-            /* Melhora o layout dos filtros no relatório em telas muito largas */
             #reportPage .filter-row {
                 grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             }
@@ -1449,7 +1392,6 @@
                         <div class="activity-log" id="activityLog"></div>
                     </div>
 
-                    <!-- NOVO CARD COM O LOG DE ÚLTIMOS REGISTOS -->
                     <div class="card">
                         <div class="card-header">
                             <h2 class="card-title">Últimos Registos</h2>
@@ -1471,7 +1413,6 @@
                     </div>
                 </div>
 
-                <!-- PÁGINA DE LAUDO TÉCNICO (AGORA SEM IA) -->
                 <div id="laudoPage" class="page">
                     <div class="card">
                         <div class="card-header">
@@ -1611,7 +1552,6 @@
                     </div>
                 </div>
 
-                <!-- ***** NOVA PÁGINA DE FINALIZADOS ***** -->
                 <div id="finalizadoPage" class="page">
                     <div class="card">
                         <div class="card-header">
@@ -1844,10 +1784,10 @@
     <div id="notification" class="notification"></div>
     
     <!-- Modal de Regras do Código de Série -->
-    <div class="rules-modal" id="rulesModal">
-        <div class="rules-content">
-            <span class="rules-close" id="closeRulesModal">&times;</span>
-            <h3 class="rules-title">Formato do Código de Série</h3>
+    <div class="modal" id="rulesModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeRulesModal">&times;</span>
+            <h3 class="modal-title">Formato do Código de Série</h3>
             <ul class="rules-list">
                 <li>O código deve ter exatamente <span class="rules-highlight">9 caracteres</span></li>
                 <li>Os primeiros 4 caracteres devem ser <span class="rules-highlight">números</span></li>
@@ -1859,11 +1799,11 @@
         </div>
     </div>
 
-    <!-- Modal de Análise Técnica (agora para single e batch) -->
-    <div class="edit-modal" id="analysisModal">
-        <div class="edit-content">
-            <span class="edit-close" id="closeAnalysisModal">&times;</span>
-            <h3 class="edit-title" id="analysisModalTitle">Analisar Bateria</h3>
+    <!-- Modal de Análise Técnica -->
+    <div class="modal" id="analysisModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeAnalysisModal">&times;</span>
+            <h3 class="modal-title" id="analysisModalTitle">Analisar Bateria</h3>
             
             <div id="analysisSingleInfo">
                 <div class="analysis-info">
@@ -1897,10 +1837,10 @@
     </div>
 
     <!-- Modal para Editar Nomes -->
-    <div class="edit-modal" id="nameEditModal">
-        <div class="edit-content">
-            <span class="edit-close" id="closeNameEditModal">&times;</span>
-            <h3 class="edit-title">Editar Nomes</h3>
+    <div class="modal" id="nameEditModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeNameEditModal">&times;</span>
+            <h3 class="modal-title">Editar Nomes</h3>
             <p style="text-align: center; font-size: 14px; margin-bottom: 15px;">A alteração será aplicada a todos os registos com estes nomes.</p>
             
             <div class="form-group">
@@ -1920,10 +1860,10 @@
     </div>
 
     <!-- Modal para Observações -->
-    <div class="edit-modal" id="observationModal">
-        <div class="edit-content">
-            <span class="edit-close" id="closeObservationModal">&times;</span>
-            <h3 class="edit-title">Observações para o Cliente</h3>
+    <div class="modal" id="observationModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeObservationModal">&times;</span>
+            <h3 class="modal-title">Observações para o Cliente</h3>
              <div class="form-group">
                 <label for="observationText">Observação</label>
                 <textarea id="observationText" class="form-control" rows="4" placeholder="Digite aqui informações adicionais para o cliente..."></textarea>
@@ -1935,10 +1875,10 @@
     </div>
 
     <!-- Modal para Opções de 'Procedente' -->
-    <div class="edit-modal" id="procedenteModal">
-        <div class="edit-content">
-            <span class="edit-close" id="closeProcedenteModal">&times;</span>
-            <h3 class="edit-title">Motivo - Procedente</h3>
+    <div class="modal" id="procedenteModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeProcedenteModal">&times;</span>
+            <h3 class="modal-title">Motivo - Procedente</h3>
             <p style="text-align: center; font-size: 14px; margin-bottom: 15px;">Selecione o motivo pelo qual a garantia foi aprovada.</p>
             <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
                  <button id="capacidadeBaixaBtn" class="btn btn-success">Capacidade Baixa</button>
@@ -1947,40 +1887,24 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Restauração -->
-    <div class="edit-modal" id="restoreConfirmModal">
-        <div class="edit-content">
-            <h3 class="edit-title">Confirmar Restauração</h3>
-            <p style="text-align: center; font-size: 14px; margin-bottom: 15px;">
-                <strong>Atenção!</strong> Esta ação substituirá <strong>TODOS</strong> os dados atuais pelos dados do arquivo de backup. A operação não pode ser desfeita.
+    <!-- NOVO MODAL DE CONFIRMAÇÃO GENÉRICO -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-content">
+            <h3 class="modal-title" id="confirmTitle">Confirmar Ação</h3>
+            <p id="confirmMessage" style="text-align: center; font-size: 14px; margin-bottom: 20px;">
+                Tem a certeza que deseja prosseguir?
             </p>
-            <p style="text-align: center; font-size: 14px; margin-bottom: 20px;">Deseja continuar?</p>
             <div style="display: flex; gap: 10px;">
-                 <button id="cancelRestoreBtn" class="btn btn-info" style="margin-top:0;">Cancelar</button>
-                 <button id="confirmRestoreBtn" class="btn btn-danger" style="margin-top:0;">Sim, Substituir Tudo</button>
+                 <button id="cancelConfirmBtn" class="btn btn-info" style="margin-top:0;">Cancelar</button>
+                 <button id="confirmActionBtn" class="btn btn-danger" style="margin-top:0;">Confirmar</button>
             </div>
         </div>
     </div>
 
-    <div class="edit-modal" id="cloudLoadConfirmModal">
-        <div class="edit-content">
-            <h3 class="edit-title">Confirmar Carregamento</h3>
-            <p style="text-align: center; font-size: 14px; margin-bottom: 15px;">
-                <strong>Atenção!</strong> Esta ação substituirá <strong>TODOS</strong> os dados locais pelos dados salvos na nuvem. A operação não pode ser desfeita.
-            </p>
-            <p style="text-align: center; font-size: 14px; margin-bottom: 20px;">Deseja continuar?</p>
-            <div style="display: flex; gap: 10px;">
-                 <button id="cancelCloudLoadBtn" class="btn btn-info" style="margin-top:0;">Cancelar</button>
-                 <button id="confirmCloudLoadBtn" class="btn btn-danger" style="margin-top:0;">Sim, Substituir Dados</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- NOVO MODAL PARA ALTERAR PALAVRA-PASSE -->
-    <div class="edit-modal" id="passwordModal">
-        <div class="edit-content">
-            <span class="edit-close" id="closePasswordModal">&times;</span>
-            <h3 class="edit-title">Alterar Palavra-passe</h3>
+    <div class="modal" id="passwordModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closePasswordModal">&times;</span>
+            <h3 class="modal-title">Alterar Palavra-passe</h3>
             <form id="passwordChangeForm">
                 <div class="form-group">
                     <label for="currentPassword">Palavra-passe Atual</label>
@@ -2051,17 +1975,13 @@
         const darkModeText = document.getElementById('darkModeText');
         const warrantyInstructionsContainer = document.getElementById('warrantyInstructionsContainer');
 
-        // Elementos da página de Análise
         const analysisBody = document.getElementById('analysisBody');
         const inAnalysisCount = document.getElementById('inAnalysisCount');
         const analysisClientFilter = document.getElementById('analysisClientFilter');
         const selectAllCheckbox = document.getElementById('selectAllCheckbox');
         const batchAnalyzeBtn = document.getElementById('batchAnalyzeBtn');
-
-        // NOVO: Elemento para o log de registos
         const recentRegistrationsBody = document.getElementById('recentRegistrationsBody');
 
-        // Elementos da página Finalizado e Relatório
         const finalizadoBody = document.getElementById('finalizadoBody');
         const finalizadoCount = document.getElementById('finalizadoCount');
         const finalizedCountReport = document.getElementById('finalizedCountReport');
@@ -2070,8 +1990,6 @@
         const finalizadoReprovadaPrazoCount = document.getElementById('finalizadoReprovadaPrazoCount');
         const finalizadoReprovadaForaCount = document.getElementById('finalizadoReprovadaForaCount');
 
-
-        // Elementos do Modal de Análise
         const analysisModal = document.getElementById('analysisModal');
         const closeAnalysisModal = document.getElementById('closeAnalysisModal');
         const analysisModalTitle = document.getElementById('analysisModalTitle');
@@ -2085,70 +2003,60 @@
         const saveAnalysisBtn = document.getElementById('saveAnalysisBtn');
         const analysisAddObservationBtn = document.getElementById('analysisAddObservationBtn');
 
-        // Elementos do Modal de Edição de Nomes
         const nameEditModal = document.getElementById('nameEditModal');
         const closeNameEditModal = document.getElementById('closeNameEditModal');
         const editClientNameInput = document.getElementById('editClientName');
         const editSalesmanNameInput = document.getElementById('editSalesmanName');
         const saveNameEditBtn = document.getElementById('saveNameEditBtn');
 
-        // Elementos do Modal de Observações
         const observationModal = document.getElementById('observationModal');
         const closeObservationModal = document.getElementById('closeObservationModal');
         const observationText = document.getElementById('observationText');
         const saveObservationBtn = document.getElementById('saveObservationBtn');
 
-        // Elementos de Análise por Vídeo
         const videoAnalysisOptions = document.getElementById('videoAnalysisOptions');
         const procedenteBtn = document.getElementById('procedenteBtn');
         const descarregadaBtn = document.getElementById('descarregadaBtn');
         const addObservationBtn = document.getElementById('addObservationBtn');
 
-        // Elementos do Modal Procedente
         const procedenteModal = document.getElementById('procedenteModal');
         const closeProcedenteModal = document.getElementById('closeProcedenteModal');
         const capacidadeBaixaBtn = document.getElementById('capacidadeBaixaBtn');
         const ccaBaixoBtn = document.getElementById('ccaBaixoBtn');
 
-        // Elementos do Modal de Restauração
-        const restoreConfirmModal = document.getElementById('restoreConfirmModal');
-        const confirmRestoreBtn = document.getElementById('confirmRestoreBtn');
-        const cancelRestoreBtn = document.getElementById('cancelRestoreBtn');
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmTitle = document.getElementById('confirmTitle');
+        const confirmMessage = document.getElementById('confirmMessage');
+        const confirmActionBtn = document.getElementById('confirmActionBtn');
+        const cancelConfirmBtn = document.getElementById('cancelConfirmBtn');
         
-        // Elementos do Laudo Técnico
         const generateLaudoPdfBtn = document.getElementById('generateLaudoPdfBtn');
         
-        // Elementos do Login e Layout
         const loginOverlay = document.getElementById('loginOverlay');
         const layoutContainer = document.getElementById('layoutContainer');
         const loginForm = document.getElementById('loginForm');
         const usernameInput = document.getElementById('usernameInput');
         const passwordInput = document.getElementById('passwordInput');
         const logoutBtn = document.getElementById('logoutBtn');
-        const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
         const viewerLoginBtn = document.getElementById('viewerLoginBtn');
         
-        // Elementos de alteração de senha
         const changePasswordBtn = document.getElementById('changePasswordBtn');
         const passwordModal = document.getElementById('passwordModal');
         const closePasswordModal = document.getElementById('closePasswordModal');
         const passwordChangeForm = document.getElementById('passwordChangeForm');
         
-        // Elementos do Laudo
         const addLaudoImageBtn = document.getElementById('addLaudoImageBtn');
         const laudoImageUpload = document.getElementById('laudoImageUpload');
         const laudoImagePreviews = document.getElementById('laudoImagePreviews');
         // #endregion
 
         // #region Estado do Sistema
-        const DB_KEY = 'fabreck_battery_db_v21'; // Versão antiga para migração
         const ACTIVITY_KEY = 'fabreck_activity_log_v12';
         const LAST_SALESMAN_KEY = 'fabreck_last_salesman_v12';
         const LAST_CLIENT_KEY = 'fabreck_last_client_v12';
         const LAST_WARRANTY_TYPE_KEY = 'fabreck_last_warranty_type_v12';
         const DARK_MODE_KEY = 'fabreck_dark_mode'; 
         const INSTRUCTIONS_KEY = 'fabreck_instructions_v1';
-        const SIDEBAR_COLLAPSED_KEY = 'fabreck_sidebar_collapsed_v1';
         let batteryData = [];
         let activityData = [];
         let currentFilters = {
@@ -2160,33 +2068,30 @@
             code: ''
         };
         let warrantyInstructions = {};
-        let audioContext = null;
-        let beepSound = null;
         let rulesShown = localStorage.getItem('rulesShown') === 'true';
-        let analysisMode = 'single'; // 'single' or 'batch'
+        let analysisMode = 'single';
         let analyzingBatteryId = null; 
-        let fileToRestore = null;
         
         let batchAnalysisIds = []; 
 
         let editingBatteryId = null;
-        let observationCallback = null; // Callback para salvar observação
+        let observationCallback = null;
+        let confirmCallback = null;
         let tempObservation = '';
         let isDarkMode = localStorage.getItem(DARK_MODE_KEY) === 'true';
-        let cloudDataToLoad = null; 
         let syncDebounceTimer = null;
-        let laudoImages = []; // Array para guardar as imagens do laudo
+        let filterDebounceTimer = null;
+        let laudoImages = [];
 
-        // Credenciais Chave
         const ADMIN_USERS_KEY = 'fabreck_admin_users';
+        const NEEDS_SYNC_KEY = 'fabreck_needs_sync';
         const FIXED_SYNC_KEY = '1418850998876823552';
         
-        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjgwIiBoZWlnaHQ9IjYwIiB2aWV3Qm94PSIwIDAgMjgwIDYwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBkb21pbmFudC1iYXNlbGluZT0ibWlkZGxlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iSW1wYWN0LCBBcmlhbCBCbGFjaywgc2Fucy1zZXJpZiIgZm9udC13ZWlnaHQ9IjkwMCIgZm9udC1zaXplPSI1MiIgZmlsbD0iI0QyMjYzMCIgc3Ryb2tlPSIjRkZGRkZGIiBzdHJva2Utd2lkdGg9IjIuNSIgcGFpbnQtb3JkZXI9InN0cm9rZSI+RkFCUkVDSzwvdGV4dD48L3N2Zz4=';
+        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjgyIiB2aWV3Qm94PSIwIDAgMzIwIDgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGlkPSJMb2dvIj48cmVjdCBpZD0iQm90dG9tQmFyIiB5PSI1NyIgd2lkdGg9IjMyMCIgaGVpZGg0PSIyNSIgZmlsbD0iIzAwNDdhYiIvPjxwYXRoIGlkPSJTdHJpcGUxMiIgZD0iTTI5MCA1N0gzMTVMMzA1IDgySDI4MFoiIGZpbGw9IndoaXRlIiAvPjxwYXRoIGlkPSJTdHJpcGUxMSIgZD0iTTI0NSA1N0gyNzBMMjYwIDgySDIzNVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTEwIiBkPSJNMjAwIDU3SDIyNUwyMTUgODJIMTkwWiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlOSIgZD0iTTE1NSA1N0gxODBMMTcwIDgySDE0NVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTgiIGQ9Ik0xMTAgNTdIMTM1TDEyNSA4MkgxMDBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGU3IiBkPSJNNjUgNTdIOU9MDgwIDgySDQ1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlNiIgZD0iTTIwIDU3SDQ1TDM1IDgySDEwWiIgZmlsbD0id2hpdGUiLz48cmVjdCBpZD0iVG9wQmFyIiB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI1IiBmaWxsPSIjMDA0N2FiIi8+PHBhdGggaWQ9IlN0cmlwZTUiIGQ9Ik0yOTAgMEgzMTVMMzA1IDI1SDI4MFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTQiIGQ9Ik0yNDUgMEgyNzBMMjYwIDI1SDIzNVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTMiIGQ9Ik0yMDAgMEgyMjVMMjE1IDI1SDE5MFoiIGZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlMiIgZD0iTTE1NSA1OEgxODBMMTcwIDI1SDE0NVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTEiIGQ9Ik0xMTAgMEgxMzVMMTI1IDI1SDEwMFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTAiIGQ9Ik02NSAwSDkwTDgwIDI1SDQ1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlLTEiIGQ9Ik0yMCAwSDQ1TDM1IDI1SDEwWiIgZmlsbD0id2hpdGUiLz48dGV4dCBpZD0iVGV4dCIgeD0iMTYwIiB5PSI1OCIgZm9udC1mYW1pbHk9IkltcGFjdCwgQXJpYWwgQmxhY2ssIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iNDgiIGZpbGw9IiNEMjI2MzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIyLjUiIHBhaW50LW9yZGVyPSJzdHJva2UiPkZBQkJSRUNLPC90ZXh0PjwvZz48L3N2Zz4=';
 
         const batteryModelMap = {
             'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
-            'F': 'FA6D',
-            'G': 'FA7E', 'H': 'FA8AE', 'I': 'FA8E', 'J': 'FA7AE',
+            'F': 'FA6D', 'G': 'FA7E', 'H': 'FA8AE', 'I': 'FA8E', 'J': 'FA7AE',
             'K': 'FA7D'
         };
         
@@ -2195,7 +2100,7 @@
 
         // #region IndexedDB Helper
         const dbPromise = new Promise((resolve, reject) => {
-            const request = indexedDB.open('FabreckDB', 1);
+            const request = indexedDB.open('FabreckDB_v2', 1); // Nome da BD atualizado para evitar conflitos
 
             request.onerror = (event) => {
                 console.error("Erro ao abrir IndexedDB:", event.target.error);
@@ -2208,7 +2113,8 @@
                     db.createObjectStore('batteries', { keyPath: 'id' });
                 }
                  if (!db.objectStoreNames.contains('activity')) {
-                    db.createObjectStore('activity', { autoIncrement: true });
+                    const activityStore = db.createObjectStore('activity', { keyPath: 'id', autoIncrement: true });
+                    activityStore.createIndex('timestamp', 'timestamp', { unique: false });
                 }
                  if (!db.objectStoreNames.contains('settings')) {
                     db.createObjectStore('settings', { keyPath: 'key' });
@@ -2249,9 +2155,8 @@
                     const transaction = db.transaction(storeName, 'readwrite');
                     const store = transaction.objectStore(storeName);
                     const request = store.put(value);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = (event) => reject(event.target.error);
-                    transaction.oncomplete = () => resolve();
+                    transaction.oncomplete = () => resolve(request.result);
+                    transaction.onerror = (event) => reject(event.target.error);
                 });
             },
             async delete(storeName, key) {
@@ -2260,8 +2165,8 @@
                     const transaction = db.transaction(storeName, 'readwrite');
                     const store = transaction.objectStore(storeName);
                     const request = store.delete(key);
-                    request.onsuccess = () => resolve();
-                    request.onerror = (event) => reject(event.target.error);
+                    transaction.oncomplete = () => resolve();
+                    transaction.onerror = (event) => reject(event.target.error);
                 });
             },
             async clear(storeName) {
@@ -2270,8 +2175,8 @@
                     const transaction = db.transaction(storeName, 'readwrite');
                     const store = transaction.objectStore(storeName);
                     const request = store.clear();
-                    request.onsuccess = () => resolve();
-                    request.onerror = (event) => reject(event.target.error);
+                    transaction.oncomplete = () => resolve();
+                    transaction.onerror = (event) => reject(event.target.error);
                 });
             }
         };
@@ -2285,27 +2190,28 @@
             document.getElementById('logo-img-sidebar').src = logoBase64;
 
             setupEventListeners();
-            applySidebarState();
-            await dbPromise; // Garante que a BD está pronta antes de qualquer operação
+            await dbPromise; 
             await initializeCredentials();
-            checkAuth(); // Verifica o login e inicia o carregamento de dados
+            checkAuth(); 
         }
 
         async function initializeAppData() {
-            showNotification('Autenticado. A carregar dados da nuvem...', 'info');
+            showNotification('Autenticado. A carregar dados...', 'info');
             
-            await loadFromCloud(true); // Carrega os dados silenciosamente da nuvem primeiro
-
-            // A migração e o carregamento do DB local servem como fallback
-            await migrateFromLocalStorage();
             await loadFromDB(); 
+            
+            // Tenta carregar da nuvem em segundo plano
+            loadFromCloud(true).then(() => {
+                // Após carregar da nuvem, os dados locais são substituídos
+                // Portanto, recarregamos da BD para a memória e atualizamos a UI
+                loadFromDB().then(updateUI);
+            });
 
-            // Atualiza a UI com os dados carregados (da nuvem ou locais)
             updateUI();
             updateLastUpdate();
-            setupAudio();
             loadLastUsedData(); 
             applyDarkMode(); 
+            updateOnlineStatus();
 
             const today = new Date();
             const year = today.getFullYear();
@@ -2319,7 +2225,7 @@
                 loginOverlay.classList.add('hidden');
                 layoutContainer.classList.remove('hidden');
                 applyUIRestrictions();
-                if (batteryData.length === 0) { // Só inicializa se os dados ainda não estiverem na memória
+                if (batteryData.length === 0) { 
                      initializeAppData();
                 }
             } else {
@@ -2347,177 +2253,168 @@
         function setupEventListeners() {
             console.log("Configurando event listeners...");
 
-            if (loginForm) {
-                loginForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const user = usernameInput.value.trim().toUpperCase();
-                    const pass = passwordInput.value.trim();
+            // --- Conexão Online/Offline ---
+            window.addEventListener('online', autoSyncOfflineChanges);
+            window.addEventListener('offline', updateOnlineStatus);
 
-                    const adminUsersData = await dbManager.get('settings', ADMIN_USERS_KEY);
-                    const adminUsers = adminUsersData ? adminUsersData.value : [];
-                    
-                    const foundUser = adminUsers.find(admin => admin.user === user && admin.pass === pass);
-                    
-                    if (foundUser) {
-                        sessionStorage.setItem('isAuthenticated', 'true');
-                        sessionStorage.setItem('userType', 'admin');
-                        sessionStorage.setItem('currentUser', user); // Guarda o utilizador atual
-                        checkAuth();
-                    } else {
-                        showNotification('Utilizador ou palavra-passe incorretos.', 'error');
-                    }
-                });
-            }
-
-            if (viewerLoginBtn) {
-                viewerLoginBtn.addEventListener('click', () => {
-                    sessionStorage.setItem('isAuthenticated', 'true');
-                    sessionStorage.setItem('userType', 'viewer');
-                    checkAuth();
-                });
-            }
-
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', () => {
-                    sessionStorage.removeItem('isAuthenticated');
-                    sessionStorage.removeItem('userType');
-                    sessionStorage.removeItem('currentUser');
-                    checkAuth();
-                });
-            }
+            loginForm?.addEventListener('submit', handleLogin);
+            viewerLoginBtn?.addEventListener('click', handleViewerLogin);
+            logoutBtn?.addEventListener('click', handleLogout);
             
-            navBtns.forEach(btn => {
-                if (btn) btn.addEventListener('click', () => showPage(btn.getAttribute('data-page')));
+            navBtns.forEach(btn => btn.addEventListener('click', () => showPage(btn.getAttribute('data-page'))));
+            sidebarBtns.forEach(btn => btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage(btn.getAttribute('data-page'));
+            }));
+            
+            serialCodeInput?.addEventListener('input', handleSerialInput);
+            serialCodeInput?.addEventListener('keypress', e => { if (e.key === 'Enter') addBattery(); });
+            
+            salesmanNameInput?.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+            salesmanNameInput?.addEventListener('blur', async () => {
+                const name = salesmanNameInput.value.trim().toUpperCase();
+                if (name) {
+                    currentSalesman.textContent = name;
+                    await dbManager.set('settings', { key: LAST_SALESMAN_KEY, value: name });
+                }
             });
-
-            sidebarBtns.forEach(btn => {
-                if (btn) btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showPage(btn.getAttribute('data-page'));
-                });
+            clientNameInput?.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+            clientNameInput?.addEventListener('blur', async () => {
+                const name = clientNameInput.value.trim().toUpperCase();
+                if (name) await dbManager.set('settings', { key: LAST_CLIENT_KEY, value: name });
             });
             
-            if (serialCodeInput) {
-                serialCodeInput.addEventListener('input', handleSerialInput);
-                serialCodeInput.addEventListener('keypress', e => { if (e.key === 'Enter') addBattery(); });
-            }
-            if (salesmanNameInput) {
-                salesmanNameInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-                salesmanNameInput.addEventListener('blur', async () => {
-                    const name = salesmanNameInput.value.trim().toUpperCase();
-                    if (name) {
-                        currentSalesman.textContent = name;
-                        await dbManager.set('settings', { key: LAST_SALESMAN_KEY, value: name });
-                    }
-                });
-            }
-            if (clientNameInput) {
-                clientNameInput.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-                clientNameInput.addEventListener('blur', async () => {
-                    const name = clientNameInput.value.trim().toUpperCase();
-                    if (name) await dbManager.set('settings', { key: LAST_CLIENT_KEY, value: name });
-                });
-            }
+            clearFormBtn?.addEventListener('click', clearCode);
+            addBtn?.addEventListener('click', addBattery);
             
-            if (clearFormBtn) clearFormBtn.addEventListener('click', clearCode);
-            if (addBtn) addBtn.addEventListener('click', addBattery);
+            factoryOption?.addEventListener('click', () => selectWarrantyType('factory'));
+            analyzedOption?.addEventListener('click', () => selectWarrantyType('analyzed'));
             
-            if (factoryOption) factoryOption.addEventListener('click', () => selectWarrantyType('factory'));
-            if (analyzedOption) analyzedOption.addEventListener('click', () => selectWarrantyType('analyzed'));
+            applyFilterBtn?.addEventListener('click', applyFilters);
+            clearFilterBtn?.addEventListener('click', clearFilters);
+            previewPdfBtn?.addEventListener('click', previewPDF);
+            pdfBtn?.addEventListener('click', downloadPDF);
+            batchPdfBtn?.addEventListener('click', generateBatchPDFs);
+            excelBtn?.addEventListener('click', exportToFormattedExcel);
+            clearBtn?.addEventListener('click', () => showConfirmModal('Limpar Todos os Dados', 'TEM CERTEZA? Todos os dados de garantia serão apagados permanentemente.', clearData));
             
-            if (applyFilterBtn) applyFilterBtn.addEventListener('click', applyFilters);
-            if (clearFilterBtn) clearFilterBtn.addEventListener('click', clearFilters);
-            if (previewPdfBtn) previewPdfBtn.addEventListener('click', previewPDF);
-            if (pdfBtn) pdfBtn.addEventListener('click', downloadPDF);
-            if (batchPdfBtn) batchPdfBtn.addEventListener('click', generateBatchPDFs);
-            if (excelBtn) excelBtn.addEventListener('click', exportToFormattedExcel);
-            if (clearBtn) clearBtn.addEventListener('click', clearData);
-            if (codeFilter) codeFilter.addEventListener('input', applyFilters);
-            
-            if (backupBtn) backupBtn.addEventListener('click', exportData);
-            if (restoreBtn) restoreBtn.addEventListener('click', () => restoreFileInput.click());
-
-            if (restoreFileInput) {
-                restoreFileInput.addEventListener('change', (e) => {
-                    if (e.target.files.length > 0) {
-                        fileToRestore = e.target.files[0];
-                        if (restoreConfirmModal) restoreConfirmModal.classList.add('active');
-                    }
-                    e.target.value = ''; 
-                });
-            }
-
-            if (cancelRestoreBtn) cancelRestoreBtn.addEventListener('click', () => {
-                fileToRestore = null;
-                if (restoreConfirmModal) restoreConfirmModal.classList.remove('active');
+            codeFilter?.addEventListener('input', () => {
+                clearTimeout(filterDebounceTimer);
+                filterDebounceTimer = setTimeout(applyFilters, 500);
             });
-
-            if (confirmRestoreBtn) confirmRestoreBtn.addEventListener('click', () => {
-                if (restoreConfirmModal) restoreConfirmModal.classList.remove('active');
-                if (fileToRestore) {
-                    handleRestoreFile(fileToRestore);
+            
+            backupBtn?.addEventListener('click', exportData);
+            restoreBtn?.addEventListener('click', () => restoreFileInput.click());
+            restoreFileInput?.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                     showConfirmModal(
+                        'Confirmar Restauração', 
+                        'Atenção! Esta ação substituirá TODOS os dados atuais pelos dados do arquivo de backup. A operação não pode ser desfeita.',
+                        () => handleRestoreFile(e.target.files[0]),
+                        () => e.target.value = ''
+                    );
                 }
             });
             
-            if (helpBtn) helpBtn.addEventListener('click', showRulesModal);
-            if (closeRulesModal) closeRulesModal.addEventListener('click', () => rulesModal.classList.remove('active'));
-            if (confirmRules) confirmRules.addEventListener('click', () => rulesModal.classList.remove('active'));
+            helpBtn?.addEventListener('click', showRulesModal);
+            closeRulesModal?.addEventListener('click', () => rulesModal.classList.remove('active'));
+            confirmRules?.addEventListener('click', () => rulesModal.classList.remove('active'));
             
-            if (closeAnalysisModal) closeAnalysisModal.addEventListener('click', () => analysisModal.classList.remove('active'));
-            if (saveAnalysisBtn) saveAnalysisBtn.addEventListener('click', saveAnalysis);
-            if (analysisClientFilter) analysisClientFilter.addEventListener('change', updateAnalysisTable);
-            if (selectAllCheckbox) selectAllCheckbox.addEventListener('change', handleSelectAll);
-            if (batchAnalyzeBtn) batchAnalyzeBtn.addEventListener('click', openBatchAnalysisModal);
+            closeAnalysisModal?.addEventListener('click', () => analysisModal.classList.remove('active'));
+            saveAnalysisBtn?.addEventListener('click', saveAnalysis);
+            analysisClientFilter?.addEventListener('change', updateAnalysisTable);
+            selectAllCheckbox?.addEventListener('change', handleSelectAll);
+            batchAnalyzeBtn?.addEventListener('click', openBatchAnalysisModal);
 
-            if (closeNameEditModal) closeNameEditModal.addEventListener('click', () => nameEditModal.classList.remove('active'));
-            if (saveNameEditBtn) saveNameEditBtn.addEventListener('click', saveEditedNames);
+            closeNameEditModal?.addEventListener('click', () => nameEditModal.classList.remove('active'));
+            saveNameEditBtn?.addEventListener('click', saveEditedNames);
 
-            if (closeObservationModal) closeObservationModal.addEventListener('click', () => observationModal.classList.remove('active'));
-            if (saveObservationBtn) saveObservationBtn.addEventListener('click', () => {
-                if (observationCallback) observationCallback(observationText.value);
+            closeObservationModal?.addEventListener('click', () => observationModal.classList.remove('active'));
+            saveObservationBtn?.addEventListener('click', () => {
+                observationCallback?.(observationText.value);
             });
 
-            if (procedenteBtn) procedenteBtn.addEventListener('click', () => procedenteModal.classList.add('active'));
-            if (closeProcedenteModal) closeProcedenteModal.addEventListener('click', () => procedenteModal.classList.remove('active'));
-            if (capacidadeBaixaBtn) capacidadeBaixaBtn.addEventListener('click', () => {
+            procedenteBtn?.addEventListener('click', () => procedenteModal.classList.add('active'));
+            closeProcedenteModal?.addEventListener('click', () => procedenteModal.classList.remove('active'));
+            capacidadeBaixaBtn?.addEventListener('click', () => {
                 if(recommendationInput) recommendationInput.value = 'PROCEDENTE - CAPACIDADE BAIXA';
-                if(procedenteModal) procedenteModal.classList.remove('active');
+                procedenteModal?.classList.remove('active');
             });
-            if (ccaBaixoBtn) ccaBaixoBtn.addEventListener('click', () => {
+            ccaBaixoBtn?.addEventListener('click', () => {
                 if(recommendationInput) recommendationInput.value = 'PROCEDENTE - CCA BAIXO';
-                if(procedenteModal) procedenteModal.classList.remove('active');
+                procedenteModal?.classList.remove('active');
             });
 
-            if (descarregadaBtn) descarregadaBtn.addEventListener('click', () => {
+            descarregadaBtn?.addEventListener('click', () => {
                 if(recommendationInput) recommendationInput.value = 'RECARREGAR A BATERIA POR 6H EM CARGA LENTA E REFAZER O TESTE';
             });
-            if (addObservationBtn) addObservationBtn.addEventListener('click', () => openObservationModal(tempObservation, (obs) => {
+            addObservationBtn?.addEventListener('click', () => openObservationModal(tempObservation, (obs) => {
                 tempObservation = obs;
-                if(observationModal) observationModal.classList.remove('active');
+                observationModal?.classList.remove('active');
                 showNotification('Observação salva temporariamente.', 'info');
             }));
-            if (analysisAddObservationBtn) analysisAddObservationBtn.addEventListener('click', async () => {
+            analysisAddObservationBtn?.addEventListener('click', async () => {
                  const battery = await dbManager.get('batteries', analyzingBatteryId);
                  if(battery) openObservationModal(battery.observations, async (obs) => {
                      battery.observations = obs;
                      await dbManager.set('batteries', battery);
-                     if(observationModal) observationModal.classList.remove('active');
+                     observationModal?.classList.remove('active');
                      showNotification('Observação atualizada.', 'info');
                  });
             });
 
-            if (toggleDarkModeBtn) toggleDarkModeBtn.addEventListener('click', toggleDarkMode);
-            if (sidebarToggleBtn) sidebarToggleBtn.addEventListener('click', toggleSidebar);
-            if (generateLaudoPdfBtn) generateLaudoPdfBtn.addEventListener('click', previewLaudoPDF);
-            if (changePasswordBtn) changePasswordBtn.addEventListener('click', () => passwordModal.classList.add('active'));
-            if (closePasswordModal) closePasswordModal.addEventListener('click', () => passwordModal.classList.remove('active'));
-            if (passwordChangeForm) passwordChangeForm.addEventListener('submit', saveNewPassword);
-            if (addLaudoImageBtn) addLaudoImageBtn.addEventListener('click', () => laudoImageUpload.click());
-            if (laudoImageUpload) laudoImageUpload.addEventListener('change', handleLaudoImageUpload);
+            toggleDarkModeBtn?.addEventListener('click', toggleDarkMode);
+            generateLaudoPdfBtn?.addEventListener('click', previewLaudoPDF);
+            changePasswordBtn?.addEventListener('click', () => passwordModal.classList.add('active'));
+            closePasswordModal?.addEventListener('click', () => passwordModal.classList.remove('active'));
+            passwordChangeForm?.addEventListener('submit', saveNewPassword);
+            addLaudoImageBtn?.addEventListener('click', () => laudoImageUpload.click());
+            laudoImageUpload?.addEventListener('change', handleLaudoImageUpload);
+            
+            // Listeners do modal de confirmação
+            cancelConfirmBtn?.addEventListener('click', () => confirmModal.classList.remove('active'));
+            confirmActionBtn?.addEventListener('click', () => {
+                confirmCallback?.();
+                confirmModal.classList.remove('active');
+            });
+        }
+        
+        async function handleLogin(e) {
+            e.preventDefault();
+            const user = usernameInput.value.trim().toUpperCase();
+            const pass = passwordInput.value.trim();
+
+            const adminUsersData = await dbManager.get('settings', ADMIN_USERS_KEY);
+            const adminUsers = adminUsersData ? adminUsersData.value : [];
+            
+            const foundUser = adminUsers.find(admin => admin.user === user && admin.pass === pass);
+            
+            if (foundUser) {
+                sessionStorage.setItem('isAuthenticated', 'true');
+                sessionStorage.setItem('userType', 'admin');
+                sessionStorage.setItem('currentUser', user);
+                checkAuth();
+            } else {
+                showNotification('Utilizador ou palavra-passe incorretos.', 'error');
+            }
+        }
+        
+        function handleViewerLogin() {
+            sessionStorage.setItem('isAuthenticated', 'true');
+            sessionStorage.setItem('userType', 'viewer');
+            checkAuth();
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('isAuthenticated');
+            sessionStorage.removeItem('userType');
+            sessionStorage.removeItem('currentUser');
+            batteryData = []; // Limpa os dados da memória
+            checkAuth();
         }
         // #endregion
 
-        // #region Lógica de UI (Páginas, Modos, Notificações)
+        // #region Lógica de UI (Páginas, Modos, Notificações, Modais)
         function applyDarkMode() {
             document.body.classList.toggle('dark-mode', isDarkMode);
             darkModeText.textContent = isDarkMode ? 'Modo Claro' : 'Modo Escuro';
@@ -2532,16 +2429,12 @@
         
         function showPage(pageId) {
             pages.forEach(page => page.classList.remove('active'));
-            document.getElementById(pageId).classList.add('active');
+            document.getElementById(pageId)?.classList.add('active');
             
-            navBtns.forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
-            });
-
-            sidebarBtns.forEach(btn => {
-                btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
-            });
+            navBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-page') === pageId));
+            sidebarBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-page') === pageId));
             
+            // Atualiza os dados apenas se a página exigir
             if (['reportPage', 'analysisPage', 'finalizadoPage', 'settingsPage'].includes(pageId)) {
                 updateUI();
             }
@@ -2551,83 +2444,60 @@
             const notification = document.getElementById('notification');
             notification.textContent = message;
             notification.className = `notification ${type} show`;
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
+            setTimeout(() => notification.classList.remove('show'), 3000);
         }
 
         function showRulesModal() {
             rulesModal.classList.add('active');
         }
 
-        function toggleSidebar() {
-            const isCollapsed = document.body.classList.toggle('sidebar-collapsed');
-            localStorage.setItem(SIDEBAR_COLLAPSED_KEY, isCollapsed);
+        function showConfirmModal(title, message, onConfirm, onCancel) {
+            confirmTitle.textContent = title;
+            confirmMessage.innerHTML = message; // Use innerHTML para permitir quebras de linha ou formatação
+            confirmCallback = onConfirm;
+            confirmModal.classList.add('active');
+            
+            // Adiciona um listener para o cancelamento se uma função for passada
+            const cancelHandler = () => {
+                onCancel?.();
+                confirmModal.classList.remove('active');
+                cancelConfirmBtn.removeEventListener('click', cancelHandler);
+            };
+            cancelConfirmBtn.addEventListener('click', cancelHandler, { once: true });
         }
 
-        function applySidebarState() {
-            if (localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true') {
-                document.body.classList.add('sidebar-collapsed');
-            }
-        }
 
         function applyUIRestrictions() {
             const userType = sessionStorage.getItem('userType');
             const isViewer = userType === 'viewer';
 
-            // 1. Esconde todos os elementos de ação que têm a classe .viewer-hidden
-            document.querySelectorAll('.viewer-hidden').forEach(el => {
-                el.style.display = isViewer ? 'none' : '';
-            });
-
-            // 2. Esconde as colunas de ação nas tabelas
-            document.querySelectorAll('.actions-cell').forEach(cell => {
-                cell.style.display = isViewer ? 'none' : '';
-            });
+            document.querySelectorAll('.viewer-hidden').forEach(el => el.style.display = isViewer ? 'none' : '');
+            document.querySelectorAll('.actions-cell').forEach(cell => cell.style.display = isViewer ? 'none' : '');
             
-            // 3. Desativa os campos de formulário, exceto os de filtro, para o visualizador
+            const elementsToDisable = 'input, textarea, select, button';
             if (isViewer) {
-                document.querySelectorAll('input, textarea, select').forEach(el => {
-                    // Verifica se o elemento NÃO está dentro da área de filtros do relatório
-                    if (!el.closest('.report-filters')) {
+                document.querySelectorAll(elementsToDisable).forEach(el => {
+                    // Não desativa elementos de filtro, navegação ou logout
+                    if (!el.closest('.report-filters') && !el.closest('.nav-btn') && !el.closest('header') && !el.closest('.sidebar-btn')) {
                         el.disabled = true;
                     }
                 });
-                 // Remove a interação de clique nas opções de tipo de garantia
                  document.querySelectorAll('.warranty-option').forEach(option => {
                     option.style.pointerEvents = 'none';
                     option.style.opacity = '0.7';
                  });
             } else {
-                // Garante que os campos estão reativados para o admin
-                 document.querySelectorAll('input, textarea, select').forEach(el => {
-                    el.disabled = false;
-                });
+                 document.querySelectorAll(elementsToDisable).forEach(el => el.disabled = false);
                  document.querySelectorAll('.warranty-option').forEach(option => {
                     option.style.pointerEvents = 'auto';
                     option.style.opacity = '1';
                 });
             }
-
-            // 4. Garante que todos os botões de navegação fiquem visíveis para todos os tipos de utilizador
-            document.querySelectorAll('.sidebar-btn, .nav-btn').forEach(btn => {
-                btn.style.display = '';
-            });
-
-            // 5. Define a página inicial
-            if (isViewer) {
-                showPage('reportPage'); // O visualizador começa nos relatórios, que é o mais útil para consulta
-            } else {
-                 // Garante que o admin comece na página de registo se nenhuma outra estiver ativa
-                if (!document.querySelector('.page.active')) {
-                     showPage('scanPage');
-                }
-            }
+            showPage(isViewer ? 'reportPage' : 'scanPage');
         }
         // #endregion
 
-        // #region Lógica de Segurança e Credenciais
+        // #region Lógica de Segurança
         async function initializeCredentials() {
             const adminUsers = await dbManager.get('settings', ADMIN_USERS_KEY);
             if (!adminUsers) {
@@ -2642,71 +2512,30 @@
 
         async function saveNewPassword(e) {
             e.preventDefault();
-            const currentPasswordInput = document.getElementById('currentPassword');
-            const newPasswordInput = document.getElementById('newPassword');
-            const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
-
-            const currentPassword = currentPasswordInput.value;
-            const newPassword = newPasswordInput.value;
-            const confirmNewPassword = confirmNewPasswordInput.value;
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
 
             const loggedInUser = sessionStorage.getItem('currentUser');
-            if (!loggedInUser) {
-                showNotification('Erro: Utilizador não identificado. Por favor, inicie sessão novamente.', 'error');
-                return;
-            }
+            if (!loggedInUser) return showNotification('Erro: Utilizador não identificado.', 'error');
 
             const adminUsersData = await dbManager.get('settings', ADMIN_USERS_KEY);
             let adminUsers = adminUsersData.value;
-            
             const userToUpdate = adminUsers.find(admin => admin.user === loggedInUser);
 
-            if (!userToUpdate || currentPassword !== userToUpdate.pass) {
-                showNotification('A palavra-passe atual está incorreta.', 'error');
-                return;
-            }
-            if (newPassword.length < 6) {
-                showNotification('A nova palavra-passe deve ter pelo menos 6 caracteres.', 'error');
-                return;
-            }
-            if (newPassword !== confirmNewPassword) {
-                showNotification('As novas palavras-passe não coincidem.', 'error');
-                return;
-            }
+            if (!userToUpdate || currentPassword !== userToUpdate.pass) return showNotification('A palavra-passe atual está incorreta.', 'error');
+            if (newPassword.length < 6) return showNotification('A nova palavra-passe deve ter pelo menos 6 caracteres.', 'error');
+            if (newPassword !== confirmNewPassword) return showNotification('As novas palavras-passe não coincidem.', 'error');
 
-            // Atualiza a palavra-passe para o utilizador correto
             userToUpdate.pass = newPassword;
-
             await dbManager.set('settings', { key: ADMIN_USERS_KEY, value: adminUsers });
             showNotification('Palavra-passe alterada com sucesso!', 'success');
             passwordModal.classList.remove('active');
-            currentPasswordInput.value = '';
-            newPasswordInput.value = '';
-            confirmNewPasswordInput.value = '';
+            passwordChangeForm.reset();
         }
         // #endregion
 
         // #region Lógica de Dados (CRUD e Persistência)
-        async function migrateFromLocalStorage() {
-            const oldData = localStorage.getItem(DB_KEY);
-            if (oldData) {
-                try {
-                    const dataToMigrate = JSON.parse(oldData);
-                    if (Array.isArray(dataToMigrate)) {
-                        await dbManager.clear('batteries');
-                        for (const item of dataToMigrate) {
-                            await dbManager.set('batteries', item);
-                        }
-                        localStorage.removeItem(DB_KEY);
-                        console.log('Migração de localStorage para IndexedDB concluída.');
-                        showNotification('Dados migrados para a nova base de dados segura!', 'success');
-                    }
-                } catch (e) {
-                    console.error("Erro na migração de dados:", e);
-                }
-            }
-        }
-
         async function loadFromDB() {
             batteryData = await dbManager.getAll('batteries');
             activityData = await dbManager.getAll('activity');
@@ -2731,35 +2560,19 @@
             const warrantyTypeEl = document.querySelector('input[name="warrantyType"]:checked');
             const recommendation = recommendationInput.value.trim();
             
-            if (!client || !salesman || !code || !submissionDate || !warrantyTypeEl) {
-                showNotification('Preencha Cliente, Vendedor, Código, Data e Tipo de Garantia.', 'error');
-                return;
-            }
-            if (warrantyTypeEl.value === 'analyzed' && !recommendation) {
-                showNotification('Para Análise por Vídeo, o Parecer Técnico é obrigatório.', 'error');
-                return;
-            }
-            if (!validateSerialCode(code)) {
-                showNotification('Formato de código inválido.', 'error');
-                return;
-            }
-            if (batteryData.some(b => b.code === code)) {
-                showNotification('Este código de série já foi registado.', 'error');
-                return;
-            }
+            if (!client || !salesman || !code || !submissionDate || !warrantyTypeEl) return showNotification('Preencha Cliente, Vendedor, Código, Data e Tipo de Garantia.', 'error');
+            if (warrantyTypeEl.value === 'analyzed' && !recommendation) return showNotification('Para Análise por Vídeo, o Parecer Técnico é obrigatório.', 'error');
+            if (!validateSerialCode(code)) return showNotification('Formato de código inválido.', 'error');
+            if (batteryData.some(b => b.code === code)) return showNotification('Este código de série já foi registado.', 'error');
             
-            const week = parseInt(code.substring(0, 2));
-            const year = parseInt("20" + code.substring(2, 4));
+            const { week, year } = parseCode(code);
             const warrantyStatus = calculateWarrantyStatus(week, year);
 
             const dateParts = submissionDate.split('-');
             const submissionDateObj = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]));
             
             const newBattery = {
-                id: Date.now(),
-                client,
-                salesman,
-                code,
+                id: Date.now(), client, salesman, code, submissionDate: submissionDateObj.toISOString(),
                 batteryModel: getBatteryModelFromCode(code),
                 manufDate: getManufacturingDate(week, year).toLocaleDateString('pt-BR'),
                 warranty_period_status: warrantyStatus,
@@ -2769,31 +2582,23 @@
                 observations: tempObservation,
                 finalAction: '',
                 timestamp: new Date().toISOString(),
-                submissionDate: submissionDateObj.toISOString(),
                 technicalOpinionDate: null
             };
 
-            if (warrantyStatus === 'expired') {
+            if (warrantyStatus === 'expired' || recommendation) {
                 newBattery.status = 'finalized';
-                newBattery.finalAction = 'REPROVADA - FORA DO PRAZO';
-                newBattery.recommendation = newBattery.recommendation || 'Finalizada automaticamente: Bateria fora do prazo de garantia.';
                 newBattery.technicalOpinionDate = new Date().toISOString();
-                showNotification(`Bateria ${code} finalizada automaticamente (Fora do Prazo).`, 'warning');
-                addActivity('fas fa-clock', `Bateria ${code} finalizada (Fora do Prazo).`);
-            } else if (recommendation) {
-                newBattery.status = 'finalized';
-                if (recommendation.toUpperCase().includes('PROCEDENTE')) {
-                    newBattery.finalAction = 'APROVADA - ENVIAR NOVA';
-                } else if (recommendation.toUpperCase().includes('RECARREGAR')) {
-                    newBattery.finalAction = 'REPROVADA - DEVOLVER AO CLIENTE';
-                } else {
-                    newBattery.finalAction = 'ANALISADA NO REGISTO';
+                if (warrantyStatus === 'expired') {
+                    newBattery.finalAction = 'REPROVADA - FORA DO PRAZO';
+                    newBattery.recommendation = newBattery.recommendation || 'Finalizada automaticamente: Bateria fora do prazo de garantia.';
+                    showNotification(`Bateria ${code} finalizada (Fora do Prazo).`, 'warning');
+                    addActivity('fas fa-clock', `Bateria ${code} finalizada (Fora do Prazo).`);
+                } else { // Análise por vídeo
+                    newBattery.finalAction = recommendation.toUpperCase().includes('PROCEDENTE') ? 'APROVADA - ENVIAR NOVA' : 'REPROVADA - DEVOLVER AO CLIENTE';
+                    showNotification(`Bateria ${code} finalizada no registo.`, 'success');
+                    addActivity('fas fa-check-circle', `Bateria ${code} finalizada no registo.`);
                 }
-                newBattery.technicalOpinionDate = new Date().toISOString();
-                showNotification(`Bateria ${code} finalizada no registo.`, 'success');
-                addActivity('fas fa-check-circle', `Bateria ${code} finalizada no registo.`);
             } else {
-                newBattery.status = 'in_analysis';
                 showNotification('Bateria adicionada para análise!', 'success');
                 addActivity('fas fa-battery-full', `Bateria ${code} adicionada para ${client}`);
             }
@@ -2810,8 +2615,6 @@
         }
 
         async function removeBattery(id) {
-            if (!confirm('Tem certeza que deseja remover esta bateria? A ação é irreversível.')) return;
-            
             const removed = batteryData.find(b => b.id === id);
             await dbManager.delete('batteries', id);
             batteryData = batteryData.filter(b => b.id !== id);
@@ -2822,74 +2625,53 @@
         }
 
         async function clearData() {
-            if (batteryData.length === 0) {
-                showNotification('Não há dados para limpar', 'info');
-                return;
-            }
-            if (confirm('TEM CERTEZA? Todos os dados de garantia serão apagados permanentemente.')) {
-                await dbManager.clear('batteries');
-                await dbManager.clear('activity');
-                batteryData = [];
-                activityData = [];
-                updateUI();
-                updateActivityLog();
-                lastUpdate.textContent = "Nenhuma atualização";
-                showNotification('Todos os dados foram removidos.', 'success');
-                addActivity('fas fa-trash-alt', 'Todos os dados foram removidos');
-                triggerAutoSync();
-            }
+            if (batteryData.length === 0) return showNotification('Não há dados para limpar', 'info');
+            await dbManager.clear('batteries');
+            await dbManager.clear('activity');
+            batteryData = [];
+            activityData = [];
+            updateUI();
+            lastUpdate.textContent = "Nenhuma atualização";
+            showNotification('Todos os dados foram removidos.', 'success');
+            addActivity('fas fa-trash-alt', 'Todos os dados foram removidos');
+            triggerAutoSync();
         }
         
         async function exportData() {
             const dataToExport = await dbManager.getAll('batteries');
-            if (dataToExport.length === 0) {
-                showNotification('Não há dados para exportar', 'info');
-                return;
-            }
+            if (dataToExport.length === 0) return showNotification('Não há dados para exportar', 'info');
             const dataStr = JSON.stringify(dataToExport);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
             const exportFileDefaultName = `fabreck_backup_${new Date().toISOString().slice(0,10)}.json`;
             const linkElement = document.createElement('a');
-            linkElement.setAttribute('href', dataUri);
-            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.href = dataUri;
+            linkElement.download = exportFileDefaultName;
             linkElement.click();
             showNotification('Dados exportados com sucesso!', 'success');
             addActivity('fas fa-download', 'Dados exportados');
         }
         
-        function handleRestoreFile(file) {
-            if (!file) return;
-
+        async function handleRestoreFile(file) {
             const reader = new FileReader();
             reader.onload = async function(event) {
                 try {
                     const importedData = JSON.parse(event.target.result);
-                    if (!Array.isArray(importedData)) {
-                        throw new Error('Estrutura de dados inválida: o arquivo não contém um array.');
-                    }
+                    if (!Array.isArray(importedData)) throw new Error('Estrutura de dados inválida.');
                     
                     await dbManager.clear('batteries');
-                    await dbManager.clear('activity');
-                    
                     for(const item of importedData) {
                         await dbManager.set('batteries', item);
                     }
-
                     batteryData = importedData;
-                    activityData = [];
+                    activityData = []; // Limpa log local para evitar inconsistência
+                    await dbManager.clear('activity');
 
                     updateUI();
-                    updateActivityLog();
-
-                    showNotification(`${importedData.length} registos restaurados com sucesso! Os dados atuais foram substituídos.`, 'success');
-                    addActivity('fas fa-upload', `${importedData.length} baterias restauradas do backup.`);
+                    showNotification(`${importedData.length} registos restaurados! Os dados atuais foram substituídos.`, 'success');
+                    addActivity('fas fa-upload', `${importedData.length} baterias restauradas.`);
                     triggerAutoSync();
-
                 } catch (error) {
-                    showNotification('Erro ao importar. Arquivo inválido ou incompatível.', 'error');
-                    console.error('Erro na restauração:', error);
-                } finally {
-                    fileToRestore = null;
+                    showNotification('Erro ao importar. Arquivo inválido.', 'error');
                 }
             };
             reader.readAsText(file);
@@ -2897,35 +2679,26 @@
         // #endregion
 
         // #region Lógica de Negócio (Garantia, Código)
-        function validateSerialCode(code) {
-            return /^\d{4}[A-Za-z]\d{4}$/.test(code);
+        function validateSerialCode(code) { return /^\d{4}[A-Za-z]\d{4}$/.test(code); }
+        function parseCode(code) {
+            return {
+                week: parseInt(code.substring(0, 2)),
+                year: parseInt("20" + code.substring(2, 4))
+            };
         }
-
-        function getBatteryModelFromCode(code) {
-            if (code && code.length >= 5) {
-                const fifthChar = code[4].toUpperCase();
-                return batteryModelMap[fifthChar] || 'Desconhecido';
-            }
-            return 'N/A';
-        }
-
-        function getManufacturingDate(week, year) {
-            const date = new Date(year, 0, 1 + (week - 1) * 7);
-            return date;
-        }
-        
+        function getBatteryModelFromCode(code) { return code?.length >= 5 ? (batteryModelMap[code[4].toUpperCase()] || 'Desconhecido') : 'N/A'; }
+        function getManufacturingDate(week, year) { return new Date(year, 0, 1 + (week - 1) * 7); }
         function calculateWarrantyStatus(week, year) {
             const manufDate = getManufacturingDate(week, year);
             const warrantyEnd = new Date(manufDate);
             warrantyEnd.setFullYear(warrantyEnd.getFullYear() + 1);
-            warrantyEnd.setDate(warrantyEnd.getDate() + 7); // 1 semana de tolerância
+            warrantyEnd.setDate(warrantyEnd.getDate() + 7); // Tolerância
             return new Date() <= warrantyEnd ? 'warranty' : 'expired';
         }
 
         function updateWarrantyDebugInfo(code) {
             if (validateSerialCode(code)) {
-                const week = parseInt(code.substring(0, 2));
-                const year = parseInt("20" + code.substring(2, 4));
+                const { week, year } = parseCode(code);
                 const manufDate = getManufacturingDate(week, year);
                 const warrantyEnd = new Date(manufDate);
                 warrantyEnd.setFullYear(warrantyEnd.getFullYear() + 1);
@@ -2971,8 +2744,9 @@
         }
         // #endregion
 
-        // #region Atualização da UI (Tabelas, Stats)
+        // #region Renderização e Atualização da UI
         function updateUI() {
+            // Os dados já devem estar na memória (batteryData)
             updateClientFilter();
             updateReportTable();
             updateAnalysisClientFilter();
@@ -2980,148 +2754,48 @@
             updateFinalizadoTable();
             updateStats();
             updateWarrantyInstructionsUI();
-            updateRecentRegistrationsLog(); // Atualiza o novo log
+            updateRecentRegistrationsLog();
+            updateActivityLog();
         }
         
         function updateStats() {
             const inAnalysis = batteryData.filter(b => b.status === 'in_analysis').length;
             const finalized = batteryData.filter(b => b.status === 'finalized').length;
             
-            if (totalCount) totalCount.textContent = batteryData.length;
-            if (inAnalysisCountReport) inAnalysisCountReport.textContent = inAnalysis;
-            if (finalizedCountReport) finalizedCountReport.textContent = finalized;
+            totalCount.textContent = batteryData.length;
+            inAnalysisCountReport.textContent = inAnalysis;
+            finalizedCountReport.textContent = finalized;
+            inAnalysisCount.textContent = inAnalysis;
+            finalizadoCount.textContent = finalized;
 
-            if (inAnalysisCount) inAnalysisCount.textContent = inAnalysis;
-
-            if (finalizadoCount) finalizadoCount.textContent = finalized;
-
-            if(finalizadoAprovadaCount) {
-                const approvedCount = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('APROVADA')).length;
-                finalizadoAprovadaCount.textContent = approvedCount;
-            }
-            if(finalizadoReprovadaPrazoCount) {
-                const rejectedInWarrantyCount = batteryData.filter(b => 
-                    b.status === 'finalized' && 
-                    b.finalAction.includes('REPROVADA') && 
-                    b.warranty_period_status === 'warranty'
-                ).length;
-                finalizadoReprovadaPrazoCount.textContent = rejectedInWarrantyCount;
-            }
-            if(finalizadoReprovadaForaCount) {
-                const rejectedExpiredCount = batteryData.filter(b => 
-                    b.status === 'finalized' && 
-                    b.warranty_period_status === 'expired'
-                ).length;
-                finalizadoReprovadaForaCount.textContent = rejectedExpiredCount;
-            }
+            finalizadoAprovadaCount.textContent = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('APROVADA')).length;
+            finalizadoReprovadaPrazoCount.textContent = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('REPROVADA') && b.warranty_period_status === 'warranty').length;
+            finalizadoReprovadaForaCount.textContent = batteryData.filter(b => b.status === 'finalized' && b.warranty_period_status === 'expired').length;
         }
-        
-        function updateRecentRegistrationsLog() {
-            if (!recentRegistrationsBody) return;
 
-            recentRegistrationsBody.innerHTML = '';
-            const recentBatteries = [...batteryData]
-                .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
-                .slice(0, 10); // Pega os últimos 10 registos
-
-            if (recentBatteries.length === 0) {
-                recentRegistrationsBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">Nenhum registo ainda.</td></tr>`;
-                return;
-            }
-
-            recentBatteries.forEach(battery => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
+        // --- Funções de Renderização Refatoradas ---
+        function renderRecentRegistrationRow(battery) {
+            return `
+                <tr>
                     <td>${battery.code}</td>
                     <td>${battery.client}</td>
                     <td>${battery.salesman}</td>
                     <td>${new Date(battery.timestamp).toLocaleDateString('pt-BR')}</td>
-                `;
-                recentRegistrationsBody.appendChild(row);
-            });
-        }
-        
-        function updateClientFilter() {
-            const currentVal = clientFilter.value;
-            clientFilter.innerHTML = '<option value="">Todos os Clientes</option>';
-            const uniqueClients = [...new Set(batteryData.map(b => b.client))];
-            uniqueClients.sort().forEach(client => {
-                const option = document.createElement('option');
-                option.value = client;
-                option.textContent = client;
-                clientFilter.appendChild(option);
-            });
-            clientFilter.value = currentVal;
+                </tr>`;
         }
 
-        function updateAnalysisClientFilter() {
-            const currentVal = analysisClientFilter.value;
-            analysisClientFilter.innerHTML = '<option value="">Todos os Clientes</option>';
-            const uniqueClientsInAnalysis = [...new Set(batteryData.filter(b => b.status === 'in_analysis').map(b => b.client))];
-            uniqueClientsInAnalysis.sort().forEach(client => {
-                const option = document.createElement('option');
-                option.value = client;
-                option.textContent = client;
-                analysisClientFilter.appendChild(option);
-            });
-            analysisClientFilter.value = currentVal;
-        }
-
-        function updateWarrantyInstructionsUI() {
-            warrantyInstructionsContainer.innerHTML = `
-                <p><strong>APROVADA - ENVIAR NOVA:</strong><br>${warrantyInstructions.approved}</p>
-                <hr style="margin: 10px 0; border-color: rgba(0,0,0,0.1);">
-                <p><strong>REPROVADA - DEVOLVER AO CLIENTE:</strong><br>${warrantyInstructions.rejected_return}</p>
-                 <hr style="margin: 10px 0; border-color: rgba(0,0,0,0.1);">
-                <p><strong>REPROVADA - SUCATEAR:</strong><br>${warrantyInstructions.rejected_scrap}</p>
-            `;
-        }
-        
-        function getFilteredData() {
-            return batteryData.filter(b => {
-                const clientMatch = !currentFilters.client || (b.client && b.client.toLowerCase().includes(currentFilters.client.toLowerCase()));
-                const statusMatch = !currentFilters.status || b.warranty_period_status === currentFilters.status;
-                const workflowMatch = !currentFilters.workflowStatus || b.status === currentFilters.workflowStatus;
-                const codeMatch = !currentFilters.code || (b.code && b.code.toLowerCase().includes(currentFilters.code.toLowerCase()));
-                
-                let dateMatch = true;
-                if (currentFilters.startDate && currentFilters.endDate) {
-                    const batteryDate = new Date(b.timestamp);
-                    const startDate = new Date(currentFilters.startDate + 'T00:00:00');
-                    const endDate = new Date(currentFilters.endDate + 'T23:59:59');
-                    dateMatch = batteryDate >= startDate && batteryDate <= endDate;
-                }
-                return clientMatch && statusMatch && workflowMatch && codeMatch && dateMatch;
-            });
-        }
-        
-        function updateReportTable() {
-            const filteredData = getFilteredData();
-            filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        function renderReportTableRow(battery) {
+            const warrantyStatus = battery.warranty_period_status === 'warranty' ? '<span class="status-badge status-warranty">Em Garantia</span>' : '<span class="status-badge status-expired">Fora do Prazo</span>';
+            const workflowStatus = battery.status === 'in_analysis' ? '<span class="status-badge status-in-analysis">Em Análise</span>' : '<span class="status-badge status-finalized">Finalizado</span>';
             
-            reportBody.innerHTML = '';
-            if (filteredData.length === 0) {
-                reportBody.innerHTML = `<tr><td colspan="10" style="text-align: center;">Nenhum resultado encontrado</td></tr>`;
-                totalsContainer.innerHTML = '';
-                document.getElementById('modelStatusSummaryCard').style.display = 'none';
-                return;
-            }
-            
-            filteredData.forEach(battery => {
-                const row = document.createElement('tr');
-                const warrantyStatus = battery.warranty_period_status === 'warranty' ? '<span class="status-badge status-warranty">Em Garantia</span>' : '<span class="status-badge status-expired">Fora do Prazo</span>';
-                const workflowStatus = battery.status === 'in_analysis' ? '<span class="status-badge status-in-analysis">Em Análise</span>' : '<span class="status-badge status-finalized">Finalizado</span>';
-                
-                let finalActionBadge = '-';
-                if (battery.finalAction) {
-                    let actionClass = '';
-                    if (battery.finalAction.includes('APROVADA')) actionClass = 'action-approved';
-                    else if (battery.finalAction.includes('DEVOLVER')) actionClass = 'action-rejected';
-                    else if (battery.finalAction.includes('SUCATEAR') || battery.finalAction.includes('PRAZO') || battery.finalAction.includes('VÍDEO')) actionClass = 'action-scrapped';
-                    finalActionBadge = `<span class="status-badge ${actionClass}">${battery.finalAction}</span>`;
-                }
+            let actionClass = '';
+            if (battery.finalAction.includes('APROVADA')) actionClass = 'action-approved';
+            else if (battery.finalAction.includes('DEVOLVER')) actionClass = 'action-rejected';
+            else if (battery.finalAction.includes('SUCATEAR') || battery.finalAction.includes('PRAZO')) actionClass = 'action-scrapped';
+            const finalActionBadge = battery.finalAction ? `<span class="status-badge ${actionClass}">${battery.finalAction}</span>` : '-';
 
-                row.innerHTML = `
+            return `
+                <tr>
                     <td>${battery.code}</td>
                     <td>${battery.batteryModel}</td>
                     <td>${battery.client}</td>
@@ -3132,126 +2806,16 @@
                     <td style="white-space: normal; max-width: 150px;">${battery.recommendation || '-'}</td>
                     <td>${battery.technicalOpinionDate ? new Date(battery.technicalOpinionDate).toLocaleDateString('pt-BR') : '-'}</td>
                     <td class="actions-cell" style="display: flex; gap: 8px;">
-                        <button class="name-edit-btn btn btn-info" data-id="${battery.id}" title="Editar Nomes" style="padding: 5px 10px; width: auto; margin: 0;">
-                            <i class="fas fa-pencil-alt"></i>
-                        </button>
-                        <button class="remove-btn btn btn-danger" data-id="${battery.id}" title="Remover" style="padding: 5px 10px; width: auto; margin: 0;">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
+                        <button class="name-edit-btn btn btn-info" data-id="${battery.id}" title="Editar Nomes" style="padding: 5px 10px; width: auto; margin: 0;"><i class="fas fa-pencil-alt"></i></button>
+                        <button class="remove-btn btn btn-danger" data-id="${battery.id}" title="Remover" style="padding: 5px 10px; width: auto; margin: 0;"><i class="fas fa-trash-alt"></i></button>
                     </td>
-                `;
-                reportBody.appendChild(row);
-            });
-
-            document.querySelectorAll('.remove-btn').forEach(btn => {
-                btn.addEventListener('click', function() { removeBattery(parseInt(this.getAttribute('data-id'))); });
-            });
-            document.querySelectorAll('.name-edit-btn').forEach(btn => {
-                btn.addEventListener('click', function() { openNameEditModal(parseInt(this.getAttribute('data-id'))); });
-            });
-
-            updateReportTotals(filteredData);
-            updateModelStatusSummary(filteredData);
+                </tr>`;
         }
-
-        function updateReportTotals(data) {
-            const warrantyCount = data.filter(b => b.warranty_period_status === 'warranty').length;
-            const expiredCount = data.filter(b => b.warranty_period_status === 'expired').length;
-            
-            totalsContainer.innerHTML = `
-                <div class="total-box">
-                    <div class="total-title">Total (Filtro)</div>
-                    <div class="total-value total-all">${data.length}</div>
-                </div>
-                <div class="total-box">
-                    <div class="total-title">Em Garantia</div>
-                    <div class="total-value total-warranty">${warrantyCount}</div>
-                </div>
-                <div class="total-box">
-                    <div class="total-title">Fora do Prazo</div>
-                    <div class="total-value total-expired">${expiredCount}</div>
-                </div>
-            `;
-        }
-
-        function updateModelStatusSummary(data) {
-            const summaryCard = document.getElementById('modelStatusSummaryCard');
-            const summaryBody = document.getElementById('modelStatusSummaryBody');
-
-            const finalizedData = data.filter(b => b.status === 'finalized');
-
-            if (finalizedData.length === 0) {
-                summaryCard.style.display = 'none';
-                return;
-            }
-
-            const summary = {
-                approved: {},
-                rejected: {},
-                recharge: {},
-                expired: {}
-            };
-
-            finalizedData.forEach(battery => {
-                const model = battery.batteryModel || 'N/A';
-                if (battery.finalAction.includes('APROVADA')) {
-                    summary.approved[model] = (summary.approved[model] || 0) + 1;
-                } else if (battery.finalAction.includes('FORA DO PRAZO')) {
-                    summary.expired[model] = (summary.expired[model] || 0) + 1;
-                } else if (battery.recommendation && battery.recommendation.toUpperCase().includes('RECARREGAR')) {
-                    summary.recharge[model] = (summary.recharge[model] || 0) + 1;
-                } else if (battery.finalAction.includes('REPROVADA')) {
-                    summary.rejected[model] = (summary.rejected[model] || 0) + 1;
-                }
-            });
-
-            if (Object.keys(summary.approved).length === 0 && Object.keys(summary.rejected).length === 0 && Object.keys(summary.recharge).length === 0 && Object.keys(summary.expired).length === 0) {
-                summaryCard.style.display = 'none';
-                return;
-            }
-
-            summaryCard.style.display = 'block';
-
-            let html = '';
-
-            const createSummaryLine = (title, data) => {
-                if (Object.keys(data).length > 0) {
-                    const items = Object.entries(data).map(([model, count]) => `${model} = ${String(count).padStart(2, '0')}`).join(' / ');
-                    return `<div style="margin-bottom: 10px;"><h4>${title}</h4><p>${items}</p></div>`;
-                }
-                return '';
-            };
-
-            html += createSummaryLine('BATERIAS APROVADAS (PARA TROCA)', summary.approved);
-            html += createSummaryLine('BATERIAS REPROVADAS', summary.rejected);
-            html += createSummaryLine('BATERIAS PARA RECARREGAR', summary.recharge);
-            html += createSummaryLine('BATERIAS FORA DO PRAZO', summary.expired);
-
-            summaryBody.innerHTML = html;
-        }
-
-
-        function updateAnalysisTable() {
-            const selectedClient = analysisClientFilter.value;
-            let dataToAnalyze = batteryData.filter(b => b.status === 'in_analysis');
-
-            if (selectedClient) {
-                dataToAnalyze = dataToAnalyze.filter(b => b.client === selectedClient);
-            }
-
-            dataToAnalyze.sort((a, b) => new Date(a.submissionDate) - new Date(b.submissionDate));
-            analysisBody.innerHTML = '';
-            selectAllCheckbox.checked = false;
-
-            if (dataToAnalyze.length === 0) {
-                analysisBody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Nenhuma bateria na fila de análise.</td></tr>`;
-                return;
-            }
-
-            dataToAnalyze.forEach(battery => {
-                const row = document.createElement('tr');
-                const warrantyStatus = battery.warranty_period_status === 'warranty' ? '<span class="status-badge status-warranty">Em Garantia</span>' : '<span class="status-badge status-expired">Fora do Prazo</span>';
-                row.innerHTML = `
+        
+        function renderAnalysisTableRow(battery) {
+            const warrantyStatus = battery.warranty_period_status === 'warranty' ? '<span class="status-badge status-warranty">Em Garantia</span>' : '<span class="status-badge status-expired">Fora do Prazo</span>';
+            return `
+                <tr>
                     <td><input type="checkbox" class="analysis-checkbox" data-id="${battery.id}"></td>
                     <td>${battery.code}</td>
                     <td>${battery.client}</td>
@@ -3259,56 +2823,165 @@
                     <td>${new Date(battery.submissionDate).toLocaleDateString('pt-BR')}</td>
                     <td>${warrantyStatus}</td>
                     <td class="actions-cell">
-                        <button class="analyze-btn btn btn-primary" data-id="${battery.id}" style="padding: 8px 12px; width: auto; margin: 0;">
-                            <i class="fas fa-edit"></i> Analisar
-                        </button>
+                        <button class="analyze-btn btn btn-primary" data-id="${battery.id}" style="padding: 8px 12px; width: auto; margin: 0;"><i class="fas fa-edit"></i> Analisar</button>
                     </td>
-                `;
-                analysisBody.appendChild(row);
-            });
+                </tr>`;
+        }
 
-            document.querySelectorAll('.analyze-btn').forEach(btn => {
-                btn.addEventListener('click', function() { openSingleAnalysisModal(parseInt(this.getAttribute('data-id'))); });
-            });
-            document.querySelectorAll('.analysis-checkbox').forEach(box => {
-                box.addEventListener('change', updateBatchAnalyzeButtonState);
-            });
+        function renderFinalizadoTableRow(battery) {
+            let actionClass = '';
+            if (battery.finalAction.includes('APROVADA')) actionClass = 'action-approved';
+            else if (battery.finalAction.includes('DEVOLVER')) actionClass = 'action-rejected';
+            else if (battery.finalAction.includes('SUCATEAR') || battery.finalAction.includes('PRAZO')) actionClass = 'action-scrapped';
+            const finalActionBadge = battery.finalAction ? `<span class="status-badge ${actionClass}">${battery.finalAction}</span>` : '-';
+
+            return `
+                <tr>
+                    <td>${battery.code}</td>
+                    <td>${battery.client}</td>
+                    <td>${new Date(battery.technicalOpinionDate).toLocaleDateString('pt-BR')}</td>
+                    <td>${finalActionBadge}</td>
+                    <td style="white-space: normal; max-width: 200px;">${battery.recommendation}</td>
+                </tr>`;
+        }
+
+        // --- Funções de Atualização das Tabelas ---
+        function updateRecentRegistrationsLog() {
+            const recentBatteries = [...batteryData].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10);
+            if (recentBatteries.length === 0) {
+                recentRegistrationsBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">Nenhum registo ainda.</td></tr>`;
+            } else {
+                recentRegistrationsBody.innerHTML = recentBatteries.map(renderRecentRegistrationRow).join('');
+            }
+        }
+        
+        function updateReportTable() {
+            const filteredData = getFilteredData();
+            filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+            
+            if (filteredData.length === 0) {
+                reportBody.innerHTML = `<tr><td colspan="10" style="text-align: center;">Nenhum resultado encontrado</td></tr>`;
+                totalsContainer.innerHTML = '';
+                document.getElementById('modelStatusSummaryCard').style.display = 'none';
+                return;
+            }
+            
+            reportBody.innerHTML = filteredData.map(renderReportTableRow).join('');
+
+            // Adiciona os event listeners após a renderização
+            reportBody.querySelectorAll('.remove-btn').forEach(btn => btn.addEventListener('click', function() { showConfirmModal('Remover Bateria', 'Tem a certeza que deseja remover esta bateria? A ação é irreversível.', () => removeBattery(parseInt(this.dataset.id))); }));
+            reportBody.querySelectorAll('.name-edit-btn').forEach(btn => btn.addEventListener('click', function() { openNameEditModal(parseInt(this.dataset.id)); }));
+
+            updateReportTotals(filteredData);
+            updateModelStatusSummary(filteredData);
+        }
+
+        function updateAnalysisTable() {
+            const selectedClient = analysisClientFilter.value;
+            let dataToAnalyze = batteryData.filter(b => b.status === 'in_analysis' && (!selectedClient || b.client === selectedClient));
+            dataToAnalyze.sort((a, b) => new Date(a.submissionDate) - new Date(b.submissionDate));
+            
+            selectAllCheckbox.checked = false;
+            if (dataToAnalyze.length === 0) {
+                analysisBody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Nenhuma bateria na fila de análise.</td></tr>`;
+                return;
+            }
+            
+            analysisBody.innerHTML = dataToAnalyze.map(renderAnalysisTableRow).join('');
+
+            analysisBody.querySelectorAll('.analyze-btn').forEach(btn => btn.addEventListener('click', function() { openSingleAnalysisModal(parseInt(this.dataset.id)); }));
+            analysisBody.querySelectorAll('.analysis-checkbox').forEach(box => box.addEventListener('change', updateBatchAnalyzeButtonState));
             updateBatchAnalyzeButtonState();
         }
 
         function updateFinalizadoTable() {
             const dataFinalizada = batteryData.filter(b => b.status === 'finalized');
             dataFinalizada.sort((a, b) => new Date(b.technicalOpinionDate) - new Date(a.technicalOpinionDate));
-            finalizadoBody.innerHTML = '';
 
             if (dataFinalizada.length === 0) {
                 finalizadoBody.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhuma garantia finalizada.</td></tr>`;
+            } else {
+                finalizadoBody.innerHTML = dataFinalizada.map(renderFinalizadoTableRow).join('');
+            }
+        }
+
+        function updateClientFilter() {
+            const uniqueClients = [...new Set(batteryData.map(b => b.client))].sort();
+            const clientOptions = uniqueClients.map(client => `<option value="${client}">${client}</option>`).join('');
+            clientFilter.innerHTML = '<option value="">Todos os Clientes</option>' + clientOptions;
+        }
+
+        function updateAnalysisClientFilter() {
+            const uniqueClientsInAnalysis = [...new Set(batteryData.filter(b => b.status === 'in_analysis').map(b => b.client))].sort();
+            const clientOptions = uniqueClientsInAnalysis.map(client => `<option value="${client}">${client}</option>`).join('');
+            analysisClientFilter.innerHTML = '<option value="">Todos os Clientes</option>' + clientOptions;
+        }
+
+        function updateWarrantyInstructionsUI() {
+            warrantyInstructionsContainer.innerHTML = `
+                <p><strong>APROVADA:</strong><br>${warrantyInstructions.approved}</p><hr>
+                <p><strong>REPROVADA (DEVOLVER):</strong><br>${warrantyInstructions.rejected_return}</p><hr>
+                <p><strong>REPROVADA (SUCATEAR):</strong><br>${warrantyInstructions.rejected_scrap}</p>
+            `;
+        }
+        
+        function updateReportTotals(data) {
+            const warrantyCount = data.filter(b => b.warranty_period_status === 'warranty').length;
+            const expiredCount = data.filter(b => b.warranty_period_status === 'expired').length;
+            
+            totalsContainer.innerHTML = `
+                <div class="total-box"><div class="total-title">Total (Filtro)</div><div class="total-value total-all">${data.length}</div></div>
+                <div class="total-box"><div class="total-title">Em Garantia</div><div class="total-value total-warranty">${warrantyCount}</div></div>
+                <div class="total-box"><div class="total-title">Fora do Prazo</div><div class="total-value total-expired">${expiredCount}</div></div>
+            `;
+        }
+
+        function updateModelStatusSummary(data) {
+            const summaryCard = document.getElementById('modelStatusSummaryCard');
+            const summaryBody = document.getElementById('modelStatusSummaryBody');
+            const finalizedData = data.filter(b => b.status === 'finalized');
+
+            if (finalizedData.length === 0) {
+                summaryCard.style.display = 'none';
                 return;
             }
 
-            dataFinalizada.forEach(battery => {
-                const row = document.createElement('tr');
-                 let finalActionBadge = '-';
-                if (battery.finalAction) {
-                    let actionClass = '';
-                    if (battery.finalAction.includes('APROVADA')) actionClass = 'action-approved';
-                    else if (battery.finalAction.includes('DEVOLVER')) actionClass = 'action-rejected';
-                    else if (battery.finalAction.includes('SUCATEAR') || battery.finalAction.includes('PRAZO') || battery.finalAction.includes('VÍDEO')) actionClass = 'action-scrapped';
-                    finalActionBadge = `<span class="status-badge ${actionClass}">${battery.finalAction}</span>`;
+            const summary = finalizedData.reduce((acc, battery) => {
+                const model = battery.batteryModel || 'N/A';
+                let category = 'rejected'; // Padrão
+                if (battery.finalAction.includes('APROVADA')) category = 'approved';
+                else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'expired';
+                else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'recharge';
+                
+                acc[category][model] = (acc[category][model] || 0) + 1;
+                return acc;
+            }, { approved: {}, rejected: {}, recharge: {}, expired: {} });
+            
+            const createSummaryLine = (title, data) => {
+                if (Object.keys(data).length > 0) {
+                    const items = Object.entries(data).map(([model, count]) => `${model}=${String(count).padStart(2, '0')}`).join(' / ');
+                    return `<div style="margin-bottom: 10px;"><h4>${title}</h4><p>${items}</p></div>`;
                 }
-                row.innerHTML = `
-                    <td>${battery.code}</td>
-                    <td>${battery.client}</td>
-                    <td>${new Date(battery.technicalOpinionDate).toLocaleDateString('pt-BR')}</td>
-                    <td>${finalActionBadge}</td>
-                    <td style="white-space: normal; max-width: 200px;">${battery.recommendation}</td>
-                `;
-                finalizadoBody.appendChild(row);
-            });
+                return '';
+            };
+
+            const html = [
+                createSummaryLine('BATERIAS APROVADAS (PARA TROCA)', summary.approved),
+                createSummaryLine('BATERIAS REPROVADAS', summary.rejected),
+                createSummaryLine('BATERIAS PARA RECARREGAR', summary.recharge),
+                createSummaryLine('BATERIAS FORA DO PRAZO', summary.expired)
+            ].join('');
+
+            if (html.trim()) {
+                summaryBody.innerHTML = html;
+                summaryCard.style.display = 'block';
+            } else {
+                summaryCard.style.display = 'none';
+            }
         }
         // #endregion
 
-        // #region Lógica de Análise e Edição (Single e Batch)
+        // #region Lógica de Análise e Edição
         async function openSingleAnalysisModal(id) {
             const battery = await dbManager.get('batteries', id);
             if (!battery) return;
@@ -3331,75 +3004,27 @@
 
         function openBatchAnalysisModal() {
             const selectedCheckboxes = document.querySelectorAll('.analysis-checkbox:checked');
-            if (selectedCheckboxes.length === 0) {
-                showNotification('Nenhuma bateria selecionada para análise em lote.', 'error');
-                return;
-            }
+            if (selectedCheckboxes.length === 0) return showNotification('Nenhuma bateria selecionada.', 'error');
 
-            batchAnalysisIds = [];
-            selectedCheckboxes.forEach(checkbox => {
-                batchAnalysisIds.push(parseInt(checkbox.getAttribute('data-id')));
-            });
-
+            batchAnalysisIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.dataset.id));
             analysisMode = 'batch';
             analysisModalTitle.textContent = `Analisar ${batchAnalysisIds.length} Baterias em Lote`;
-            analysisSingleInfo.style.display = 'none'; // Oculta informações individuais
+            analysisSingleInfo.style.display = 'none';
             analysisRecommendation.value = '';
             analysisFinalAction.value = '';
-            
             analysisModal.classList.add('active');
         }
 
-        function saveAnalysis() {
-            if (analysisMode === 'single') {
-                saveSingleAnalysis();
-            } else if (analysisMode === 'batch') {
-                saveBatchAnalysis();
-            }
-        }
-
-        async function saveSingleAnalysis() {
-            if (analyzingBatteryId === null) return;
-
-            const battery = await dbManager.get('batteries', analyzingBatteryId);
-            if (!battery) return;
-
+        async function saveAnalysis() {
             const newRecommendation = analysisRecommendation.value.trim();
             const newFinalAction = analysisFinalAction.value;
+            if (!newRecommendation || !newFinalAction) return showNotification('Preencha o Parecer e a Ação Final.', 'error');
 
-            if (!newRecommendation || !newFinalAction) {
-                showNotification('Preencha o Parecer Técnico e a Ação Final.', 'error');
-                return;
-            }
-
-            battery.status = 'finalized';
-            battery.recommendation = newRecommendation;
-            battery.finalAction = newFinalAction;
-            battery.technicalOpinionDate = new Date().toISOString();
-
-            await dbManager.set('batteries', battery);
-            batteryData = await dbManager.getAll('batteries');
-            
-            analysisModal.classList.remove('active');
-            showNotification(`Análise da bateria ${battery.code} salva!`, 'success');
-            addActivity('fas fa-clipboard-check', `Análise da bateria ${battery.code} finalizada.`);
-            analyzingBatteryId = null;
-            updateUI();
-            triggerAutoSync();
-        }
-
-        async function saveBatchAnalysis() {
-            const newRecommendation = analysisRecommendation.value.trim();
-            const newFinalAction = analysisFinalAction.value;
-
-            if (!newRecommendation || !newFinalAction) {
-                showNotification('Preencha o Parecer Técnico e a Ação Final para o lote.', 'error');
-                return;
-            }
-
+            const idsToUpdate = analysisMode === 'single' ? [analyzingBatteryId] : batchAnalysisIds;
             let updatedCount = 0;
-            for (const batteryId of batchAnalysisIds) {
-                const battery = await dbManager.get('batteries', batteryId);
+            
+            for (const id of idsToUpdate) {
+                const battery = await dbManager.get('batteries', id);
                 if (battery) {
                     battery.status = 'finalized';
                     battery.recommendation = newRecommendation;
@@ -3411,34 +3036,29 @@
             }
 
             if (updatedCount > 0) {
-                batteryData = await dbManager.getAll('batteries');
+                await loadFromDB(); // Recarrega todos os dados para a memória
                 analysisModal.classList.remove('active');
-                showNotification(`${updatedCount} baterias analisadas em lote com sucesso!`, 'success');
-                addActivity('fas fa-layer-group', `${updatedCount} baterias analisadas em lote.`);
-                batchAnalysisIds = [];
+                showNotification(`${updatedCount} análise(s) salva(s)!`, 'success');
+                addActivity('fas fa-clipboard-check', `${updatedCount} bateria(s) analisada(s).`);
                 updateUI();
                 triggerAutoSync();
             }
         }
 
         function handleSelectAll() {
-            const checkboxes = document.querySelectorAll('.analysis-checkbox');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = selectAllCheckbox.checked;
-            });
+            document.querySelectorAll('.analysis-checkbox').forEach(cb => cb.checked = selectAllCheckbox.checked);
             updateBatchAnalyzeButtonState();
         }
 
         function updateBatchAnalyzeButtonState() {
             const selectedCount = document.querySelectorAll('.analysis-checkbox:checked').length;
             batchAnalyzeBtn.disabled = selectedCount === 0;
-            batchAnalyzeBtn.textContent = selectedCount > 0 ? `Analisar ${selectedCount} Selecionados` : 'Analisar Selecionados';
+            batchAnalyzeBtn.innerHTML = selectedCount > 0 ? `<i class="fas fa-layer-group"></i> Analisar ${selectedCount} Selecionados` : '<i class="fas fa-layer-group"></i> Analisar Selecionados';
         }
 
         async function openNameEditModal(id) {
             const battery = await dbManager.get('batteries', id);
             if (!battery) return;
-
             editingBatteryId = id;
             editClientNameInput.value = battery.client;
             editSalesmanNameInput.value = battery.salesman;
@@ -3446,42 +3066,27 @@
         }
 
         async function saveEditedNames() {
-            if (editingBatteryId === null) return;
-
             const originalBattery = await dbManager.get('batteries', editingBatteryId);
             if (!originalBattery) return;
 
-            const oldClientName = originalBattery.client;
-            const oldSalesmanName = originalBattery.salesman;
-
             const newClientName = editClientNameInput.value.trim().toUpperCase();
             const newSalesmanName = editSalesmanNameInput.value.trim().toUpperCase();
-
-            if (!newClientName || !newSalesmanName) {
-                showNotification('Os nomes não podem estar em branco.', 'error');
-                return;
-            }
-
+            if (!newClientName || !newSalesmanName) return showNotification('Os nomes não podem estar em branco.', 'error');
+            
+            const { client: oldClientName, salesman: oldSalesmanName } = originalBattery;
             const allBatteries = await dbManager.getAll('batteries');
             for (const battery of allBatteries) {
                 let updated = false;
-                if (battery.client === oldClientName) {
-                    battery.client = newClientName;
-                    updated = true;
-                }
-                if (battery.salesman === oldSalesmanName) {
-                    battery.salesman = newSalesmanName;
-                    updated = true;
-                }
-                if(updated) await dbManager.set('batteries', battery);
+                if (battery.client === oldClientName) { battery.client = newClientName; updated = true; }
+                if (battery.salesman === oldSalesmanName) { battery.salesman = newSalesmanName; updated = true; }
+                if (updated) await dbManager.set('batteries', battery);
             }
 
-            batteryData = await dbManager.getAll('batteries');
+            await loadFromDB();
             updateUI();
             nameEditModal.classList.remove('active');
             showNotification('Nomes atualizados em todos os registos!', 'success');
             addActivity('fas fa-pencil-alt', `Nomes '${oldClientName}/${oldSalesmanName}' atualizados.`);
-            editingBatteryId = null;
             triggerAutoSync();
         }
 
@@ -3493,53 +3098,34 @@
         // #endregion
         
         // #region Histórico e Log de Atividades
-        function setupAudio() {
-            try {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                beepSound = () => {
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-                    oscillator.type = 'sine';
-                    oscillator.frequency.value = 800;
-                    gainNode.gain.value = 0.1;
-                    oscillator.start();
-                    setTimeout(() => oscillator.stop(), 150);
-                };
-            } catch (e) {
-                console.log('Web Audio API não suportada');
-            }
-        }
-        
-        function playBeep() {
-            if (beepSound) beepSound();
-        }
-        
         function updateLastUpdate() {
             if(batteryData.length > 0) {
-                 lastUpdate.textContent = new Date(Math.max(...batteryData.map(b => new Date(b.timestamp)))).toLocaleString('pt-BR');
+                 const latestTimestamp = Math.max(...batteryData.map(b => new Date(b.timestamp).getTime()));
+                 lastUpdate.textContent = new Date(latestTimestamp).toLocaleString('pt-BR');
             } else {
                  lastUpdate.textContent = "Nenhuma atualização";
             }
         }
         
-        function updateActivityLog() {
-            activityLog.innerHTML = '';
-            if (activityData.length === 0) {
-                activityLog.innerHTML = `<div class="activity-item"><div class="activity-icon"><i class="fas fa-info-circle"></i></div><div class="activity-content">Nenhuma atividade recente</div></div>`;
+        async function updateActivityLog() {
+            const logContainer = document.getElementById('activityLog');
+            const recentActivities = activityData.sort((a,b) => b.id - a.id).slice(0, 5);
+            
+            if (recentActivities.length === 0) {
+                logContainer.innerHTML = `<div class="activity-item"><div class="activity-icon"><i class="fas fa-info-circle"></i></div><div class="activity-content">Nenhuma atividade recente</div></div>`;
                 return;
             }
-            activityData.slice(-5).reverse().forEach(activity => {
-                const item = document.createElement('div');
-                item.className = 'activity-item';
-                item.innerHTML = `<div class="activity-icon"><i class="${activity.icon}"></i></div><div class="activity-content">${activity.message}</div><div class="activity-time">${activity.time}</div>`;
-                activityLog.appendChild(item);
-            });
+            logContainer.innerHTML = recentActivities.map(activity => `
+                <div class="activity-item">
+                    <div class="activity-icon"><i class="${activity.icon}"></i></div>
+                    <div class="activity-content">${activity.message}</div>
+                    <div class="activity-time">${activity.time}</div>
+                </div>
+            `).join('');
         }
         
         async function addActivity(icon, message) {
-            const newActivity = { icon, message, time: new Date().toLocaleTimeString('pt-BR') };
+            const newActivity = { icon, message, timestamp: Date.now(), time: new Date().toLocaleTimeString('pt-BR') };
             await dbManager.set('activity', newActivity);
             activityData.push(newActivity);
             if (activityData.length > 50) activityData.shift();
@@ -3551,320 +3137,174 @@
         // #region Filtros e PDF/Excel
         function applyFilters() {
             currentFilters = {
-                client: clientFilter.value,
-                status: statusFilter.value,
-                workflowStatus: workflowStatusFilter.value,
-                startDate: startDateInput.value,
-                endDate: endDateInput.value,
-                code: codeFilter.value
+                client: clientFilter.value, status: statusFilter.value, workflowStatus: workflowStatusFilter.value,
+                startDate: startDateInput.value, endDate: endDateInput.value, code: codeFilter.value
             };
             updateReportTable();
-            showNotification('Filtros aplicados!', 'success');
         }
         
         function clearFilters() {
-            clientFilter.value = '';
-            statusFilter.value = '';
-            workflowStatusFilter.value = '';
-            startDateInput.value = '';
-            endDateInput.value = '';
-            codeFilter.value = '';
-            currentFilters = { client: '', status: '', workflowStatus: '', startDate: '', endDate: '', code: '' };
-            updateReportTable();
+            clientFilter.value = ''; statusFilter.value = ''; workflowStatusFilter.value = '';
+            startDateInput.value = ''; endDateInput.value = ''; codeFilter.value = '';
+            applyFilters();
             showNotification('Filtros limpos!', 'success');
         }
 
+        function getFilteredData() {
+            return batteryData.filter(b => {
+                const clientMatch = !currentFilters.client || b.client === currentFilters.client;
+                const statusMatch = !currentFilters.status || b.warranty_period_status === currentFilters.status;
+                const workflowMatch = !currentFilters.workflowStatus || b.status === currentFilters.workflowStatus;
+                const codeMatch = !currentFilters.code || b.code.toLowerCase().includes(currentFilters.code.toLowerCase());
+                
+                let dateMatch = true;
+                if (currentFilters.startDate && currentFilters.endDate) {
+                    const batteryDate = new Date(b.timestamp);
+                    const startDate = new Date(currentFilters.startDate + 'T00:00:00');
+                    const endDate = new Date(currentFilters.endDate + 'T23:59:59');
+                    dateMatch = batteryDate >= startDate && batteryDate <= endDate;
+                }
+                return clientMatch && statusMatch && workflowMatch && codeMatch && dateMatch;
+            });
+        }
+        
         function drawPdfHeader(doc, clientName, salesmanName) {
-            // A linha do logótipo foi removida para garantir estabilidade
-            doc.setFontSize(18);
-            doc.text('FABRECK DO BRASIL', 195, 15, { align: 'right' });
-            doc.setFontSize(12);
-            doc.text('Relatório de Análise de Garantia', 195, 22, { align: 'right' });
-            doc.setFontSize(10);
-            doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 195, 28, { align: 'right' });
-            
-            doc.setFontSize(12);
-            doc.text(`Cliente: ${clientName}`, 15, 45);
-            doc.text(`Vendedor: ${salesmanName}`, 15, 51);
-
-            doc.setLineWidth(0.5);
-            doc.line(15, 58, 195, 58);
-
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'bold');
-            doc.text('RESPONSÁVEL TÉCNICO: REGINALDO SANTOS', 15, 65);
-            doc.text('ANÁLISE DE GARANTIA: JENILTON CRUZ', 195, 65, { align: 'right' });
-            doc.setFont(undefined, 'normal');
-
+            doc.setFontSize(18); doc.text('FABRECK DO BRASIL', 195, 15, { align: 'right' });
+            doc.setFontSize(12); doc.text('Relatório de Análise de Garantia', 195, 22, { align: 'right' });
+            doc.setFontSize(10); doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 195, 28, { align: 'right' });
+            doc.setFontSize(12); doc.text(`Cliente: ${clientName}`, 15, 45); doc.text(`Vendedor: ${salesmanName}`, 15, 51);
+            doc.setLineWidth(0.5); doc.line(15, 58, 195, 58);
+            doc.setFontSize(9); doc.setFont(undefined, 'bold'); doc.text('RESPONSÁVEL TÉCNICO: REGINALDO SANTOS', 15, 65);
+            doc.text('ANÁLISE DE GARANTIA: JENILTON CRUZ', 195, 65, { align: 'right' }); doc.setFont(undefined, 'normal');
             return 75;
         }
 
-        function buildClientPDFPage(doc, clientName, clientBatteries, startY) {
+        function buildClientPDFPage(doc, clientBatteries, startY) {
             let currentY = startY;
 
-            const summary = {
-                approved: {},
-                rejected: {},
-                recharge: {},
-                expired: {}
-            };
-
-            const finalizedData = clientBatteries.filter(b => b.status === 'finalized');
-
-            finalizedData.forEach(battery => {
+            const summary = finalizedData.reduce((acc, battery) => {
                 const model = battery.batteryModel || 'N/A';
-                if (battery.finalAction.includes('APROVADA')) {
-                    summary.approved[model] = (summary.approved[model] || 0) + 1;
-                } else if (battery.finalAction.includes('FORA DO PRAZO')) {
-                    summary.expired[model] = (summary.expired[model] || 0) + 1;
-                } else if (battery.recommendation && battery.recommendation.toUpperCase().includes('RECARREGAR')) {
-                    summary.recharge[model] = (summary.recharge[model] || 0) + 1;
-                } else if (battery.finalAction.includes('REPROVADA')) {
-                    summary.rejected[model] = (summary.rejected[model] || 0) + 1;
-                }
-            });
+                let category = 'rejected';
+                if (battery.finalAction.includes('APROVADA')) category = 'approved';
+                else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'expired';
+                else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'recharge';
+                
+                acc[category][model] = (acc[category][model] || 0) + 1;
+                return acc;
+            }, { approved: {}, rejected: {}, recharge: {}, expired: {} });
 
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.text('Resumo para Separação', 15, currentY);
-            currentY += 10;
+            doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('Resumo para Separação', 15, currentY); currentY += 10;
 
             const createSummaryList = (title, data, color) => {
                 if (Object.keys(data).length > 0) {
-                    if (currentY > 260) {
-                        doc.addPage();
-                        currentY = 20;
-                    }
+                    if (currentY > 260) { doc.addPage(); currentY = 20; }
                     const totalCount = Object.values(data).reduce((sum, count) => sum + count, 0);
-                    doc.setFontSize(12);
-                    doc.setFont(undefined, 'bold');
-                    doc.setTextColor(color[0], color[1], color[2]);
-                    doc.text(`${title} - TOTAL: ${String(totalCount).padStart(2, '0')}`, 15, currentY);
-                    currentY += 8;
-
-                    doc.setFontSize(10);
-                    doc.setFont(undefined, 'normal');
-                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(...color);
+                    doc.text(`${title} - TOTAL: ${String(totalCount).padStart(2, '0')}`, 15, currentY); currentY += 8;
+                    doc.setFontSize(10); doc.setFont(undefined, 'normal'); doc.setTextColor(0, 0, 0);
                     const items = Object.entries(data).map(([model, count]) => `${model} = ${String(count).padStart(2, '0')}`).join('  /  ');
-                    doc.text(items, 15, currentY, { maxWidth: 180 });
-                    currentY += 15;
+                    doc.text(items, 15, currentY, { maxWidth: 180 }); currentY += 15;
                 }
             };
             
-            doc.setTextColor(0, 0, 0);
             createSummaryList('BATERIAS APROVADAS (PARA TROCA)', summary.approved, [39, 174, 96]);
             createSummaryList('BATERIAS PARA RECARREGAR', summary.recharge, [243, 156, 18]);
             createSummaryList('BATERIAS REPROVADAS', summary.rejected, [231, 76, 60]);
             createSummaryList('BATERIAS FORA DO PRAZO', summary.expired, [127, 140, 141]);
 
-            if (currentY > 240) {
-                doc.addPage();
-                currentY = 20;
-            } else {
-                doc.setLineWidth(0.2);
-                doc.line(15, currentY - 5, 195, currentY - 5);
-            }
+            if (currentY > 240) { doc.addPage(); currentY = 20; } 
+            else { doc.setLineWidth(0.2); doc.line(15, currentY - 5, 195, currentY - 5); }
             
-            doc.setFontSize(14);
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor(0,0,0);
-            doc.text('Detalhamento das Baterias', 15, currentY);
-            currentY += 10;
-
-            const tableBodyData = clientBatteries.map(b => [
-                String(b.code || '-').substring(0, 20),
-                String(b.batteryModel || '-').substring(0, 20),
-                b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : '-',
-                String(b.finalAction || (b.status === 'in_analysis' ? 'Em Análise' : '-')).substring(0, 40),
-                String(b.recommendation || '-').substring(0, 100)
-            ]);
+            doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.setTextColor(0,0,0); doc.text('Detalhamento das Baterias', 15, currentY); currentY += 10;
 
             doc.autoTable({
                 startY: currentY,
                 head: [['Código', 'Modelo', 'Data Envio', 'Ação Final', 'Parecer Técnico']],
-                body: tableBodyData,
-                theme: 'striped',
-                headStyles: { fillColor: [22, 49, 72] },
-                bodyStyles: { fontSize: 8 },
-                columnStyles: { 4: { cellWidth: 60 } },
-                 didDrawPage: (data) => {
-                    currentY = data.cursor.y; 
-                }
+                body: clientBatteries.map(b => [b.code || '-', b.batteryModel || '-', b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : '-', b.finalAction || (b.status === 'in_analysis' ? 'Em Análise' : '-'), b.recommendation || '-']),
+                theme: 'striped', headStyles: { fillColor: [22, 49, 72] }, bodyStyles: { fontSize: 8 }, columnStyles: { 4: { cellWidth: 60 } }
             });
             currentY = doc.lastAutoTable.finalY + 15;
 
-            if (currentY > 240) {
-                doc.addPage();
-                currentY = 20;
-            }
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.text('Critérios para Análise de Garantia', 15, currentY);
-            currentY += 8;
-            
-            doc.setFontSize(9);
-            doc.setFont(undefined, 'normal');
-            doc.text(`APROVADA (TROCA): ${warrantyInstructions.approved}`, 17, currentY, { maxWidth: 180 });
-            currentY += 12;
-            doc.text(`REPROVADA: ${warrantyInstructions.rejected_return}`, 17, currentY, { maxWidth: 180 });
-            currentY += 12;
-             doc.text(`SUCATEAR: ${warrantyInstructions.rejected_scrap}`, 17, currentY, { maxWidth: 180 });
+            if (currentY > 240) { doc.addPage(); currentY = 20; }
+            doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Critérios para Análise de Garantia', 15, currentY); currentY += 8;
+            doc.setFontSize(9); doc.setFont(undefined, 'normal');
+            doc.text(`APROVADA (TROCA): ${warrantyInstructions.approved}`, 17, currentY, { maxWidth: 180 }); currentY += 12;
+            doc.text(`REPROVADA: ${warrantyInstructions.rejected_return}`, 17, currentY, { maxWidth: 180 }); currentY += 12;
+            doc.text(`SUCATEAR: ${warrantyInstructions.rejected_scrap}`, 17, currentY, { maxWidth: 180 });
         }
 
-
-        function generatePDF() {
+        function generatePDF(data) {
             try {
-                if (!window.jspdf || !window.jspdf.jsPDF) {
-                    showNotification('Erro: A biblioteca PDF (jsPDF) não carregou corretamente.', 'error');
-                    console.error('jsPDF library is not available on window.jspdf');
-                    return null;
-                }
+                if (!window.jspdf || !window.jspdf.jsPDF || typeof (new window.jspdf.jsPDF()).autoTable !== 'function') throw new Error('Biblioteca PDF não carregada.');
+                if (data.length === 0) throw new Error('Nenhum dado no filtro para gerar o relatório.');
+                
                 const doc = new window.jspdf.jsPDF();
-                if (typeof doc.autoTable !== 'function') {
-                    showNotification('Erro: O plugin de tabelas para PDF (autoTable) não carregou.', 'error');
-                    console.error('jsPDF autoTable plugin is not available on the doc instance.');
-                    return null;
-                }
-
-                const filteredData = getFilteredData();
-                if (filteredData.length === 0) {
-                    showNotification('Nenhum dado no filtro para gerar o relatório.', 'error');
-                    return null;
-                }
-
-                const validData = filteredData.filter(b => b && b.client);
-                if (validData.length === 0) {
-                    showNotification('Nenhum registo com cliente válido para gerar o relatório.', 'error');
-                    return null;
-                }
-
-                const groupedByClient = validData.reduce((acc, battery) => {
+                const groupedByClient = data.reduce((acc, battery) => {
                     (acc[battery.client] = acc[battery.client] || []).push(battery);
                     return acc;
                 }, {});
                 
-                let firstClient = true;
-                for (const clientName in groupedByClient) {
-                    if (!firstClient) {
-                        doc.addPage();
-                    }
-                    const clientBatteries = groupedByClient[clientName];
-                    const salesmanName = clientBatteries.length > 0 ? (clientBatteries[0].salesman || 'N/A') : 'N/A';
+                Object.entries(groupedByClient).forEach(([clientName, clientBatteries], index) => {
+                    if (index > 0) doc.addPage();
+                    const salesmanName = clientBatteries[0]?.salesman || 'N/A';
                     const startY = drawPdfHeader(doc, clientName, salesmanName);
-                    buildClientPDFPage(doc, clientName, clientBatteries, startY);
-                    firstClient = false;
-                }
-                
+                    buildClientPDFPage(doc, clientBatteries, startY);
+                });
                 return doc;
             } catch (error) {
-                console.error("Falha catastrófica ao gerar PDF:", error);
-                showNotification(`Ocorreu um erro inesperado ao gerar o PDF. Verifique a consola.`, 'error');
+                showNotification(`Erro ao gerar PDF: ${error.message}`, 'error');
                 return null;
             }
         }
         
+        function previewPDF() { generatePDF(getFilteredData())?.output('dataurlnewwindow'); }
+        function downloadPDF() { generatePDF(getFilteredData())?.save(`relatorio_consolidado_${new Date().toISOString().slice(0,10)}.pdf`); }
+        
         function generateBatchPDFs() {
             try {
-                if (!window.jspdf || !window.jspdf.jsPDF) {
-                    showNotification('Erro: A biblioteca PDF (jsPDF) não carregou corretamente.', 'error');
-                    console.error('jsPDF library is not available on window.jspdf');
-                    return;
-                }
-                if (typeof (new window.jspdf.jsPDF()).autoTable !== 'function') {
-                    showNotification('Erro: O plugin de tabelas para PDF (autoTable) não carregou.', 'error');
-                    console.error('jsPDF autoTable plugin is not available on the doc instance.');
-                    return;
-                }
+                if (!window.jspdf || !window.jspdf.jsPDF) throw new Error("Biblioteca PDF não carregada.");
+                if (batteryData.length === 0) throw new Error("Nenhum dado para gerar relatórios.");
 
-                const dataToProcess = batteryData;
-                if (dataToProcess.length === 0) {
-                    showNotification('Nenhum dado para gerar os relatórios.', 'error');
-                    return;
-                }
-
-                const validData = dataToProcess.filter(b => b && b.client);
-                 if (validData.length === 0) {
-                    showNotification('Nenhum registo com cliente válido para gerar relatórios.', 'error');
-                    return;
-                }
-
-                const groupedByClient = validData.reduce((acc, battery) => {
+                const groupedByClient = batteryData.reduce((acc, battery) => {
                     (acc[battery.client] = acc[battery.client] || []).push(battery);
                     return acc;
                 }, {});
 
                 showNotification(`Gerando ${Object.keys(groupedByClient).length} relatórios...`, 'info');
-
-                for (const clientName in groupedByClient) {
-                    const doc = new window.jspdf.jsPDF();
-                    const clientBatteries = groupedByClient[clientName];
-                    const salesmanName = clientBatteries.length > 0 ? (clientBatteries[0].salesman || 'N/A') : 'N/A';
-
-                    const startY = drawPdfHeader(doc, clientName, salesmanName);
-                    buildClientPDFPage(doc, clientName, clientBatteries, startY);
-                    
-                    const safeFileName = String(clientName).replace(/[^a-z0-9]/gi, '_').toLowerCase();
-                    doc.save(`relatorio_garantia_${safeFileName}.pdf`);
-                }
+                Object.entries(groupedByClient).forEach(([clientName, clientBatteries]) => {
+                    const doc = generatePDF(clientBatteries);
+                    if (doc) doc.save(`relatorio_${clientName.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`);
+                });
             } catch (error) {
-                 console.error("Falha catastrófica ao gerar PDFs em lote:", error);
-                showNotification(`Ocorreu um erro inesperado ao gerar os PDFs. Verifique a consola.`, 'error');
-            }
-        }
-
-        function previewPDF() {
-            const doc = generatePDF();
-            if (doc) { 
-                doc.output('dataurlnewwindow');
-            }
-        }
-        
-        function downloadPDF() {
-            const doc = generatePDF();
-            if (doc) { 
-                doc.save(`relatorio_consolidado_${new Date().toISOString().slice(0,10)}.pdf`);
+                showNotification(`Erro ao gerar PDFs: ${error.message}`, 'error');
             }
         }
         
         function exportToFormattedExcel() {
             const data = getFilteredData();
-            if (data.length === 0) {
-                showNotification('Não há dados para exportar', 'error');
-                return;
-            }
+            if (data.length === 0) return showNotification('Não há dados para exportar', 'error');
 
             const mappedData = data.map(b => ({
-                'Código': b.code,
-                'Modelo': b.batteryModel,
-                'Cliente': b.client,
-                'Vendedor': b.salesman,
-                'Data de Registo': new Date(b.timestamp).toLocaleString('pt-BR'),
-                'Data de Envio': b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : '',
-                'Status da Garantia': b.warranty_period_status === 'warranty' ? 'Em Garantia' : 'Fora do Prazo',
-                'Status da Análise': b.status === 'in_analysis' ? 'Em Análise' : 'Finalizado',
-                'Parecer Técnico': b.recommendation || '',
-                'Ação Final': b.finalAction || '',
-                'Data da Análise': b.technicalOpinionDate ? new Date(b.technicalOpinionDate).toLocaleString('pt-BR') : ''
+                'Código': b.code, 'Modelo': b.batteryModel, 'Cliente': b.client, 'Vendedor': b.salesman,
+                'Data Registo': new Date(b.timestamp).toLocaleString('pt-BR'),
+                'Data Envio': b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : '',
+                'Status Garantia': b.warranty_period_status === 'warranty' ? 'Em Garantia' : 'Fora do Prazo',
+                'Status Análise': b.status === 'in_analysis' ? 'Em Análise' : 'Finalizado',
+                'Parecer': b.recommendation || '', 'Ação Final': b.finalAction || '',
+                'Data Análise': b.technicalOpinionDate ? new Date(b.technicalOpinionDate).toLocaleString('pt-BR') : ''
             }));
 
             const ws = XLSX.utils.json_to_sheet(mappedData);
-            
-            ws['!autofilter'] = { ref: XLSX.utils.encode_range(XLSX.utils.decode_range(ws['!ref'])) };
-
-            const colWidths = [];
-            for (const key in mappedData[0]) {
-                colWidths.push({ wch: Math.max(key.length, ...mappedData.map(row => row[key] ? row[key].toString().length : 0)) + 2 });
-            }
+            ws['!autofilter'] = { ref: ws['!ref'] };
+            const colWidths = Object.keys(mappedData[0]).map(key => ({ wch: Math.max(key.length, ...mappedData.map(row => row[key]?.toString().length || 0)) + 2 }));
             ws['!cols'] = colWidths;
-
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Relatório de Garantias");
-
-            XLSX.writeFile(wb, `relatorio_garantias_${new Date().toISOString().slice(0,10)}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "Relatório");
+            XLSX.writeFile(wb, `relatorio_${new Date().toISOString().slice(0,10)}.xlsx`);
         }
         // #endregion
 
-        // #region Lógica do Laudo Padrão (Offline)
+        // #region Lógica do Laudo Padrão
         function getLaudoData() {
             const data = {
                 client: document.getElementById('laudoClientName').value.trim().toUpperCase(),
@@ -3874,253 +3314,96 @@
                 ccaMedido: document.getElementById('laudoCA_Medido').value,
                 voltageNominal: document.getElementById('laudoBatteryVoltage_Nominal').value,
                 voltageMedida: document.getElementById('laudoVoltage_Medida').value,
-                visual: {
-                    estufada: document.getElementById('checkEstufada').checked,
-                    polos: document.getElementById('checkPolos').checked,
-                    vazamento: document.getElementById('checkVazamento').checked,
-                    outros: document.getElementById('laudoVisualInspection').value.trim()
-                },
-                diagnostics: {
-                    fugaCorrente: document.getElementById('checkFugaCorrente').checked,
-                    sobretensao: document.getElementById('checkSobretensao').checked,
-                    subtensao: document.getElementById('checkSubtensao').checked,
-                    aplicacaoIncorreta: document.getElementById('checkAplicacaoIncorreta').checked,
-                    longoDesuso: document.getElementById('checkLongoDesuso').checked,
-                },
-                notes: document.getElementById('laudoTechnicianNotes').value.trim(),
-                images: laudoImages, // Adiciona as imagens
+                visual: { estufada: document.getElementById('checkEstufada').checked, polos: document.getElementById('checkPolos').checked, vazamento: document.getElementById('checkVazamento').checked, outros: document.getElementById('laudoVisualInspection').value.trim() },
+                diagnostics: { fugaCorrente: document.getElementById('checkFugaCorrente').checked, sobretensao: document.getElementById('checkSobretensao').checked, subtensao: document.getElementById('checkSubtensao').checked, aplicacaoIncorreta: document.getElementById('checkAplicacaoIncorreta').checked, longoDesuso: document.getElementById('checkLongoDesuso').checked, },
+                notes: document.getElementById('laudoTechnicianNotes').value.trim(), images: laudoImages,
             };
-
-            // Validação
             if(!data.client || !data.code || !data.model || !data.ccaNominal || !data.ccaMedido || !data.voltageMedida) {
-                showNotification('Por favor, preencha todos os campos do laudo.', 'error');
-                return null;
-            }
-            return data;
+                showNotification('Preencha todos os campos do laudo.', 'error'); return null;
+            } return data;
         }
 
         function generateLaudoDiagnosis(data) {
-            let analysis = [];
-            let diagnosis = "Diagnóstico Pendente";
+            let analysis = [], diagnosis = "Pendente";
+            const voltage = parseFloat(data.voltageMedida), ccaNominal = parseFloat(data.ccaNominal), ccaMedido = parseFloat(data.ccaMedido);
 
-            const voltage = parseFloat(data.voltageMedida);
-            const ccaNominal = parseFloat(data.ccaNominal);
-            const ccaMedido = parseFloat(data.ccaMedido);
+            if (voltage < 10.5) analysis.push("Tensão em nível crítico, sugere célula em curto ou descarga profunda.");
+            else if (voltage < 12.4) analysis.push("Tensão abaixo do mínimo, indicando baixo estado de carga (SoC).");
+            else analysis.push("Tensão em conformidade, indicando boa retenção de carga.");
 
-            // Análise da Tensão
-            if (voltage < 10.5) {
-                analysis.push("A Tensão em Circuito Aberto (VCA) encontra-se em nível crítico, sugerindo a possibilidade de uma ou mais células em curto-circuito ou em estado de descarga profunda irreversível.");
-            } else if (voltage < 12.4) {
-                analysis.push("A Tensão em Circuito Aberto (VCA) está abaixo do mínimo especificado (12.4V), o que indica um baixo Estado de Carga (SoC - State of Charge), requerendo análise aprofundada.");
-            } else {
-                analysis.push("A Tensão em Circuito Aberto (VCA) está em conformidade com os parâmetros nominais, indicando uma adequada capacidade de retenção de carga.");
-            }
+            if (ccaMedido < (ccaNominal * 0.7)) analysis.push(`CA medido (${ccaMedido}A) abaixo do especificado (${ccaNominal}A), indicando perda de capacidade de arranque.`);
+            else analysis.push(`CA medido (${ccaMedido}A) compatível com o nominal (${ccaNominal}A), demonstrando capacidade de arranque adequada.`);
 
-            // Análise do CA (CCA)
-            if (ccaMedido < (ccaNominal * 0.7)) {
-                 analysis.push(`A Corrente de Arranque (CA) medida de ${ccaMedido}A está significativamente abaixo do especificado (${ccaNominal}A), denotando uma perda acentuada e irrecuperável da capacidade de arranque, indicativo de sulfatação avançada das placas internas.`);
-            } else {
-                analysis.push(`A Corrente de Arranque (CA) medida de ${ccaMedido}A mostra-se compatível com o valor nominal de ${ccaNominal}A, demonstrando capacidade de arranque adequada.`);
-            }
-
-            // Análise Visual
             let visualProblems = [];
-            if (data.visual.estufada) visualProblems.push("deformação ou estufamento da caixa");
-            if (data.visual.polos) visualProblems.push("danos ou oxidação nos polos");
-            if (data.visual.vazamento) visualProblems.push("sinais de vazamento de eletrólito");
+            if (data.visual.estufada) visualProblems.push("deformação da caixa");
+            if (data.visual.polos) visualProblems.push("danos nos polos");
+            if (data.visual.vazamento) visualProblems.push("vazamento de eletrólito");
 
             if (visualProblems.length > 0) {
-                analysis.push(`Adicionalmente, a inspeção visual constatou: ${visualProblems.join(', ')}.`);
-                diagnosis = `IMPROCEDENTE. Identificada avaria física (${visualProblems.join(', ')}), condição característica de falha no sistema de recarga do veículo (sobretensão/subtensão) ou manuseio inadequado, não configurando defeito de fabricação.`;
+                analysis.push(`Inspeção visual constatou: ${visualProblems.join(', ')}.`);
+                diagnosis = `IMPROCEDENTE. Identificada avaria física (${visualProblems.join(', ')}), característica de falha externa, não configurando defeito de fabricação.`;
             } else if (voltage < 12.4 && ccaMedido >= (ccaNominal * 0.7)) {
-                diagnosis = "IMPROCEDENTE. Nenhum defeito de fabricação foi detectado. A bateria apresenta-se apenas com baixo estado de carga (SoC). Recomenda-se a aplicação de recarga lenta conforme especificações técnicas e a verificação do sistema elétrico do veículo.";
+                diagnosis = "IMPROCEDENTE. Bateria apenas descarregada. Recomenda-se recarga lenta e verificação do sistema elétrico do veículo.";
             } else if (voltage >= 12.4 && ccaMedido < (ccaNominal * 0.7)) {
-                diagnosis = "PROCEDENTE. A bateria exibe perda de capacidade de arranque (CA) não recuperável por processo de recarga, mesmo com tensão em repouso adequada, o que caracteriza um defeito de fabricação nas células internas.";
+                diagnosis = "PROCEDENTE. Perda de capacidade de arranque (CA) irrecuperável, caracterizando defeito de fabricação.";
             } else if (voltage < 12.4 && ccaMedido < (ccaNominal * 0.7)) {
-                 diagnosis = "PROCEDENTE. A bateria apresenta falha crítica e simultânea de retenção de carga e capacidade de arranque, caracterizando um defeito de fabricação conclusivo.";
+                 diagnosis = "PROCEDENTE. Falha crítica e simultânea de retenção de carga e capacidade de arranque, caracterizando defeito de fabricação.";
+            } else {
+                diagnosis = "IMPROCEDENTE. Parâmetros elétricos em conformidade. Nenhuma anomalia de fabricação detectada.";
             }
-            else {
-                diagnosis = "IMPROCEDENTE. Os parâmetros elétricos de Tensão em Circuito Aberto (VCA) e Corrente de Arranque (CA) estão em conformidade com as especificações técnicas do produto. Nenhuma anomalia de fabricação foi detectada durante os ensaios.";
-            }
-
             return { analysis: analysis.join(' '), diagnosis };
         }
 
         function generateLaudoPDF(data) {
             try {
-                if (!window.jspdf || !window.jspdf.jsPDF) {
-                    showNotification('Erro: A biblioteca PDF (jsPDF) não carregou corretamente.', 'error');
-                    return null;
-                }
                 const doc = new window.jspdf.jsPDF();
                 const { analysis, diagnosis } = generateLaudoDiagnosis(data);
-
-                // --- Cabeçalho ---
-                doc.setFontSize(18);
-                doc.text('FABRECK DO BRASIL', 200, 15, { align: 'right' });
-                doc.setFontSize(12);
-                doc.text('Laudo Técnico de Análise de Garantia', 200, 22, { align: 'right' });
-                doc.setLineWidth(0.5);
-                doc.line(15, 30, 200, 30);
-                
                 let y = 40;
+                doc.setFontSize(18); doc.text('FABRECK DO BRASIL', 200, 15, { align: 'right' });
+                doc.setFontSize(12); doc.text('Laudo Técnico de Análise de Garantia', 200, 22, { align: 'right' });
+                doc.setLineWidth(0.5); doc.line(15, 30, 200, 30);
+                
+                doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('1. DADOS DE IDENTIFICAÇÃO', 15, y); y += 7;
+                doc.setFontSize(10); doc.setFont(undefined, 'normal');
+                doc.text(`Cliente: ${data.client}`, 17, y); doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 200, y, {align: 'right'}); y += 5;
+                doc.text(`Bateria S/N: ${data.code}`, 17, y); doc.text(`Modelo: ${data.model}`, 100, y); y += 10;
 
-                // --- Seção 1: Dados ---
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('1. DADOS DE IDENTIFICAÇÃO', 15, y);
-                y += 7;
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'normal');
-                doc.text(`Cliente: ${data.client}`, 17, y);
-                doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 200, y, {align: 'right'});
-                y += 5;
-                doc.text(`Bateria S/N: ${data.code}`, 17, y);
-                doc.text(`Modelo: ${data.model}`, 100, y);
-                y += 10;
-
-                // --- Seção 2: Testes ---
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('2. PARÂMETROS DE TESTE', 15, y);
-                y += 5;
-                doc.autoTable({
-                    startY: y,
-                    theme: 'grid',
-                    head: [['Parâmetro', 'Valor Padrão', 'Valor Medido', 'Resultado']],
-                    body: [
-                        [`Tensão em Circuito Aberto (VCA)`, `${data.voltageNominal}`, `${data.voltageMedida}V`, parseFloat(data.voltageMedida) >= 12.4 ? 'CONFORME' : 'NÃO CONFORME'],
-                        [`Corrente de Arranque (CA / CCA)`, `${data.ccaNominal}A`, `${data.ccaMedido}A`, parseFloat(data.ccaMedido) >= (parseFloat(data.ccaNominal) * 0.7) ? 'CONFORME' : 'NÃO CONFORME']
-                    ],
-                    headStyles: { fillColor: [22, 49, 72] },
-                });
+                doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('2. PARÂMETROS DE TESTE', 15, y); y += 5;
+                doc.autoTable({ startY: y, theme: 'grid', head: [['Parâmetro', 'Padrão', 'Medido', 'Resultado']],
+                    body: [[`Tensão (VCA)`, `${data.voltageNominal}`, `${data.voltageMedida}V`, parseFloat(data.voltageMedida) >= 12.4 ? 'CONFORME' : 'NÃO CONFORME'], [`Corrente (CA)`, `${data.ccaNominal}A`, `${data.ccaMedido}A`, parseFloat(data.ccaMedido) >= (parseFloat(data.ccaNominal) * 0.7) ? 'CONFORME' : 'NÃO CONFORME']],
+                    headStyles: { fillColor: [22, 49, 72] } });
                 y = doc.lastAutoTable.finalY + 10;
 
-                // --- Seção 3: Inspeção Visual ---
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('3. INSPEÇÃO VISUAL', 15, y);
-                y += 7;
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'normal');
-                doc.text(`- Carcaça estufada/danificada: ${data.visual.estufada ? 'SIM' : 'NÃO'}`, 17, y);
-                doc.text(`- Polos danificados/oxidados: ${data.visual.polos ? 'SIM' : 'NÃO'}`, 100, y);
-                y += 5;
-                doc.text(`- Sinais de vazamento de eletrólito: ${data.visual.vazamento ? 'SIM' : 'NÃO'}`, 17, y);
-                y += 5;
-                if (data.visual.outros) doc.text(`- Outras observações: ${data.visual.outros}`, 17, y);
-                y += 10;
-
-                // --- Seção 4: Diagnóstico ---
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('4. ANÁLISE E DIAGNÓSTICO TÉCNICO', 15, y);
-                y += 7;
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'normal');
-                doc.text(doc.splitTextToSize(analysis, 180), 17, y);
+                doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('4. ANÁLISE E DIAGNÓSTICO', 15, y); y += 7;
+                doc.setFontSize(10); doc.setFont(undefined, 'normal'); doc.text(doc.splitTextToSize(analysis, 180), 17, y);
                 y = doc.lastAutoTable.finalY > y ? doc.lastAutoTable.finalY + 10 : y + 20;
 
-                // --- Seção 5: Parecer ---
-                doc.setFontSize(12);
-                doc.setFont(undefined, 'bold');
-                doc.text('5. PARECER FINAL', 15, y);
-                y += 7;
-                doc.setFont(undefined, 'bold');
-                doc.setFillColor(diagnosis.includes('PROCEDENTE') ? '#2ecc71' : '#e74c3c');
-                doc.rect(17, y - 4, 60, 6, 'F');
-                doc.setTextColor(255,255,255);
-                doc.text(diagnosis.split('.')[0], 20, y);
-                doc.setTextColor(0,0,0);
-                y += 7;
-                doc.setFont(undefined, 'normal');
-                doc.text(doc.splitTextToSize(diagnosis, 180), 17, y);
-                y = doc.lastAutoTable.finalY > y ? doc.lastAutoTable.finalY + 20 : y + 20;
-
-                // --- Seção 6: Observações ---
-                const diagnosticNotes = [];
-                if (data.diagnostics.fugaCorrente) diagnosticNotes.push("- Veículo apresenta indícios de fuga de corrente, resultando em descarga prematura da bateria.");
-                if (data.diagnostics.sobretensao) diagnosticNotes.push("- Sistema de recarga (alternador/retificador) opera com sobretensão, causando sobrecarga e danos internos à bateria.");
-                if (data.diagnostics.subtensao) diagnosticNotes.push("- Sistema de recarga (alternador/retificador) opera com subtensão, impedindo a recarga completa da bateria.");
-                if (data.diagnostics.aplicacaoIncorreta) diagnosticNotes.push("- A bateria instalada não corresponde à aplicação recomendada para o modelo do veículo.");
-                if (data.diagnostics.longoDesuso) diagnosticNotes.push("- Identificada evidência de longo período sem uso, o que pode levar à descarga profunda e sulfatação.");
-                if (data.notes) diagnosticNotes.push(`- Outras notas: ${data.notes}`);
-
-                if (diagnosticNotes.length > 0) {
-                     doc.setFontSize(12);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('6. OBSERVAÇÕES TÉCNICAS ADICIONAIS', 15, y);
-                    y += 7;
-                    doc.setFontSize(10);
-                    doc.setFont(undefined, 'normal');
-                    doc.text(doc.splitTextToSize(diagnosticNotes.join('\n'), 180), 17, y);
-                    y = doc.lastAutoTable.finalY > y ? doc.lastAutoTable.finalY + 15 : y + 15;
-                }
-
-                 // --- Seção 7: Evidências Fotográficas ---
-                if (data.images && data.images.length > 0) {
-                    if (y > 180) { // Adiciona nova página se não houver espaço suficiente
-                        doc.addPage();
-                        y = 20;
-                    }
-                    doc.setFontSize(12);
-                    doc.setFont(undefined, 'bold');
-                    doc.text('7. EVIDÊNCIAS FOTOGRÁFICAS', 15, y);
-                    y += 10;
-                    
-                    const imgWidth = 55;
-                    const imgHeight = 55;
+                doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('5. PARECER FINAL', 15, y); y += 7;
+                doc.setFont(undefined, 'bold'); doc.setFillColor(diagnosis.includes('PROCEDENTE') ? '#2ecc71' : '#e74c3c');
+                doc.rect(17, y - 4, 60, 6, 'F'); doc.setTextColor(255,255,255); doc.text(diagnosis.split('.')[0], 20, y);
+                doc.setTextColor(0,0,0); y += 7; doc.setFont(undefined, 'normal'); doc.text(doc.splitTextToSize(diagnosis, 180), 17, y);
+                
+                if (data.images.length > 0) {
+                    y = doc.lastAutoTable.finalY > y ? doc.lastAutoTable.finalY + 20 : y + 20;
+                    if (y > 180) { doc.addPage(); y = 20; }
+                    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('EVIDÊNCIAS FOTOGRÁFICAS', 15, y); y += 10;
                     let x = 15;
-
-                    data.images.forEach((imgData, index) => {
-                        doc.addImage(imgData.src, 'JPEG', x, y, imgWidth, imgHeight);
-                        x += imgWidth + 5; // Move para a próxima imagem
-                        if ((index + 1) % 3 === 0) { // Quebra a linha a cada 3 imagens
-                            x = 15;
-                            y += imgHeight + 5;
-                        }
-                    });
-                    y += imgHeight + 10;
+                    data.images.forEach((imgData) => { doc.addImage(imgData.src, 'JPEG', x, y, 55, 55); x += 60; });
                 }
 
-
-                // --- Assinatura ---
                 const signatureY = doc.internal.pageSize.height - 40;
                 doc.line(60, signatureY, 150, signatureY);
-                doc.setFontSize(10);
-                doc.text('JENILTON CRUZ', 105, signatureY + 5, { align: 'center'});
-                doc.setFontSize(8);
-                doc.text('Técnico Responsável', 105, signatureY + 9, { align: 'center'});
-                
+                doc.setFontSize(10); doc.text('JENILTON CRUZ', 105, signatureY + 5, { align: 'center'});
+                doc.setFontSize(8); doc.text('Técnico Responsável', 105, signatureY + 9, { align: 'center'});
                 return doc;
-
-            } catch (error) {
-                console.error("Falha ao gerar o PDF do laudo:", error);
-                showNotification(`Ocorreu um erro inesperado ao gerar o laudo.`, 'error');
-                return null;
-            }
+            } catch (error) { showNotification(`Erro ao gerar laudo: ${error.message}`, 'error'); return null; }
         }
         
-        function previewLaudoPDF() {
-            const data = getLaudoData();
-            if (!data) return;
-            
-            const doc = generateLaudoPDF(data);
-            if(doc) {
-                doc.output('dataurlnewwindow');
-            }
-        }
+        function previewLaudoPDF() { getLaudoData() && generateLaudoPDF(getLaudoData())?.output('dataurlnewwindow'); }
         
         function handleLaudoImageUpload(event) {
-            const files = event.target.files;
-            if (!files) return;
-
-            if (laudoImages.length + files.length > 3) {
-                showNotification('Pode adicionar no máximo 3 imagens.', 'error');
-                return;
-            }
-
-            for (const file of files) {
+            if (laudoImages.length + event.target.files.length > 3) return showNotification('Máximo de 3 imagens.', 'error');
+            for (const file of event.target.files) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
                     laudoImages.push({ id: Date.now() + Math.random(), src: e.target.result });
@@ -4128,160 +3411,122 @@
                 };
                 reader.readAsDataURL(file);
             }
-            // Limpa o input para permitir selecionar o mesmo ficheiro novamente
             event.target.value = '';
         }
 
         function renderLaudoImagePreviews() {
-            laudoImagePreviews.innerHTML = '';
-            laudoImages.forEach(image => {
-                const container = document.createElement('div');
-                container.className = 'preview-container';
-
-                const img = document.createElement('img');
-                img.src = image.src;
-
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-img-btn';
-                removeBtn.innerHTML = '&times;';
-                removeBtn.onclick = () => {
-                    laudoImages = laudoImages.filter(i => i.id !== image.id);
-                    renderLaudoImagePreviews();
-                };
-
-                container.appendChild(img);
-                container.appendChild(removeBtn);
-                laudoImagePreviews.appendChild(container);
+            laudoImagePreviews.innerHTML = laudoImages.map(image => `
+                <div class="preview-container">
+                    <img src="${image.src}">
+                    <button class="remove-img-btn" data-id="${image.id}">&times;</button>
+                </div>
+            `).join('');
+            laudoImagePreviews.querySelectorAll('.remove-img-btn').forEach(btn => btn.onclick = () => {
+                laudoImages = laudoImages.filter(i => i.id !== parseFloat(btn.dataset.id));
+                renderLaudoImagePreviews();
             });
         }
-        
         // #endregion
 
-        // #region Sincronização em Nuvem
-        function triggerAutoSync() {
-            debounce(() => saveToCloud(true), 2500);
+        // #region Sincronização em Nuvem e Offline
+        function updateOnlineStatus() {
+            const syncStatus = document.getElementById('syncStatus');
+            if (navigator.onLine) {
+                syncStatus.textContent = 'Online';
+                syncStatus.style.color = '#2ECC71';
+            } else {
+                syncStatus.textContent = 'Offline - A trabalhar localmente';
+                syncStatus.style.color = '#E74C3C';
+            }
         }
 
-        function debounce(func, delay) {
-            clearTimeout(syncDebounceTimer);
-            const syncStatus = document.getElementById('syncStatus');
-            syncStatus.textContent = 'A guardar alterações...';
-            syncStatus.style.color = '#F39C12';
-            syncDebounceTimer = setTimeout(func, delay);
+        async function autoSyncOfflineChanges() {
+            updateOnlineStatus();
+            const needsSync = await dbManager.get('settings', NEEDS_SYNC_KEY);
+            if (needsSync?.value) {
+                showNotification('Conexão restaurada. A sincronizar alterações...', 'info');
+                await saveToCloud(false); 
+                await dbManager.set('settings', { key: NEEDS_SYNC_KEY, value: false });
+            }
+        }
+
+        async function triggerAutoSync() {
+            if (navigator.onLine) {
+                const syncStatus = document.getElementById('syncStatus');
+                syncStatus.textContent = 'A guardar alterações...';
+                syncStatus.style.color = '#F39C12';
+                clearTimeout(syncDebounceTimer);
+                syncDebounceTimer = setTimeout(() => saveToCloud(true), 2500);
+            } else {
+                updateOnlineStatus();
+                await dbManager.set('settings', { key: NEEDS_SYNC_KEY, value: true });
+                showNotification('Offline. Alterações salvas localmente.', 'info');
+            }
         }
 
         async function saveToCloud(isSilent = false) {
             const syncStatus = document.getElementById('syncStatus');
-            if (syncStatus) {
-                syncStatus.textContent = 'A sincronizar...';
-            }
-            
-            const dataToSave = {
-                batteries: await dbManager.getAll('batteries'),
-                savedAt: new Date().toISOString()
-            };
+            if (!isSilent) syncStatus.textContent = 'A sincronizar...';
             
             try {
                 const response = await fetch(`https://jsonblob.com/api/jsonBlob/${FIXED_SYNC_KEY}`, {
                     method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify(dataToSave)
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ batteries: await dbManager.getAll('batteries'), savedAt: new Date().toISOString() })
                 });
-
                 if (!response.ok) throw new Error(`Erro no servidor: ${response.statusText}`);
 
-                if (isSilent) {
-                    const syncTime = new Date().toLocaleTimeString('pt-BR');
-                    if(syncStatus) {
-                        syncStatus.textContent = `Sincronizado às ${syncTime}`;
-                        syncStatus.style.color = '#2ECC71';
-                    }
-                } else {
-                    showNotification('Dados atualizados na nuvem com sucesso!', 'success');
-                }
+                syncStatus.textContent = `Sincronizado às ${new Date().toLocaleTimeString('pt-BR')}`;
+                syncStatus.style.color = '#2ECC71';
+                if (!isSilent) showNotification('Dados salvos na nuvem!', 'success');
                 addActivity('fas fa-cloud-upload-alt', 'Dados sincronizados com a nuvem.');
-
+                await dbManager.set('settings', { key: NEEDS_SYNC_KEY, value: false });
             } catch (error) {
-                console.error('Erro ao salvar na nuvem:', error);
-                if (isSilent) {
-                    if(syncStatus) {
-                        syncStatus.textContent = 'Erro de sincronização';
-                        syncStatus.style.color = '#E74C3C';
-                    }
-                }
+                syncStatus.textContent = 'Erro de sincronização';
+                syncStatus.style.color = '#E74C3C';
                 showNotification('Falha ao sincronizar os dados. Verifique a sua ligação.', 'error');
             }
         }
 
         async function loadFromCloud(isSilent = false) {
             const syncStatus = document.getElementById('syncStatus');
-            if (syncStatus) {
-                syncStatus.textContent = 'A carregar dados da nuvem...';
-            }
+            if (!isSilent) syncStatus.textContent = 'A carregar da nuvem...';
 
             try {
                 const response = await fetch(`https://jsonblob.com/api/jsonBlob/${FIXED_SYNC_KEY}`);
-
-                if (!response.ok) {
-                    if (response.status === 404) throw new Error('Nenhum dado encontrado na nuvem.');
-                    throw new Error(`Erro no servidor: ${response.statusText}`);
-                }
-
+                if (!response.ok) throw new Error(response.status === 404 ? 'Nenhum backup na nuvem.' : `Erro no servidor: ${response.statusText}`);
                 const data = await response.json();
+                if (!data || !Array.isArray(data.batteries)) throw new Error('Dados da nuvem inválidos.');
 
-                if (!data || !Array.isArray(data.batteries)) {
-                    throw new Error('O formato dos dados na nuvem é inválido.');
-                }
+                // Compara as datas do último dado local e da nuvem
+                const localLastUpdate = batteryData.length > 0 ? Math.max(...batteryData.map(b => new Date(b.timestamp).getTime())) : 0;
+                const cloudLastUpdate = new Date(data.savedAt).getTime();
 
-                if (isSilent) {
+                if (cloudLastUpdate > localLastUpdate) {
                     await applyCloudData(data);
                 } else {
-                    cloudDataToLoad = data;
-                    cloudLoadConfirmModal.classList.add('active');
+                     if (!isSilent) showNotification('Os seus dados locais estão mais recentes que os da nuvem.', 'info');
+                     updateOnlineStatus(); // Apenas atualiza o status se não carregar nada
                 }
-
             } catch (error) {
-                console.error('Erro ao carregar da nuvem:', error);
-                showNotification(`Falha ao carregar: ${error.message}`, 'error');
-                if (syncStatus) {
-                    syncStatus.textContent = 'Falha ao carregar da nuvem';
-                    syncStatus.style.color = '#E74C3C';
-                }
+                if (!isSilent) showNotification(`Falha ao carregar: ${error.message}`, 'error');
+                updateOnlineStatus(); // Atualiza o status em caso de erro
             }
         }
 
         async function applyCloudData(data) {
-            try {
-                await dbManager.clear('batteries');
-                
-                for (const battery of data.batteries) {
-                    await dbManager.set('batteries', battery);
-                }
-
-                await loadFromDB();
-                updateUI();
-
-                if (data.batteries.length > 0) {
-                    showNotification(`${data.batteries.length} registos carregados da nuvem!`, 'success');
-                }
-                addActivity('fas fa-cloud-download-alt', 'Dados carregados da nuvem.');
-
-                const syncStatus = document.getElementById('syncStatus');
-                if (syncStatus) {
-                    const syncTime = new Date(data.savedAt).toLocaleString('pt-BR');
-                    syncStatus.textContent = `Sincronizado em ${syncTime}`;
-                    syncStatus.style.color = '#2ECC71';
-                }
-
-            } catch (error) {
-                console.error('Erro ao aplicar dados da nuvem:', error);
-                showNotification('Ocorreu um erro ao aplicar os dados carregados.', 'error');
-            } finally {
-                cloudDataToLoad = null;
+            await dbManager.clear('batteries');
+            for (const battery of data.batteries) {
+                await dbManager.set('batteries', battery);
             }
+            await loadFromDB();
+            updateUI();
+            
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.textContent = `Sincronizado em ${new Date(data.savedAt).toLocaleString('pt-BR')}`;
+            syncStatus.style.color = '#2ECC71';
+            showNotification(`${data.batteries.length} registos carregados da nuvem!`, 'success');
+            addActivity('fas fa-cloud-download-alt', 'Dados carregados da nuvem.');
         }
         // #endregion
 
@@ -4289,14 +3534,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
