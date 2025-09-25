@@ -1324,6 +1324,11 @@
                                 <input type="text" id="clientName" class="form-control" placeholder="Nome completo" autocomplete="off">
                             </div>
                             
+                            <div class="form-group">
+                                <label for="clientPhone">Telefone (WhatsApp)</label>
+                                <input type="tel" id="clientPhone" class="form-control" placeholder="Ex: 5511999998888">
+                            </div>
+
                             <div class="form-group autocomplete-container">
                                 <label for="salesmanName">Nome do Vendedor</label>
                                 <input type="text" id="salesmanName" class="form-control" placeholder="Nome do vendedor" autocomplete="off">
@@ -1676,6 +1681,7 @@
                                         <th>Modelo</th>
                                         <th>Cliente</th>
                                         <th>Vendedor</th>
+                                        <th>Telefone</th>
                                         <th>Status Prazo</th>
                                         <th>Status Processo</th>
                                         <th>Ação Final</th>
@@ -1699,11 +1705,13 @@
                             </div>
                         </div>
                         
-                        <div class="action-buttons" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px;">
-                            <button id="previewPdfBtn" class="btn btn-info"><i class="fas fa-eye"></i> Visualizar PDF Único</button>
-                            <button id="pdfBtn" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Baixar PDF Único</button>
-                            <button id="batchPdfBtn" class="btn btn-success"><i class="fas fa-file-archive"></i> Baixar Todos (PDF por Cliente)</button>
+                        <div class="action-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 20px;">
+                            <button id="previewPdfBtn" class="btn btn-info"><i class="fas fa-eye"></i> Visualizar PDF</button>
+                            <button id="pdfBtn" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Baixar PDF</button>
+                            <button id="batchPdfBtn" class="btn btn-success"><i class="fas fa-file-archive"></i> Baixar Todos (PDF)</button>
                             <button id="excelBtn" class="btn btn-primary"><i class="fas fa-file-excel"></i> Baixar Excel</button>
+                            <button id="whatsappFilteredBtn" class="btn btn-success"><i class="fab fa-whatsapp"></i> WhatsApp (Filtrado)</button>
+                            <button id="whatsappGeneralBtn" class="btn btn-warning"><i class="fab fa-whatsapp"></i> WhatsApp (Geral)</button>
                             <button id="clearBtn" class="btn btn-danger viewer-hidden"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
                         </div>
                     </div>
@@ -1836,12 +1844,12 @@
         </div>
     </div>
 
-    <!-- Modal para Editar Nomes -->
-    <div class="modal" id="nameEditModal">
+    <!-- Modal para Editar Dados do Cliente -->
+    <div class="modal" id="clientEditModal">
         <div class="modal-content">
-            <span class="modal-close" id="closeNameEditModal">&times;</span>
-            <h3 class="modal-title">Editar Nomes</h3>
-            <p style="text-align: center; font-size: 14px; margin-bottom: 15px;">A alteração será aplicada a todos os registos com estes nomes.</p>
+            <span class="modal-close" id="closeClientEditModal">&times;</span>
+            <h3 class="modal-title">Editar Dados do Cliente</h3>
+            <p style="text-align: center; font-size: 14px; margin-bottom: 15px;">A alteração será aplicada a todos os registos com este cliente.</p>
             
             <div class="form-group">
                 <label for="editClientName">Nome do Cliente</label>
@@ -1849,11 +1857,16 @@
             </div>
 
             <div class="form-group">
+                <label for="editClientPhone">Telefone (WhatsApp)</label>
+                <input type="tel" id="editClientPhone" class="form-control" placeholder="Ex: 5511999998888">
+            </div>
+
+            <div class="form-group">
                 <label for="editSalesmanName">Nome do Vendedor</label>
                 <input type="text" id="editSalesmanName" class="form-control">
             </div>
 
-            <button id="saveNameEditBtn" class="btn btn-success">
+            <button id="saveClientEditBtn" class="btn btn-success">
                 <i class="fas fa-save"></i> Salvar Alterações
             </button>
         </div>
@@ -1887,7 +1900,7 @@
         </div>
     </div>
 
-    <!-- NOVO MODAL DE CONFIRMAÇÃO GENÉRICO -->
+    <!-- Modal de Confirmação Genérico -->
     <div class="modal" id="confirmModal">
         <div class="modal-content">
             <h3 class="modal-title" id="confirmTitle">Confirmar Ação</h3>
@@ -2003,11 +2016,12 @@
         const saveAnalysisBtn = document.getElementById('saveAnalysisBtn');
         const analysisAddObservationBtn = document.getElementById('analysisAddObservationBtn');
 
-        const nameEditModal = document.getElementById('nameEditModal');
-        const closeNameEditModal = document.getElementById('closeNameEditModal');
+        const clientEditModal = document.getElementById('clientEditModal');
+        const closeClientEditModal = document.getElementById('closeClientEditModal');
         const editClientNameInput = document.getElementById('editClientName');
         const editSalesmanNameInput = document.getElementById('editSalesmanName');
-        const saveNameEditBtn = document.getElementById('saveNameEditBtn');
+        const editClientPhoneInput = document.getElementById('editClientPhone');
+        const saveClientEditBtn = document.getElementById('saveClientEditBtn');
 
         const observationModal = document.getElementById('observationModal');
         const closeObservationModal = document.getElementById('closeObservationModal');
@@ -2018,6 +2032,7 @@
         const procedenteBtn = document.getElementById('procedenteBtn');
         const descarregadaBtn = document.getElementById('descarregadaBtn');
         const addObservationBtn = document.getElementById('addObservationBtn');
+        const clientPhoneInput = document.getElementById('clientPhone');
 
         const procedenteModal = document.getElementById('procedenteModal');
         const closeProcedenteModal = document.getElementById('closeProcedenteModal');
@@ -2048,6 +2063,9 @@
         const addLaudoImageBtn = document.getElementById('addLaudoImageBtn');
         const laudoImageUpload = document.getElementById('laudoImageUpload');
         const laudoImagePreviews = document.getElementById('laudoImagePreviews');
+
+        const whatsappFilteredBtn = document.getElementById('whatsappFilteredBtn');
+        const whatsappGeneralBtn = document.getElementById('whatsappGeneralBtn');
         // #endregion
 
         // #region Estado do Sistema
@@ -2087,7 +2105,7 @@
         const NEEDS_SYNC_KEY = 'fabreck_needs_sync';
         const FIXED_SYNC_KEY = '1418850998876823552';
         
-        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjgyIiB2aWV3Qm94PSIwIDAgMzIwIDgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxnIGlkPSJMb2dvIj48cmVjdCBpZD0iQm90dG9tQmFyIiB5PSI1NyIgd2lkdGg9IjMyMCIgaGVpZGg0PSIyNSIgZmlsbD0iIzAwNDdhYiIvPjxwYXRoIGlkPSJTdHJpcGUxMiIgZD0iTTI5MCA1N0gzMTVMMzA1IDgySDI4MFoiIGZpbGw9IndoaXRlIiAvPjxwYXRoIGlkPSJTdHJpcGUxMSIgZD0iTTI0NSA1N0gyNzBMMjYwIDgySDIzNVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTEwIiBkPSJNMjAwIDU3SDIyNUwyMTUgODJIMTkwWiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlOSIgZD0iTTE1NSA1N0gxODBMMTcwIDgySDE0NVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTgiIGQ9Ik0xMTAgNTdIMTM1TDEyNSA4MkgxMDBaIiBmaWxsPSJ3aGl0ZSIvPjxwYXRoIGlkPSJTdHJpcGU3IiBkPSJNNjUgNTdIOU9MDgwIDgySDQ1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlNiIgZD0iTTIwIDU3SDQ1TDM1IDgySDEwWiIgZmlsbD0id2hpdGUiLz48cmVjdCBpZD0iVG9wQmFyIiB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI1IiBmaWxsPSIjMDA0N2FiIi8+PHBhdGggaWQ9IlN0cmlwZTUiIGQ9Ik0yOTAgMEgzMTVMMzA1IDI1SDI4MFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTQiIGQ9Ik0yNDUgMEgyNzBMMjYwIDI1SDIzNVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTMiIGQ9Ik0yMDAgMEgyMjVMMjE1IDI1SDE5MFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTIiIGQ9Ik0xNSA1OEgxODBMMTcwIDI1SDE0NVoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTEiIGQ9Ik0xMTAgMEgxMzVMMTI1IDI1SDEwMFoiIGZpbGw9IndoaXRlIi8+PHBhdGggaWQ9IlN0cmlwZTAiIGQ9Ik02NSAwSDkwTDgwIDI1SDQ1WiIgZmlsbD0id2hpdGUiLz48cGF0aCBpZD0iU3RyaXBlLTEiIGQ9Ik0yMCAwSDQ1TDM1IDI1SDEwWiIgZmlsbD0id2hpdGUiLz48dGV4dCBpZD0iVGV4dCIgeD0iMTYwIiB5PSI1OCIgZm9udC1mYW1pbHk9IkltcGFjdCwgQXJpYWwgQmxhY2ssIHNhbnMtc2VyaWYiIGZvbnQtd2VpZ2h0PSI5MDAiIGZvbnQtc2l6ZT0iNDgiIGZpbGw9IiNEMjI2MzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIyLjUiIHBhaW50LW9yZGVyPSJzdHJva2UiPkZBQkJSRUNLPC90ZXh0PjwvZz48L3N2Zz4=';
+        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjgyIiB2aWV3Qm94PSIwIDAgMzIwIDgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iODIiIGZpbGw9IiMwMDQ3QUIiLz48dGV4dCB4PSIxNjAiIHk9IjU4IiBmb250LWZhbWlseT0iSW1wYWN0LCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjUycHgiIGZpbGw9IiNEMjI2MzAiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIzcHgiIHBhaW50LW9yZGVyPSJzdHJva2UiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkZBQkJSRUNLPC90ZXh0Pjwvc3ZnPg==';
 
         const batteryModelMap = {
             'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
@@ -2297,6 +2315,8 @@
             batchPdfBtn?.addEventListener('click', generateBatchPDFs);
             excelBtn?.addEventListener('click', exportToFormattedExcel);
             clearBtn?.addEventListener('click', () => showConfirmModal('Limpar Todos os Dados', 'TEM CERTEZA? Todos os dados de garantia serão apagados permanentemente.', clearData));
+            whatsappFilteredBtn?.addEventListener('click', sendFilteredViaWhatsApp);
+            whatsappGeneralBtn?.addEventListener('click', sendGeneralWhatsAppReport);
             
             codeFilter?.addEventListener('input', () => {
                 clearTimeout(filterDebounceTimer);
@@ -2326,8 +2346,8 @@
             selectAllCheckbox?.addEventListener('change', handleSelectAll);
             batchAnalyzeBtn?.addEventListener('click', openBatchAnalysisModal);
 
-            closeNameEditModal?.addEventListener('click', () => nameEditModal.classList.remove('active'));
-            saveNameEditBtn?.addEventListener('click', saveEditedNames);
+            closeClientEditModal?.addEventListener('click', () => clientEditModal.classList.remove('active'));
+            saveClientEditBtn?.addEventListener('click', saveEditedClientData);
 
             closeObservationModal?.addEventListener('click', () => observationModal.classList.remove('active'));
             saveObservationBtn?.addEventListener('click', () => {
@@ -2428,6 +2448,8 @@
         }
         
         function showPage(pageId) {
+            document.getElementById('mainContentWrapper').scrollTop = 0; // Garante que a nova página comece no topo
+
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById(pageId)?.classList.add('active');
             
@@ -2557,6 +2579,7 @@
             const salesman = salesmanNameInput.value.trim().toUpperCase();
             const code = serialCodeInput.value.trim().toUpperCase();
             const submissionDate = submissionDateInput.value;
+            const clientPhone = clientPhoneInput.value.trim();
             const warrantyTypeEl = document.querySelector('input[name="warrantyType"]:checked');
             const recommendation = recommendationInput.value.trim();
             
@@ -2573,6 +2596,7 @@
             
             const newBattery = {
                 id: Date.now(), client, salesman, code, submissionDate: submissionDateObj.toISOString(),
+                clientPhone: clientPhone,
                 batteryModel: getBatteryModelFromCode(code),
                 manufDate: getManufacturingDate(week, year).toLocaleDateString('pt-BR'),
                 warranty_period_status: warrantyStatus,
@@ -2800,6 +2824,7 @@
                     <td>${battery.batteryModel}</td>
                     <td>${battery.client}</td>
                     <td>${battery.salesman}</td>
+                    <td>${battery.clientPhone || '-'}</td>
                     <td>${warrantyStatus}</td>
                     <td>${workflowStatus}</td>
                     <td>${finalActionBadge}</td>
@@ -2870,7 +2895,7 @@
 
             // Adiciona os event listeners após a renderização
             reportBody.querySelectorAll('.remove-btn').forEach(btn => btn.addEventListener('click', function() { showConfirmModal('Remover Bateria', 'Tem a certeza que deseja remover esta bateria? A ação é irreversível.', () => removeBattery(parseInt(this.dataset.id))); }));
-            reportBody.querySelectorAll('.name-edit-btn').forEach(btn => btn.addEventListener('click', function() { openNameEditModal(parseInt(this.dataset.id)); }));
+            reportBody.querySelectorAll('.name-edit-btn').forEach(btn => btn.addEventListener('click', function() { openClientEditModal(parseInt(this.dataset.id)); }));
 
             updateReportTotals(filteredData);
             updateModelStatusSummary(filteredData);
@@ -3056,37 +3081,51 @@
             batchAnalyzeBtn.innerHTML = selectedCount > 0 ? `<i class="fas fa-layer-group"></i> Analisar ${selectedCount} Selecionados` : '<i class="fas fa-layer-group"></i> Analisar Selecionados';
         }
 
-        async function openNameEditModal(id) {
+        async function openClientEditModal(id) {
             const battery = await dbManager.get('batteries', id);
             if (!battery) return;
             editingBatteryId = id;
             editClientNameInput.value = battery.client;
             editSalesmanNameInput.value = battery.salesman;
-            nameEditModal.classList.add('active');
+            
+            // Procura o telefone mais recente para este cliente
+            const allClientEntries = batteryData.filter(b => b.client === battery.client && b.clientPhone);
+            const latestEntry = allClientEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
+            editClientPhoneInput.value = latestEntry ? latestEntry.clientPhone : '';
+
+            clientEditModal.classList.add('active');
         }
 
-        async function saveEditedNames() {
+        async function saveEditedClientData() {
             const originalBattery = await dbManager.get('batteries', editingBatteryId);
             if (!originalBattery) return;
 
             const newClientName = editClientNameInput.value.trim().toUpperCase();
             const newSalesmanName = editSalesmanNameInput.value.trim().toUpperCase();
+            const newClientPhone = editClientPhoneInput.value.trim();
             if (!newClientName || !newSalesmanName) return showNotification('Os nomes não podem estar em branco.', 'error');
             
             const { client: oldClientName, salesman: oldSalesmanName } = originalBattery;
             const allBatteries = await dbManager.getAll('batteries');
             for (const battery of allBatteries) {
                 let updated = false;
-                if (battery.client === oldClientName) { battery.client = newClientName; updated = true; }
-                if (battery.salesman === oldSalesmanName) { battery.salesman = newSalesmanName; updated = true; }
+                if (battery.client === oldClientName) { 
+                    battery.client = newClientName; 
+                    battery.clientPhone = newClientPhone; // Atualiza o telefone junto com o nome
+                    updated = true; 
+                }
+                if (battery.salesman === oldSalesmanName) { 
+                    battery.salesman = newSalesmanName; 
+                    updated = true; 
+                }
                 if (updated) await dbManager.set('batteries', battery);
             }
 
             await loadFromDB();
             updateUI();
-            nameEditModal.classList.remove('active');
-            showNotification('Nomes atualizados em todos os registos!', 'success');
-            addActivity('fas fa-pencil-alt', `Nomes '${oldClientName}/${oldSalesmanName}' atualizados.`);
+            clientEditModal.classList.remove('active');
+            showNotification('Dados do cliente atualizados em todos os registos!', 'success');
+            addActivity('fas fa-pencil-alt', `Dados do cliente '${oldClientName}' atualizados.`);
             triggerAutoSync();
         }
 
@@ -3169,58 +3208,113 @@
         }
         
         function drawPdfHeader(doc, clientName, salesmanName) {
-            doc.setFontSize(18); doc.text('FABRECK DO BRASIL', 195, 15, { align: 'right' });
-            doc.setFontSize(12); doc.text('Relatório de Análise de Garantia', 195, 22, { align: 'right' });
-            doc.setFontSize(10); doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 195, 28, { align: 'right' });
-            doc.setFontSize(12); doc.text(`Cliente: ${clientName}`, 15, 45); doc.text(`Vendedor: ${salesmanName}`, 15, 51);
-            doc.setLineWidth(0.5); doc.line(15, 58, 195, 58);
-            doc.setFontSize(9); doc.setFont(undefined, 'bold'); doc.text('RESPONSÁVEL TÉCNICO: REGINALDO SANTOS', 15, 65);
-            doc.text('ANÁLISE DE GARANTIA: JENILTON CRUZ', 195, 65, { align: 'right' }); doc.setFont(undefined, 'normal');
-            return 75;
+            // Logo como texto
+            doc.setFontSize(22);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor('#0047AB'); // Azul Fabreck
+            doc.text('FABRECK', 15, 20);
+            doc.setTextColor(0, 0, 0);
+
+            // Informações da Empresa e Relatório
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'normal');
+            doc.text('FABRECK DO BRASIL', 195, 15, { align: 'right' });
+            doc.text('Relatório de Análise de Garantia', 195, 20, { align: 'right' });
+            doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 195, 25, { align: 'right' });
+
+            // Linha Separadora
+            doc.setLineWidth(0.5);
+            doc.line(15, 35, 195, 35);
+
+            // Informações do Cliente
+            doc.setFontSize(12);
+            doc.text(`Cliente: ${clientName}`, 15, 45);
+            doc.text(`Vendedor: ${salesmanName}`, 15, 51);
+            
+            // Responsáveis
+            doc.setFontSize(9); 
+            doc.setFont(undefined, 'bold'); 
+            doc.text('RESPONSÁVEL TÉCNICO: REGINALDO SANTOS', 15, 62);
+            doc.text('ANÁLISE DE GARANTIA: JENILTON CRUZ', 195, 62, { align: 'right' }); 
+            doc.setFont(undefined, 'normal');
+            return 72; // Nova posição Y inicial
+        }
+
+        function drawPdfFooter(doc) {
+            const pageCount = doc.internal.getNumberOfPages();
+            doc.setFontSize(8);
+            for (let i = 1; i <= pageCount; i++) {
+                doc.setPage(i);
+                doc.setLineWidth(0.2);
+                doc.line(15, 285, 195, 285);
+                doc.text(`Relatório gerado em ${new Date().toLocaleString('pt-BR')}`, 15, 290);
+                doc.text(`Página ${i} de ${pageCount}`, 195, 290, { align: 'right' });
+            }
         }
 
         function buildClientPDFPage(doc, clientBatteries, startY) {
             let currentY = startY;
             const finalizedData = clientBatteries.filter(b => b.status === 'finalized');
+
+            // --- SEÇÃO DE RESUMO ---
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setFillColor('#0047AB');
+            doc.rect(15, currentY - 5, 180, 7, 'F');
+            doc.setTextColor('#FFFFFF');
+            doc.text('Resumo para Separação', 20, currentY);
+            doc.setTextColor(0,0,0);
+            currentY += 10;
+
             if (finalizedData.length === 0) {
-                 doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Nenhuma bateria finalizada para este cliente.', 15, currentY); currentY += 10;
+                 doc.setFontSize(10).setFont(undefined, 'normal').text('Nenhuma bateria finalizada para este cliente no período.', 15, currentY);
+                 currentY += 10;
             } else {
                  const summary = finalizedData.reduce((acc, battery) => {
                     const model = battery.batteryModel || 'N/A';
-                    let category = 'rejected';
-                    if (battery.finalAction.includes('APROVADA')) category = 'approved';
-                    else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'expired';
-                    else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'recharge';
+                    let category = 'Reprovadas'; // Padrão
+                    if (battery.finalAction.includes('APROVADA')) category = 'Aprovadas (Troca)';
+                    else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'Reprovadas (Fora do Prazo)';
+                    else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'Para Recarregar';
                     
+                    if (!acc[category]) acc[category] = {};
                     acc[category][model] = (acc[category][model] || 0) + 1;
                     return acc;
-                }, { approved: {}, rejected: {}, recharge: {}, expired: {} });
+                }, {});
 
-                doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.text('Resumo para Separação', 15, currentY); currentY += 10;
-
-                const createSummaryList = (title, data, color) => {
-                    if (Object.keys(data).length > 0) {
-                        if (currentY > 260) { doc.addPage(); currentY = 20; }
-                        const totalCount = Object.values(data).reduce((sum, count) => sum + count, 0);
-                        doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.setTextColor(...color);
-                        doc.text(`${title} - TOTAL: ${String(totalCount).padStart(2, '0')}`, 15, currentY); currentY += 8;
-                        doc.setFontSize(10); doc.setFont(undefined, 'normal'); doc.setTextColor(0, 0, 0);
-                        const items = Object.entries(data).map(([model, count]) => `${model} = ${String(count).padStart(2, '0')}`).join('  /  ');
-                        doc.text(items, 15, currentY, { maxWidth: 180 }); currentY += 15;
-                    }
-                };
+                const order = ['Aprovadas (Troca)', 'Para Recarregar', 'Reprovadas', 'Reprovadas (Fora do Prazo)'];
                 
-                createSummaryList('BATERIAS APROVADAS (PARA TROCA)', summary.approved, [39, 174, 96]);
-                createSummaryList('BATERIAS PARA RECARREGAR', summary.recharge, [243, 156, 18]);
-                createSummaryList('BATERIAS REPROVADAS', summary.rejected, [231, 76, 60]);
-                createSummaryList('BATERIAS FORA DO PRAZO', summary.expired, [127, 140, 141]);
+                order.forEach(category => {
+                    if (summary[category]) {
+                        if (currentY > 250) { doc.addPage(); currentY = 20; } // Adiciona nova página se não houver espaço
+                        const total = Object.values(summary[category]).reduce((s, c) => s + c, 0);
+                        
+                        doc.setFontSize(11);
+                        doc.setFont(undefined, 'bold');
+                        doc.text(`${category.toUpperCase()} - TOTAL: ${total}`, 15, currentY);
+                        currentY += 6;
+
+                        doc.setFontSize(9);
+                        doc.setFont(undefined, 'normal');
+                        const details = Object.entries(summary[category]).map(([model, count]) => `  - ${model}: ${count}`).join('\n');
+                        doc.text(details, 15, currentY);
+                        currentY += (details.split('\n').length * 5) + 5; // Ajusta o Y baseado no número de modelos
+                    }
+                });
+
+                currentY += 5; // Espaço extra antes da próxima seção
             }
-
-
-            if (currentY > 240) { doc.addPage(); currentY = 20; } 
-            else { doc.setLineWidth(0.2); doc.line(15, currentY - 5, 195, currentY - 5); }
             
-            doc.setFontSize(14); doc.setFont(undefined, 'bold'); doc.setTextColor(0,0,0); doc.text('Detalhamento das Baterias', 15, currentY); currentY += 10;
+            // --- SEÇÃO DE DETALHAMENTO ---
+            if (currentY > 250) { doc.addPage(); currentY = 20; }
+            doc.setFontSize(12);
+            doc.setFont(undefined, 'bold');
+            doc.setFillColor('#0047AB');
+            doc.rect(15, currentY - 5, 180, 7, 'F');
+            doc.setTextColor('#FFFFFF');
+            doc.text('Detalhamento de Todas as Baterias Registadas', 20, currentY);
+            doc.setTextColor(0,0,0);
+            currentY += 10;
 
             doc.autoTable({
                 startY: currentY,
@@ -3230,11 +3324,15 @@
             });
             currentY = doc.lastAutoTable.finalY + 15;
 
+            // --- SEÇÃO DE CRITÉRIOS ---
             if (currentY > 240) { doc.addPage(); currentY = 20; }
-            doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('Critérios para Análise de Garantia', 15, currentY); currentY += 8;
-            doc.setFontSize(9); doc.setFont(undefined, 'normal');
-            doc.text(`APROVADA (TROCA): ${warrantyInstructions.approved}`, 17, currentY, { maxWidth: 180 }); currentY += 12;
-            doc.text(`REPROVADA: ${warrantyInstructions.rejected_return}`, 17, currentY, { maxWidth: 180 }); currentY += 12;
+            doc.setFontSize(10);
+            doc.setFont(undefined, 'bold');
+            doc.text('Critérios para Análise de Garantia', 15, currentY);
+            currentY += 6;
+            doc.setFontSize(8); doc.setFont(undefined, 'normal');
+            doc.text(`APROVADA (TROCA): ${warrantyInstructions.approved}`, 17, currentY, { maxWidth: 180 }); currentY += 10;
+            doc.text(`REPROVADA: ${warrantyInstructions.rejected_return}`, 17, currentY, { maxWidth: 180 }); currentY += 10;
             doc.text(`SUCATEAR: ${warrantyInstructions.rejected_scrap}`, 17, currentY, { maxWidth: 180 });
         }
 
@@ -3255,6 +3353,8 @@
                     const startY = drawPdfHeader(doc, clientName, salesmanName);
                     buildClientPDFPage(doc, clientBatteries, startY);
                 });
+
+                drawPdfFooter(doc); // Adiciona o rodapé em todas as páginas
                 return doc;
             } catch (error) {
                 showNotification(`Erro ao gerar PDF: ${error.message}`, 'error');
@@ -3364,10 +3464,21 @@
                 const doc = new window.jspdf.jsPDF();
                 const { analysis, diagnosis } = generateLaudoDiagnosis(data);
                 let y = 40;
-                doc.setFontSize(18); doc.text('FABRECK DO BRASIL', 200, 15, { align: 'right' });
-                doc.setFontSize(12); doc.text('Laudo Técnico de Análise de Garantia', 200, 22, { align: 'right' });
-                doc.setLineWidth(0.5); doc.line(15, 30, 200, 30);
                 
+                // Cabeçalho Profissional
+                doc.setFontSize(22);
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor('#0047AB'); // Azul Fabreck
+                doc.text('FABRECK', 15, 20);
+                doc.setTextColor(0, 0, 0);
+
+                doc.setFontSize(10);
+                doc.setFont(undefined, 'normal');
+                doc.text('Laudo Técnico de Análise de Garantia', 200, 22, { align: 'right' });
+                doc.setLineWidth(0.5); 
+                doc.line(15, 30, 200, 30);
+                
+                // Corpo do Laudo
                 doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('1. DADOS DE IDENTIFICAÇÃO', 15, y); y += 7;
                 doc.setFontSize(10); doc.setFont(undefined, 'normal');
                 doc.text(`Cliente: ${data.client}`, 17, y); doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 200, y, {align: 'right'}); y += 5;
@@ -3400,6 +3511,8 @@
                 doc.line(60, signatureY, 150, signatureY);
                 doc.setFontSize(10); doc.text('JENILTON CRUZ', 105, signatureY + 5, { align: 'center'});
                 doc.setFontSize(8); doc.text('Técnico Responsável', 105, signatureY + 9, { align: 'center'});
+                
+                drawPdfFooter(doc); // Adiciona o rodapé também no laudo
                 return doc;
             } catch (error) { showNotification(`Erro ao gerar laudo: ${error.message}`, 'error'); return null; }
         }
@@ -3535,7 +3648,135 @@
         }
         // #endregion
 
+        // #region WhatsApp
+        function generateWhatsAppTextMessage(data) {
+            const clientName = data[0]?.client || 'N/A';
+            let message = `*Relatório Completo de Garantia FABRECK*\n\n`;
+            message += `*Cliente:* ${clientName}\n`;
+            message += `*Data:* ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+
+            // --- Secção de Baterias Finalizadas ---
+            const finalizedData = data.filter(b => b.status === 'finalized');
+            message += `--- *BATERIAS FINALIZADAS* ---\n`;
+
+            if (finalizedData.length === 0) {
+                message += "Nenhuma bateria finalizada para este cliente.\n\n";
+            } else {
+                const summary = finalizedData.reduce((acc, battery) => {
+                    let category = 'Reprovadas'; // Padrão
+                    if (battery.finalAction.includes('APROVADA')) category = 'Aprovadas (Troca)';
+                    else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'Reprovadas (Fora do Prazo)';
+                    else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'Para Recarregar';
+                    
+                    if (!acc[category]) acc[category] = [];
+                    acc[category].push(battery.code);
+                    return acc;
+                }, {});
+
+                const order = ['Aprovadas (Troca)', 'Para Recarregar', 'Reprovadas', 'Reprovadas (Fora do Prazo)'];
+                let hasContent = false;
+                
+                order.forEach(category => {
+                    if (summary[category]) {
+                        hasContent = true;
+                        const total = summary[category].length;
+                        const codes = summary[category].join(', ');
+                        message += `\n*${category.toUpperCase()} - TOTAL: ${total}*\n`;
+                        message += `Códigos: ${codes}\n`;
+                    }
+                });
+
+                if (!hasContent) {
+                     message += "Nenhuma bateria finalizada com parecer para este cliente.\n";
+                }
+                 message += `\n`;
+            }
+
+            // --- Secção de Baterias em Análise ---
+            const inAnalysisData = data.filter(b => b.status === 'in_analysis');
+            message += `--- *BATERIAS EM ANÁLISE* ---\n`;
+
+            if (inAnalysisData.length > 0) {
+                const total = inAnalysisData.length;
+                const codes = inAnalysisData.map(b => b.code).join(', ');
+                message += `\n*TOTAL EM ANÁLISE: ${total}*\n`;
+                message += `Códigos: ${codes}\n\n`;
+            } else {
+                message += "\nNenhuma bateria pendente de análise.\n\n";
+            }
+
+
+            message += `_Relatório gerado pelo Sistema de Garantia Fabreck._`;
+            return message;
+        }
+
+        function sendFilteredViaWhatsApp() {
+            const selectedClient = clientFilter.value;
+            if (!selectedClient) {
+                showNotification('Por favor, filtre por um cliente específico para enviar o relatório.', 'error');
+                return;
+            }
+            
+            const filteredData = getFilteredData();
+            if (filteredData.length === 0) {
+                showNotification('Não há dados no relatório para este cliente.', 'error');
+                return;
+            }
+
+            // 1. Gera a mensagem de texto a partir dos dados filtrados.
+            const textMessage = generateWhatsAppTextMessage(filteredData);
+            
+            // 2. Codifica a mensagem para ser usada numa URL.
+            const encodedMessage = encodeURIComponent(textMessage);
+            
+            // 3. Abre o WhatsApp Web com a mensagem pré-preenchida, pronto para o utilizador escolher o contacto.
+            window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
+
+            showNotification('A sua mensagem para o WhatsApp está pronta!', 'success');
+        }
+
+        function sendGeneralWhatsAppReport() {
+            if (batteryData.length === 0) {
+                showNotification('Não há dados para gerar o relatório.', 'error');
+                return;
+            }
+
+            const groupedByClient = batteryData.reduce((acc, battery) => {
+                (acc[battery.client] = acc[battery.client] || []).push(battery);
+                return acc;
+            }, {});
+
+            let fullMessage = `*Relatório Geral de Garantia FABRECK*\n\n`;
+            fullMessage += `*Data:* ${new Date().toLocaleDateString('pt-BR')}\n`;
+            fullMessage += `------------------------------------\n\n`;
+
+            const clients = Object.keys(groupedByClient).sort();
+
+            clients.forEach(clientName => {
+                const clientData = groupedByClient[clientName];
+                const clientReportSection = generateWhatsAppTextMessage(clientData);
+                // Remove o cabeçalho e rodapé padrão para evitar repetição
+                const cleanSection = clientReportSection
+                    .replace(`*Relatório Completo de Garantia FABRECK*\n\n`, '')
+                    .replace(`*Data:* ${new Date().toLocaleDateString('pt-BR')}\n\n`, '')
+                    .replace(`_Relatório gerado pelo Sistema de Garantia Fabreck._`, '');
+
+                fullMessage += cleanSection;
+                fullMessage += `------------------------------------\n\n`;
+            });
+
+            fullMessage += `_Relatório gerado pelo Sistema de Garantia Fabreck._`;
+
+            const encodedMessage = encodeURIComponent(fullMessage);
+            window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
+            showNotification('O seu relatório geral para o WhatsApp está pronto!', 'success');
+        }
+        // #endregion
+
+
         document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
+
+
