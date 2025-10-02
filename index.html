@@ -1152,6 +1152,12 @@
             text-align: center;
         }
 
+        .batch-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
         @media (min-width: 600px) {
             .batch-actions {
                 flex-direction: row;
@@ -1174,7 +1180,7 @@
                 grid-template-columns: 1fr 1fr;
             }
             .filter-row {
-                grid-template-columns: 1fr 1fr;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             }
             #finalizadoPage .stat-cards {
                 grid-template-columns: repeat(4, 1fr);
@@ -1185,9 +1191,6 @@
         @media (min-width: 992px) {
             .total-box {
                 min-width: 200px;
-            }
-            .filter-row {
-                grid-template-columns: repeat(3, 1fr);
             }
         }
 
@@ -1237,7 +1240,7 @@
             }
 
             #reportPage .filter-row {
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
         }
     </style>
@@ -1245,7 +1248,10 @@
 <body>
     <div class="login-overlay" id="loginOverlay">
         <div class="login-card">
-            <img id="logo-img-login" alt="Fabreck Logo" class="logo-img">
+            <div class="logo-text-container">
+                <h1 class="logo-main">FABRECK</h1>
+                <h2 class="logo-sub">BATERIAS</h2>
+            </div>
             <h2>Acesso Restrito</h2>
             <form id="loginForm">
                 <div class="form-group">
@@ -1268,7 +1274,10 @@
         <!-- Sidebar para Desktop -->
         <nav id="sidebar">
             <div class="sidebar-header">
-                <img id="logo-img-sidebar" alt="Fabreck Logo" class="logo-img">
+                <div class="logo-text-container">
+                    <h1 class="logo-main">FABRECK</h1>
+                    <h2 class="logo-sub">BATERIAS</h2>
+                </div>
                 <h3>Garantia</h3>
             </div>
             <div class="sidebar-nav">
@@ -1288,8 +1297,9 @@
         <div id="mainContentWrapper">
             <div class="container">
                 <header>
-                    <div class="logo">
-                        <img id="logo-img-header" alt="Fabreck Logo" class="logo-img">
+                     <div class="logo-text-container">
+                        <h1 class="logo-main">FABRECK</h1>
+                        <h2 class="logo-sub">BATERIAS</h2>
                     </div>
                     <div class="system-title">Sistema de Controle de Garantia</div>
                     
@@ -1533,6 +1543,9 @@
                                 <label for="analysisClientFilter">Agrupar por Cliente:</label>
                                 <select id="analysisClientFilter" class="form-control"></select>
                             </div>
+                            <button id="whatsappAnalysisBtn" class="btn btn-success viewer-hidden" style="margin-top: 0;" disabled>
+                                <i class="fab fa-whatsapp"></i> Notificar
+                            </button>
                             <button id="batchAnalyzeBtn" class="btn btn-success viewer-hidden" disabled>
                                 <i class="fas fa-layer-group"></i> Analisar Selecionados
                             </button>
@@ -1635,6 +1648,12 @@
                                     </select>
                                 </div>
                                 <div class="filter-group">
+                                    <label for="salesmanFilter">Filtrar por Vendedor:</label>
+                                    <select id="salesmanFilter" class="form-control">
+                                        <option value="">Todos os Vendedores</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
                                     <label for="statusFilter">Status da Garantia (Prazo):</label>
                                     <select id="statusFilter" class="form-control">
                                         <option value="">Todos</option>
@@ -1648,6 +1667,16 @@
                                         <option value="">Todos</option>
                                         <option value="in_analysis">Em Análise</option>
                                         <option value="finalized">Finalizado</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="finalActionFilter">Filtrar por Ação Final:</label>
+                                    <select id="finalActionFilter" class="form-control">
+                                        <option value="">Todas as Ações</option>
+                                        <option value="APROVADA - ENVIAR NOVA">APROVADA - ENVIAR NOVA</option>
+                                        <option value="REPROVADA - DEVOLVER AO CLIENTE">REPROVADA - DEVOLVER AO CLIENTE</option>
+                                        <option value="REPROVADA - SUCATEAR">REPROVADA - SUCATEAR</option>
+                                        <option value="REPROVADA - FORA DO PRAZO">REPROVADA - FORA DO PRAZO</option>
                                     </select>
                                 </div>
                             </div>
@@ -1708,10 +1737,9 @@
                         <div class="action-buttons" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-top: 20px;">
                             <button id="previewPdfBtn" class="btn btn-info"><i class="fas fa-eye"></i> Visualizar PDF</button>
                             <button id="pdfBtn" class="btn btn-primary"><i class="fas fa-file-pdf"></i> Baixar PDF</button>
-                            <button id="batchPdfBtn" class="btn btn-success"><i class="fas fa-file-archive"></i> Baixar Todos (PDF)</button>
                             <button id="excelBtn" class="btn btn-primary"><i class="fas fa-file-excel"></i> Baixar Excel</button>
-                            <button id="whatsappFilteredBtn" class="btn btn-success"><i class="fab fa-whatsapp"></i> WhatsApp (Filtrado)</button>
-                            <button id="whatsappGeneralBtn" class="btn btn-warning"><i class="fab fa-whatsapp"></i> WhatsApp (Geral)</button>
+                            <button id="batchPdfBtn" class="btn btn-success"><i class="fas fa-file-archive"></i> Baixar Todos (PDF)</button>
+                            <button id="whatsappBtn" class="btn btn-success"><i class="fab fa-whatsapp"></i> Enviar via WhatsApp</button>
                             <button id="clearBtn" class="btn btn-danger viewer-hidden"><i class="fas fa-trash-alt"></i> Limpar Tudo</button>
                         </div>
                     </div>
@@ -1914,6 +1942,22 @@
         </div>
     </div>
 
+    <!-- Modal de Seleção de Relatório WhatsApp -->
+    <div class="modal" id="whatsappModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeWhatsappModal">&times;</span>
+            <h3 class="modal-title">Escolha o Relatório para Enviar</h3>
+            <div class="info-section" style="margin-top: 0; margin-bottom: 20px;">
+                <p>Selecione o tipo de relatório que deseja gerar e enviar via WhatsApp.</p>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                 <button id="sendFilteredReportBtn" class="btn btn-primary" style="margin-top:0;">Relatório do Filtro Atual</button>
+                 <button id="sendGeneralReportBtn" class="btn btn-warning" style="margin-top:0;">Relatório Geral Completo</button>
+                 <button id="sendTodayReportBtn" class="btn btn-info" style="margin-top:0;">Resumo dos Registos de Hoje</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal" id="passwordModal">
         <div class="modal-content">
             <span class="modal-close" id="closePasswordModal">&times;</span>
@@ -1955,6 +1999,8 @@
         const totalCount = document.getElementById('totalCount');
         const lastUpdate = document.getElementById('lastUpdate');
         const clientFilter = document.getElementById('clientFilter');
+        const salesmanFilter = document.getElementById('salesmanFilter');
+        const finalActionFilter = document.getElementById('finalActionFilter');
         const statusFilter = document.getElementById('statusFilter'); 
         const workflowStatusFilter = document.getElementById('workflowStatusFilter');
         const applyFilterBtn = document.getElementById('applyFilter');
@@ -2064,8 +2110,13 @@
         const laudoImageUpload = document.getElementById('laudoImageUpload');
         const laudoImagePreviews = document.getElementById('laudoImagePreviews');
 
-        const whatsappFilteredBtn = document.getElementById('whatsappFilteredBtn');
-        const whatsappGeneralBtn = document.getElementById('whatsappGeneralBtn');
+        const whatsappBtn = document.getElementById('whatsappBtn');
+        const whatsappModal = document.getElementById('whatsappModal');
+        const closeWhatsappModal = document.getElementById('closeWhatsappModal');
+        const sendFilteredReportBtn = document.getElementById('sendFilteredReportBtn');
+        const sendGeneralReportBtn = document.getElementById('sendGeneralReportBtn');
+        const sendTodayReportBtn = document.getElementById('sendTodayReportBtn');
+        const whatsappAnalysisBtn = document.getElementById('whatsappAnalysisBtn');
         // #endregion
 
         // #region Estado do Sistema
@@ -2079,8 +2130,10 @@
         let activityData = [];
         let currentFilters = {
             client: '',
+            salesman: '',
             status: '',
             workflowStatus: '',
+            finalAction: '',
             startDate: '',
             endDate: '',
             code: ''
@@ -2105,8 +2158,6 @@
         const NEEDS_SYNC_KEY = 'fabreck_needs_sync';
         const FIXED_SYNC_KEY = '1418850998876823552';
         
-        const logoBase64 = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjgyIiB2aWV3Qm94PSIwIDAgMzIwIDgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iODIiIGZpbGw9IiMwMDQ3QUIiLz48dGV4dCB4PSIxNjAiIHk9IjU4IiBmb250LWZhbWlseT0iSW1wYWN0LCBzYW5zLXNlcmlmIiBmb250LXdlaWdodD0iOTAwIiBmb250LXNpemU9IjUycHgiIGZpbGw9IiNEMjI2MzAiIHN0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIzcHgiIHBhaW50LW9yZGVyPSJzdHJva2UiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkZBQkJSRUNLPC90ZXh0Pjwvc3ZnPg==';
-
         const batteryModelMap = {
             'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
             'F': 'FA6D', 'G': 'FA7E', 'H': 'FA8AE', 'I': 'FA8E', 'J': 'FA7AE',
@@ -2203,10 +2254,7 @@
         // #region Inicialização e Autenticação
         async function init() {
             console.log("Inicializando sistema...");
-            document.getElementById('logo-img-header').src = logoBase64;
-            document.getElementById('logo-img-login').src = logoBase64;
-            document.getElementById('logo-img-sidebar').src = logoBase64;
-
+            
             setupEventListeners();
             await dbPromise; 
             await initializeCredentials();
@@ -2218,10 +2266,7 @@
             
             await loadFromDB(); 
             
-            // Tenta carregar da nuvem em segundo plano
             loadFromCloud(true).then(() => {
-                // Após carregar da nuvem, os dados locais são substituídos
-                // Portanto, recarregamos da BD para a memória e atualizamos a UI
                 loadFromDB().then(updateUI);
             });
 
@@ -2271,7 +2316,6 @@
         function setupEventListeners() {
             console.log("Configurando event listeners...");
 
-            // --- Conexão Online/Offline ---
             window.addEventListener('online', autoSyncOfflineChanges);
             window.addEventListener('offline', updateOnlineStatus);
 
@@ -2315,8 +2359,15 @@
             batchPdfBtn?.addEventListener('click', generateBatchPDFs);
             excelBtn?.addEventListener('click', exportToFormattedExcel);
             clearBtn?.addEventListener('click', () => showConfirmModal('Limpar Todos os Dados', 'TEM CERTEZA? Todos os dados de garantia serão apagados permanentemente.', clearData));
-            whatsappFilteredBtn?.addEventListener('click', sendFilteredViaWhatsApp);
-            whatsappGeneralBtn?.addEventListener('click', sendGeneralWhatsAppReport);
+            
+            whatsappBtn?.addEventListener('click', () => whatsappModal.classList.add('active'));
+            closeWhatsappModal?.addEventListener('click', () => whatsappModal.classList.remove('active'));
+
+            sendFilteredReportBtn?.addEventListener('click', sendFilteredViaWhatsApp);
+            sendGeneralReportBtn?.addEventListener('click', sendGeneralWhatsAppReport);
+            sendTodayReportBtn?.addEventListener('click', sendTodaySummaryViaWhatsApp);
+            
+            whatsappAnalysisBtn?.addEventListener('click', sendAnalysisViaWhatsApp);
             
             codeFilter?.addEventListener('input', () => {
                 clearTimeout(filterDebounceTimer);
@@ -2342,7 +2393,10 @@
             
             closeAnalysisModal?.addEventListener('click', () => analysisModal.classList.remove('active'));
             saveAnalysisBtn?.addEventListener('click', saveAnalysis);
-            analysisClientFilter?.addEventListener('change', updateAnalysisTable);
+            analysisClientFilter?.addEventListener('change', () => {
+                updateAnalysisTable();
+                updateAnalysisWhatsAppButtonState();
+            });
             selectAllCheckbox?.addEventListener('change', handleSelectAll);
             batchAnalyzeBtn?.addEventListener('click', openBatchAnalysisModal);
 
@@ -2391,7 +2445,6 @@
             addLaudoImageBtn?.addEventListener('click', () => laudoImageUpload.click());
             laudoImageUpload?.addEventListener('change', handleLaudoImageUpload);
             
-            // Listeners do modal de confirmação
             cancelConfirmBtn?.addEventListener('click', () => confirmModal.classList.remove('active'));
             confirmActionBtn?.addEventListener('click', () => {
                 confirmCallback?.();
@@ -2429,7 +2482,7 @@
             sessionStorage.removeItem('isAuthenticated');
             sessionStorage.removeItem('userType');
             sessionStorage.removeItem('currentUser');
-            batteryData = []; // Limpa os dados da memória
+            batteryData = []; 
             checkAuth();
         }
         // #endregion
@@ -2456,7 +2509,6 @@
             navBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-page') === pageId));
             sidebarBtns.forEach(btn => btn.classList.toggle('active', btn.getAttribute('data-page') === pageId));
             
-            // Atualiza os dados apenas se a página exigir
             if (['reportPage', 'analysisPage', 'finalizadoPage', 'settingsPage'].includes(pageId)) {
                 updateUI();
             }
@@ -2475,11 +2527,10 @@
 
         function showConfirmModal(title, message, onConfirm, onCancel) {
             confirmTitle.textContent = title;
-            confirmMessage.innerHTML = message; // Use innerHTML para permitir quebras de linha ou formatação
+            confirmMessage.innerHTML = message;
             confirmCallback = onConfirm;
             confirmModal.classList.add('active');
             
-            // Adiciona um listener para o cancelamento se uma função for passada
             const cancelHandler = () => {
                 onCancel?.();
                 confirmModal.classList.remove('active');
@@ -2499,7 +2550,6 @@
             const elementsToDisable = 'input, textarea, select, button';
             if (isViewer) {
                 document.querySelectorAll(elementsToDisable).forEach(el => {
-                    // Não desativa elementos de filtro, navegação ou logout
                     if (!el.closest('.report-filters') && !el.closest('.nav-btn') && !el.closest('header') && !el.closest('.sidebar-btn')) {
                         el.disabled = true;
                     }
@@ -2762,7 +2812,7 @@
             factoryRadio.checked = type === 'factory';
             analyzedRadio.checked = type === 'analyzed';
             factoryOption.classList.toggle('selected', type === 'factory');
-            analyzedOption.classList.toggle('selected', type === 'analyzed');
+            analyzedOption.classList.toggle('selected', type !== 'analyzed');
             videoAnalysisOptions.classList.toggle('hidden', type !== 'analyzed');
             await dbManager.set('settings', { key: LAST_WARRANTY_TYPE_KEY, value: type });
         }
@@ -2772,6 +2822,7 @@
         function updateUI() {
             // Os dados já devem estar na memória (batteryData)
             updateClientFilter();
+            updateSalesmanFilter();
             updateReportTable();
             updateAnalysisClientFilter();
             updateAnalysisTable();
@@ -2864,7 +2915,7 @@
                 <tr>
                     <td>${battery.code}</td>
                     <td>${battery.client}</td>
-                    <td>${new Date(battery.technicalOpinionDate).toLocaleDateString('pt-BR')}</td>
+                    <td>${battery.technicalOpinionDate ? new Date(battery.technicalOpinionDate).toLocaleDateString('pt-BR') : '-'}</td>
                     <td>${finalActionBadge}</td>
                     <td style="white-space: normal; max-width: 200px;">${battery.recommendation}</td>
                 </tr>`;
@@ -2885,7 +2936,7 @@
             filteredData.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
             
             if (filteredData.length === 0) {
-                reportBody.innerHTML = `<tr><td colspan="10" style="text-align: center;">Nenhum resultado encontrado</td></tr>`;
+                reportBody.innerHTML = `<tr><td colspan="11" style="text-align: center;">Nenhum resultado encontrado</td></tr>`;
                 totalsContainer.innerHTML = '';
                 document.getElementById('modelStatusSummaryCard').style.display = 'none';
                 return;
@@ -2917,6 +2968,7 @@
             analysisBody.querySelectorAll('.analyze-btn').forEach(btn => btn.addEventListener('click', function() { openSingleAnalysisModal(parseInt(this.dataset.id)); }));
             analysisBody.querySelectorAll('.analysis-checkbox').forEach(box => box.addEventListener('change', updateBatchAnalyzeButtonState));
             updateBatchAnalyzeButtonState();
+            updateAnalysisWhatsAppButtonState();
         }
 
         function updateFinalizadoTable() {
@@ -2934,6 +2986,12 @@
             const uniqueClients = [...new Set(batteryData.map(b => b.client))].sort();
             const clientOptions = uniqueClients.map(client => `<option value="${client}">${client}</option>`).join('');
             clientFilter.innerHTML = '<option value="">Todos os Clientes</option>' + clientOptions;
+        }
+
+        function updateSalesmanFilter() {
+            const uniqueSalesmen = [...new Set(batteryData.map(b => b.salesman))].sort();
+            const salesmanOptions = uniqueSalesmen.map(salesman => `<option value="${salesman}">${salesman}</option>`).join('');
+            salesmanFilter.innerHTML = '<option value="">Todos os Vendedores</option>' + salesmanOptions;
         }
 
         function updateAnalysisClientFilter() {
@@ -3073,12 +3131,18 @@
         function handleSelectAll() {
             document.querySelectorAll('.analysis-checkbox').forEach(cb => cb.checked = selectAllCheckbox.checked);
             updateBatchAnalyzeButtonState();
+            updateAnalysisWhatsAppButtonState();
         }
 
         function updateBatchAnalyzeButtonState() {
             const selectedCount = document.querySelectorAll('.analysis-checkbox:checked').length;
             batchAnalyzeBtn.disabled = selectedCount === 0;
             batchAnalyzeBtn.innerHTML = selectedCount > 0 ? `<i class="fas fa-layer-group"></i> Analisar ${selectedCount} Selecionados` : '<i class="fas fa-layer-group"></i> Analisar Selecionados';
+        }
+
+        function updateAnalysisWhatsAppButtonState() {
+            const selectedClient = analysisClientFilter.value;
+            whatsappAnalysisBtn.disabled = !selectedClient;
         }
 
         async function openClientEditModal(id) {
@@ -3176,14 +3240,20 @@
         // #region Filtros e PDF/Excel
         function applyFilters() {
             currentFilters = {
-                client: clientFilter.value, status: statusFilter.value, workflowStatus: workflowStatusFilter.value,
-                startDate: startDateInput.value, endDate: endDateInput.value, code: codeFilter.value
+                client: clientFilter.value,
+                salesman: salesmanFilter.value,
+                status: statusFilter.value,
+                workflowStatus: workflowStatusFilter.value,
+                finalAction: finalActionFilter.value,
+                startDate: startDateInput.value,
+                endDate: endDateInput.value,
+                code: codeFilter.value
             };
             updateReportTable();
         }
         
         function clearFilters() {
-            clientFilter.value = ''; statusFilter.value = ''; workflowStatusFilter.value = '';
+            clientFilter.value = ''; salesmanFilter.value = ''; statusFilter.value = ''; workflowStatusFilter.value = ''; finalActionFilter.value = '';
             startDateInput.value = ''; endDateInput.value = ''; codeFilter.value = '';
             applyFilters();
             showNotification('Filtros limpos!', 'success');
@@ -3192,8 +3262,10 @@
         function getFilteredData() {
             return batteryData.filter(b => {
                 const clientMatch = !currentFilters.client || b.client === currentFilters.client;
+                const salesmanMatch = !currentFilters.salesman || b.salesman === currentFilters.salesman;
                 const statusMatch = !currentFilters.status || b.warranty_period_status === currentFilters.status;
                 const workflowMatch = !currentFilters.workflowStatus || b.status === currentFilters.workflowStatus;
+                const finalActionMatch = !currentFilters.finalAction || b.finalAction === currentFilters.finalAction;
                 const codeMatch = !currentFilters.code || b.code.toLowerCase().includes(currentFilters.code.toLowerCase());
                 
                 let dateMatch = true;
@@ -3203,7 +3275,7 @@
                     const endDate = new Date(currentFilters.endDate + 'T23:59:59');
                     dateMatch = batteryDate >= startDate && batteryDate <= endDate;
                 }
-                return clientMatch && statusMatch && workflowMatch && codeMatch && dateMatch;
+                return clientMatch && salesmanMatch && statusMatch && workflowMatch && finalActionMatch && codeMatch && dateMatch;
             });
         }
         
@@ -3267,10 +3339,10 @@
             currentY += 10;
 
             if (finalizedData.length === 0) {
-                 doc.setFontSize(10).setFont(undefined, 'normal').text('Nenhuma bateria finalizada para este cliente no período.', 15, currentY);
-                 currentY += 10;
+                doc.setFontSize(10).setFont(undefined, 'normal').text('Nenhuma bateria finalizada para este cliente no período.', 15, currentY);
+                currentY += 10;
             } else {
-                 const summary = finalizedData.reduce((acc, battery) => {
+                const summary = finalizedData.reduce((acc, battery) => {
                     const model = battery.batteryModel || 'N/A';
                     let category = 'Reprovadas'; // Padrão
                     if (battery.finalAction.includes('APROVADA')) category = 'Aprovadas (Troca)';
@@ -3465,54 +3537,45 @@
                 const { analysis, diagnosis } = generateLaudoDiagnosis(data);
                 let y = 40;
                 
-                // Cabeçalho Profissional
-                doc.setFontSize(22);
-                doc.setFont(undefined, 'bold');
-                doc.setTextColor('#0047AB'); // Azul Fabreck
-                doc.text('FABRECK', 15, 20);
-                doc.setTextColor(0, 0, 0);
-
-                doc.setFontSize(10);
-                doc.setFont(undefined, 'normal');
-                doc.text('Laudo Técnico de Análise de Garantia', 200, 22, { align: 'right' });
-                doc.setLineWidth(0.5); 
-                doc.line(15, 30, 200, 30);
+                doc.setFontSize(22).setFont(undefined, 'bold').setTextColor('#0047AB').text('FABRECK', 15, 20);
+                doc.setTextColor(0,0,0);
+                doc.setFontSize(10).setFont(undefined, 'normal').text('Laudo Técnico de Análise de Garantia', 200, 22, { align: 'right' });
+                doc.setLineWidth(0.5).line(15, 30, 200, 30);
                 
-                // Corpo do Laudo
-                doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('1. DADOS DE IDENTIFICAÇÃO', 15, y); y += 7;
-                doc.setFontSize(10); doc.setFont(undefined, 'normal');
+                doc.setFontSize(12).setFont(undefined, 'bold').text('1. DADOS DE IDENTIFICAÇÃO', 15, y); y += 7;
+                doc.setFontSize(10).setFont(undefined, 'normal');
                 doc.text(`Cliente: ${data.client}`, 17, y); doc.text(`Data: ${new Date().toLocaleDateString('pt-BR')}`, 200, y, {align: 'right'}); y += 5;
                 doc.text(`Bateria S/N: ${data.code}`, 17, y); doc.text(`Modelo: ${data.model}`, 100, y); y += 10;
 
-                doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('2. PARÂMETROS DE TESTE', 15, y); y += 5;
+                doc.setFontSize(12).setFont(undefined, 'bold').text('2. PARÂMETROS DE TESTE', 15, y); y += 5;
                 doc.autoTable({ startY: y, theme: 'grid', head: [['Parâmetro', 'Padrão', 'Medido', 'Resultado']],
                     body: [[`Tensão (VCA)`, `${data.voltageNominal}`, `${data.voltageMedida}V`, parseFloat(data.voltageMedida) >= 12.4 ? 'CONFORME' : 'NÃO CONFORME'], [`Corrente (CA)`, `${data.ccaNominal}A`, `${data.ccaMedido}A`, parseFloat(data.ccaMedido) >= (parseFloat(data.ccaNominal) * 0.7) ? 'CONFORME' : 'NÃO CONFORME']],
                     headStyles: { fillColor: [22, 49, 72] } });
                 y = doc.lastAutoTable.finalY + 10;
 
-                doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('4. ANÁLISE E DIAGNÓSTICO', 15, y); y += 7;
-                doc.setFontSize(10); doc.setFont(undefined, 'normal'); doc.text(doc.splitTextToSize(analysis, 180), 17, y);
+                doc.setFontSize(12).setFont(undefined, 'bold').text('4. ANÁLISE E DIAGNÓSTICO', 15, y); y += 7;
+                doc.setFontSize(10).setFont(undefined, 'normal').text(doc.splitTextToSize(analysis, 180), 17, y);
                 y = doc.lastAutoTable.finalY > y ? doc.lastAutoTable.finalY + 10 : y + 20;
 
-                doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('5. PARECER FINAL', 15, y); y += 7;
-                doc.setFont(undefined, 'bold'); doc.setFillColor(diagnosis.includes('PROCEDENTE') ? '#2ecc71' : '#e74c3c');
-                doc.rect(17, y - 4, 60, 6, 'F'); doc.setTextColor(255,255,255); doc.text(diagnosis.split('.')[0], 20, y);
-                doc.setTextColor(0,0,0); y += 7; doc.setFont(undefined, 'normal'); doc.text(doc.splitTextToSize(diagnosis, 180), 17, y);
+                doc.setFontSize(12).setFont(undefined, 'bold').text('5. PARECER FINAL', 15, y); y += 7;
+                doc.setFont(undefined, 'bold').setFillColor(diagnosis.includes('PROCEDENTE') ? '#2ecc71' : '#e74c3c');
+                doc.rect(17, y - 4, 60, 6, 'F'); doc.setTextColor(255,255,255).text(diagnosis.split('.')[0], 20, y);
+                doc.setTextColor(0,0,0); y += 7; doc.setFont(undefined, 'normal').text(doc.splitTextToSize(diagnosis, 180), 17, y);
                 
                 if (data.images.length > 0) {
                     y = doc.lastAutoTable.finalY > y ? doc.lastAutoTable.finalY + 20 : y + 20;
                     if (y > 180) { doc.addPage(); y = 20; }
-                    doc.setFontSize(12); doc.setFont(undefined, 'bold'); doc.text('EVIDÊNCIAS FOTOGRÁFICAS', 15, y); y += 10;
+                    doc.setFontSize(12).setFont(undefined, 'bold').text('EVIDÊNCIAS FOTOGRÁFICAS', 15, y); y += 10;
                     let x = 15;
                     data.images.forEach((imgData) => { doc.addImage(imgData.src, 'JPEG', x, y, 55, 55); x += 60; });
                 }
 
                 const signatureY = doc.internal.pageSize.height - 40;
                 doc.line(60, signatureY, 150, signatureY);
-                doc.setFontSize(10); doc.text('JENILTON CRUZ', 105, signatureY + 5, { align: 'center'});
-                doc.setFontSize(8); doc.text('Técnico Responsável', 105, signatureY + 9, { align: 'center'});
+                doc.setFontSize(10).text('JENILTON CRUZ', 105, signatureY + 5, { align: 'center'});
+                doc.setFontSize(8).text('Técnico Responsável', 105, signatureY + 9, { align: 'center'});
                 
-                drawPdfFooter(doc); // Adiciona o rodapé também no laudo
+                drawPdfFooter(doc);
                 return doc;
             } catch (error) { showNotification(`Erro ao gerar laudo: ${error.message}`, 'error'); return null; }
         }
@@ -3649,29 +3712,31 @@
         // #endregion
 
         // #region WhatsApp
-        function generateWhatsAppTextMessage(data) {
+        function generateWhatsAppClientSectionBody(data) {
             const clientName = data[0]?.client || 'N/A';
-            let message = `*Relatório Completo de Garantia FABRECK*\n\n`;
-            message += `*Cliente:* ${clientName}\n`;
-            message += `*Data:* ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+            let message = `*Cliente:* ${clientName}\n\n`;
 
             // --- Secção de Baterias Finalizadas ---
             const finalizedData = data.filter(b => b.status === 'finalized');
-            message += `--- *BATERIAS FINALIZADAS* ---\n`;
+            message += `*STATUS DE BATERIAS FINALIZADAS*\n`;
+            message += `--------------------------------------\n`;
 
             if (finalizedData.length === 0) {
-                message += "Nenhuma bateria finalizada para este cliente.\n\n";
+                message += "Nenhuma bateria com análise concluída para este cliente.\n\n";
             } else {
-                const summary = finalizedData.reduce((acc, battery) => {
-                    let category = 'Reprovadas'; // Padrão
+                const summary = {};
+                finalizedData.forEach(battery => {
+                    let category = 'Reprovadas';
                     if (battery.finalAction.includes('APROVADA')) category = 'Aprovadas (Troca)';
                     else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'Reprovadas (Fora do Prazo)';
                     else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'Para Recarregar';
                     
-                    if (!acc[category]) acc[category] = [];
-                    acc[category].push(battery.code);
-                    return acc;
-                }, {});
+                    if (!summary[category]) summary[category] = {};
+                    const model = battery.batteryModel || 'N/A';
+                    if (!summary[category][model]) summary[category][model] = [];
+                    summary[category][model].push(battery.code);
+                });
+
 
                 const order = ['Aprovadas (Troca)', 'Para Recarregar', 'Reprovadas', 'Reprovadas (Fora do Prazo)'];
                 let hasContent = false;
@@ -3679,90 +3744,140 @@
                 order.forEach(category => {
                     if (summary[category]) {
                         hasContent = true;
-                        const total = summary[category].length;
-                        const codes = summary[category].join(', ');
+                        const models = summary[category];
+                        const total = Object.values(models).reduce((sum, codes) => sum + codes.length, 0);
+                        
                         message += `\n*${category.toUpperCase()} - TOTAL: ${total}*\n`;
-                        message += `Códigos: ${codes}\n`;
+                        
+                        Object.keys(models).sort().forEach(model => {
+                            const codes = models[model];
+                            message += `  • *${model} (${codes.length}):* ${codes.join(', ')}\n`;
+                        });
                     }
                 });
 
                 if (!hasContent) {
-                     message += "Nenhuma bateria finalizada com parecer para este cliente.\n";
+                    message += "Nenhuma bateria com parecer finalizado para este cliente.\n";
                 }
-                 message += `\n`;
+                message += `\n`;
             }
 
             // --- Secção de Baterias em Análise ---
             const inAnalysisData = data.filter(b => b.status === 'in_analysis');
-            message += `--- *BATERIAS EM ANÁLISE* ---\n`;
+            message += `*BATERIAS PENDENTES DE ANÁLISE*\n`;
+            message += `--------------------------------------\n`;
 
             if (inAnalysisData.length > 0) {
                 const total = inAnalysisData.length;
-                const codes = inAnalysisData.map(b => b.code).join(', ');
-                message += `\n*TOTAL EM ANÁLISE: ${total}*\n`;
-                message += `Códigos: ${codes}\n\n`;
+                message += `Total de ${total} bateria(s) aguardando parecer técnico:\n`;
+
+                const groupedByModel = {};
+                inAnalysisData.forEach(battery => {
+                    const model = battery.batteryModel || 'N/A';
+                    if (!groupedByModel[model]) groupedByModel[model] = [];
+                    groupedByModel[model].push(battery.code);
+                });
+
+                Object.keys(groupedByModel).sort().forEach(model => {
+                    const codes = groupedByModel[model];
+                    message += `  • *${model} (${codes.length}):* ${codes.join(', ')}\n`;
+                });
+                message += `\n`;
             } else {
-                message += "\nNenhuma bateria pendente de análise.\n\n";
+                message += "Nenhuma bateria pendente de análise no momento.\n\n";
             }
-
-
-            message += `_Relatório gerado pelo Sistema de Garantia Fabreck._`;
+            
             return message;
         }
 
         function sendFilteredViaWhatsApp() {
-            const selectedClient = clientFilter.value;
-            if (!selectedClient) {
-                showNotification('Por favor, filtre por um cliente específico para enviar o relatório.', 'error');
-                return;
-            }
-            
+            whatsappModal.classList.remove('active');
             const filteredData = getFilteredData();
             if (filteredData.length === 0) {
-                showNotification('Não há dados no relatório para este cliente.', 'error');
-                return;
+                return showNotification('Não há dados no filtro atual para enviar.', 'error');
             }
 
-            // 1. Gera a mensagem de texto a partir dos dados filtrados.
-            const textMessage = generateWhatsAppTextMessage(filteredData);
-            
-            // 2. Codifica a mensagem para ser usada numa URL.
-            const encodedMessage = encodeURIComponent(textMessage);
-            
-            // 3. Abre o WhatsApp Web com a mensagem pré-preenchida, pronto para o utilizador escolher o contacto.
-            window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
+            let fullMessage = '';
+            const uniqueSalespeople = [...new Set(filteredData.map(b => b.salesman))];
 
-            showNotification('A sua mensagem para o WhatsApp está pronta!', 'success');
+            if (uniqueSalespeople.length === 1 && uniqueSalespeople[0]) {
+                const salesmanName = uniqueSalespeople[0];
+                
+                fullMessage += `*Relatório de Garantia - FABRECK BATERIAS*\n\n`;
+                fullMessage += `*Vendedor:* ${salesmanName}\n`;
+                fullMessage += `*Data de Emissão:* ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+                fullMessage += `Prezado(a) ${salesmanName.split(' ')[0]},\nSegue abaixo o status de garantia atualizado para os seus clientes, com base nos filtros aplicados:\n\n`;
+
+                const groupedByClient = filteredData.reduce((acc, battery) => {
+                    (acc[battery.client] = acc[battery.client] || []).push(battery);
+                    return acc;
+                }, {});
+
+                Object.keys(groupedByClient).sort().forEach(clientName => {
+                    fullMessage += generateWhatsAppClientSectionBody(groupedByClient[clientName]);
+                    fullMessage += `------------------------------------\n\n`;
+                });
+
+            } 
+            else {
+                fullMessage = `*Relatório Consolidado (Filtrado) - FABRECK BATERIAS*\n`;
+                fullMessage += `*Data de Emissão:* ${new Date().toLocaleDateString('pt-BR')}\n`;
+                fullMessage += `====================================\n\n`;
+
+                const groupedBySalesman = filteredData.reduce((acc, battery) => {
+                    (acc[battery.salesman] = acc[battery.salesman] || []).push(battery);
+                    return acc;
+                }, {});
+
+                Object.keys(groupedBySalesman).sort().forEach(salesmanName => {
+                    fullMessage += `*VENDEDOR: ${salesmanName}*\n\n`;
+                    const salesmanData = groupedBySalesman[salesmanName];
+                    const groupedByClient = salesmanData.reduce((acc, battery) => {
+                        (acc[battery.client] = acc[battery.client] || []).push(battery);
+                        return acc;
+                    }, {});
+
+                    Object.keys(groupedByClient).sort().forEach(clientName => {
+                        fullMessage += generateWhatsAppClientSectionBody(groupedByClient[clientName]);
+                        fullMessage += `------------------------------------\n\n`;
+                    });
+                });
+            }
+
+            fullMessage += `_Mensagem gerada automaticamente pelo Sistema de Garantia Fabreck._`;
+
+            const encodedMessage = encodeURIComponent(fullMessage);
+            window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
+            showNotification('O seu relatório filtrado está pronto para enviar!', 'success');
         }
 
         function sendGeneralWhatsAppReport() {
+            whatsappModal.classList.remove('active');
             if (batteryData.length === 0) {
-                showNotification('Não há dados para gerar o relatório.', 'error');
-                return;
+                return showNotification('Não há dados para gerar o relatório.', 'error');
             }
 
-            const groupedByClient = batteryData.reduce((acc, battery) => {
-                (acc[battery.client] = acc[battery.client] || []).push(battery);
+            let fullMessage = `*Relatório Geral de Garantia - FABRECK BATERIAS*\n`;
+            fullMessage += `*Data de Emissão:* ${new Date().toLocaleDateString('pt-BR')}\n`;
+            fullMessage += `====================================\n\n`;
+
+            const groupedBySalesman = batteryData.reduce((acc, battery) => {
+                (acc[battery.salesman] = acc[battery.salesman] || []).push(battery);
                 return acc;
             }, {});
 
-            let fullMessage = `*Relatório Geral de Garantia FABRECK*\n\n`;
-            fullMessage += `*Data:* ${new Date().toLocaleDateString('pt-BR')}\n`;
-            fullMessage += `------------------------------------\n\n`;
+            Object.keys(groupedBySalesman).sort().forEach(salesmanName => {
+                fullMessage += `*VENDEDOR: ${salesmanName}*\n\n`;
+                const salesmanData = groupedBySalesman[salesmanName];
+                const groupedByClient = salesmanData.reduce((acc, battery) => {
+                    (acc[battery.client] = acc[battery.client] || []).push(battery);
+                    return acc;
+                }, {});
 
-            const clients = Object.keys(groupedByClient).sort();
-
-            clients.forEach(clientName => {
-                const clientData = groupedByClient[clientName];
-                const clientReportSection = generateWhatsAppTextMessage(clientData);
-                // Remove o cabeçalho e rodapé padrão para evitar repetição
-                const cleanSection = clientReportSection
-                    .replace(`*Relatório Completo de Garantia FABRECK*\n\n`, '')
-                    .replace(`*Data:* ${new Date().toLocaleDateString('pt-BR')}\n\n`, '')
-                    .replace(`_Relatório gerado pelo Sistema de Garantia Fabreck._`, '');
-
-                fullMessage += cleanSection;
-                fullMessage += `------------------------------------\n\n`;
+                Object.keys(groupedByClient).sort().forEach(clientName => {
+                    fullMessage += generateWhatsAppClientSectionBody(groupedByClient[clientName]);
+                    fullMessage += `------------------------------------\n\n`;
+                });
             });
 
             fullMessage += `_Relatório gerado pelo Sistema de Garantia Fabreck._`;
@@ -3771,6 +3886,88 @@
             window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
             showNotification('O seu relatório geral para o WhatsApp está pronto!', 'success');
         }
+
+        function sendTodaySummaryViaWhatsApp() {
+            whatsappModal.classList.remove('active');
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            const todaysEntries = batteryData.filter(b => {
+                const entryDate = new Date(b.timestamp);
+                entryDate.setHours(0, 0, 0, 0);
+                return entryDate.getTime() === today.getTime();
+            });
+
+            if (todaysEntries.length === 0) {
+                return showNotification('Nenhum registo de garantia feito hoje.', 'info');
+            }
+
+            let message = `*Resumo de Registos de Garantia - ${today.toLocaleDateString('pt-BR')}*\n\n`;
+
+            const groupedBySalesman = todaysEntries.reduce((acc, battery) => {
+                (acc[battery.salesman] = acc[battery.salesman] || []).push(battery);
+                return acc;
+            }, {});
+
+            let totalToday = 0;
+            Object.keys(groupedBySalesman).sort().forEach(salesman => {
+                const entries = groupedBySalesman[salesman];
+                const count = entries.length;
+                totalToday += count;
+                message += `*Vendedor: ${salesman}*\n`;
+                message += `Total de Baterias: ${count}\n`;
+                
+                const clients = [...new Set(entries.map(e => e.client))].join(', ');
+                message += `Clientes: ${clients}\n\n`;
+            });
+
+            message += `*Total Geral do Dia: ${totalToday} baterias*\n\n`;
+            message += `_Relatório gerado pelo Sistema de Garantia Fabreck._`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
+            showNotification('Resumo do dia pronto para enviar!', 'success');
+        }
+        
+        function sendAnalysisViaWhatsApp() {
+            const selectedClient = analysisClientFilter.value;
+            if (!selectedClient) return showNotification('Selecione um cliente para notificar.', 'error');
+            
+            const batteriesInAnalysis = batteryData.filter(b => b.client === selectedClient && b.status === 'in_analysis');
+            if (batteriesInAnalysis.length === 0) return showNotification('Este cliente não tem baterias em análise.', 'info');
+
+            const clientPhone = batteriesInAnalysis[0]?.clientPhone;
+            const salesmanName = batteriesInAnalysis[0]?.salesman || 'nosso vendedor';
+            
+            let message = `Prezado(a) *${selectedClient.split(' ')[0]}*,\n\n`;
+            message += `Informamos, por intermédio do seu vendedor *${salesmanName}*, que as seguintes baterias foram recebidas e estão em processo de análise técnica de garantia na Fabreck:\n\n`;
+
+            const groupedByModel = batteriesInAnalysis.reduce((acc, battery) => {
+                const model = battery.batteryModel || 'N/A';
+                if (!acc[model]) acc[model] = [];
+                acc[model].push(battery.code);
+                return acc;
+            }, {});
+
+            Object.keys(groupedByModel).sort().forEach(model => {
+                const codes = groupedByModel[model];
+                message += `*${model}* - ${codes.length} unidade(s)\n`;
+                codes.forEach(code => {
+                    message += `  • Código: ${code}\n`;
+                });
+            });
+
+            message += `\nO prazo para conclusão da análise é de até 5 dias úteis. Entraremos em contato assim que houver um parecer.\n\n`;
+            message += `Atenciosamente,\n*Equipe de Garantia FABRECK BATERIAS*`;
+
+            const encodedMessage = encodeURIComponent(message);
+            const url = clientPhone 
+                ? `https://wa.me/${clientPhone.replace(/\D/g, '')}?text=${encodedMessage}`
+                : `https://web.whatsapp.com/send?text=${encodedMessage}`;
+            
+            window.open(url, '_blank');
+            showNotification('Mensagem de notificação pronta!', 'success');
+        }
         // #endregion
 
 
@@ -3778,6 +3975,4 @@
     </script>
 </body>
 </html>
-
-
 
