@@ -22,14 +22,14 @@
             --fabreck-danger: #E74C3C;
 
             /* Cores para o Modo Escuro Aprimorado */
-            --dark-bg: #0d0d0d;
-            --dark-card-bg: #1a1a1a;
-            --dark-text: #E0E0E0;
-            --dark-light-text: #B0B0B0;
+            --dark-bg: #121212;
+            --dark-card-bg: #1E1E1E;
+            --dark-text: #FFFFFF;
+            --dark-light-text: #BDBDBD;
             --dark-border: #333333;
             --dark-header-bg-start: #002244;
             --dark-header-bg-end: #000000;
-            --dark-blue-light: #0066cc;
+            --dark-blue-light: #64B5F6;
         }
         
         /* Reset e fontes */
@@ -278,7 +278,8 @@
             border: none;
         }
         
-        body.dark-mode .status-in-analysis {
+        body.dark-mode .status-in-analysis,
+        body.dark-mode .action-courtesy {
             background: #f39c12; /* Laranja sólido */
             border: none;
         }
@@ -356,27 +357,45 @@
             position: relative;
         }
 
-        .logo {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
+        /* --- NOVO LOGO EM TEXTO --- */
+        .logo-text-container {
+            padding: 5px 0;
+            line-height: 1;
             margin-bottom: 10px;
-            position: relative;
-            z-index: 1;
         }
-        
-        .logo-img {
-            width: 150px; 
-            height: auto;
+        .logo-main {
+            font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+            font-weight: 900;
+            font-size: 58px;
+            color: var(--fabreck-red);
+            -webkit-text-stroke: 3px var(--fabreck-white);
+            paint-order: stroke fill;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
         }
-
-        .logo h1 {
-            font-size: 22px;
-            font-weight: 700;
+        .logo-sub {
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 20px;
             color: var(--fabreck-white);
-            letter-spacing: 0.5px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            letter-spacing: 2px;
+            margin-top: -5px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        /* Ajuste do logo no card de login */
+        .login-card .logo-main {
+             color: var(--fabreck-red);
+             -webkit-text-stroke-color: var(--fabreck-blue);
+        }
+        .login-card .logo-sub {
+             color: var(--fabreck-blue);
+        }
+        /* Ajuste do logo na sidebar */
+        .sidebar-header .logo-main {
+            font-size: 44px;
+        }
+        .sidebar-header .logo-sub {
+            font-size: 16px;
         }
         
         .system-title {
@@ -652,6 +671,11 @@
             background: rgba(231, 76, 60, 0.2);
             color: var(--fabreck-danger);
             border: 1px solid rgba(231, 76, 60, 0.4);
+        }
+        .action-courtesy {
+            background: rgba(243, 156, 18, 0.2);
+            color: var(--fabreck-warning);
+            border: 1px solid rgba(243, 156, 18, 0.4);
         }
         .action-scrapped {
             background: rgba(127, 140, 141, 0.2);
@@ -1243,6 +1267,80 @@
                 grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             }
         }
+
+        /* --- ESTILOS ADICIONAIS PARA MODO ESCURO --- */
+        body.dark-mode .card,
+        body.dark-mode .stat-card,
+        body.dark-mode .total-box,
+        body.dark-mode .activity-log {
+            background: var(--dark-card-bg);
+            border-color: var(--dark-border);
+        }
+
+        body.dark-mode .card-title,
+        body.dark-mode .form-group label,
+        body.dark-mode .stat-title,
+        body.dark-mode .stat-value,
+        body.dark-mode .total-title,
+        body.dark-mode .code-preview {
+            color: var(--dark-blue-light);
+        }
+
+        body.dark-mode .form-control {
+            background-color: #2a2a2a; /* Um pouco mais claro que o fundo do cartão */
+            color: var(--dark-text);
+            border-color: var(--dark-border);
+        }
+
+        body.dark-mode .form-control::placeholder {
+            color: var(--dark-light-text);
+            opacity: 0.7;
+        }
+
+        body.dark-mode .form-control:focus {
+            border-color: var(--dark-blue-light);
+            box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.3); /* Cor correspondente ao --dark-blue-light */
+        }
+
+        body.dark-mode th {
+            background-color: rgba(100, 181, 246, 0.15);
+            color: var(--dark-blue-light);
+        }
+
+        body.dark-mode tr:nth-child(even) {
+            background-color: rgba(100, 181, 246, 0.05);
+        }
+
+        body.dark-mode .info-section, 
+        body.dark-mode .report-filters {
+            background: rgba(0, 71, 171, 0.15);
+            border-color: rgba(0, 71, 171, 0.25);
+        }
+
+        /* Estilos para o cabeçalho minimalista */
+        header {
+            transition: padding 0.3s ease;
+        }
+        header.minimal .header-main-content {
+            display: none;
+        }
+        header.minimal {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+        }
+        header.minimal .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            justify-content: space-between;
+        }
+        header.minimal .header-buttons {
+            margin-top: 0;
+        }
     </style>
 </head>
 <body>
@@ -1297,26 +1395,28 @@
         <div id="mainContentWrapper">
             <div class="container">
                 <header>
-                     <div class="logo-text-container">
-                        <h1 class="logo-main">FABRECK</h1>
-                        <h2 class="logo-sub">BATERIAS</h2>
+                    <div class="header-main-content">
+                        <div class="logo-text-container">
+                            <h1 class="logo-main">FABRECK</h1>
+                            <h2 class="logo-sub">BATERIAS</h2>
+                        </div>
+                        <div class="system-title">Sistema de Controle de Garantia</div>
+                        <div class="company-info">
+                            <p><strong>Encarregado de Produção: Reginaldo</strong></p>
+                            <p>Análise da Garantia: Jenilton Cruz</p>
+                            <p class="active-salesman">Vendedor Ativo: <span id="currentSalesman">N/A</span></p>
+                        </div>
                     </div>
-                    <div class="system-title">Sistema de Controle de Garantia</div>
-                    
-                    <div class="company-info">
-                        <p><strong>Encarregado de Produção: Reginaldo</strong></p>
-                        <p>Análise da Garantia: Jenilton Cruz</p>
-                        <p class="active-salesman">Vendedor Ativo: <span id="currentSalesman">N/A</span></p>
-                    </div>
-                    <div id="syncStatus" style="color: white; font-size: 12px; margin-top: 8px; opacity: 0.8; font-weight: 600;">A ligar...</div>
-
-                    <div style="display: flex; justify-content: center; gap: 10px; margin-top: 10px;">
-                        <button id="toggleDarkModeBtn" class="btn btn-info" style="width: auto;">
-                            <i class="fas fa-moon"></i> <span id="darkModeText">Modo Escuro</span>
-                        </button>
-                        <button id="logoutBtn" class="btn btn-danger" style="width: auto;">
-                            <i class="fas fa-sign-out-alt"></i> Sair
-                        </button>
+                    <div class="header-controls">
+                        <div id="syncStatus" style="color: white; font-size: 12px; opacity: 0.8; font-weight: 600;">A ligar...</div>
+                        <div class="header-buttons" style="display: flex; gap: 10px;">
+                            <button id="toggleDarkModeBtn" class="btn btn-info" style="width: auto; margin-top:0;">
+                                <i class="fas fa-moon"></i> <span id="darkModeText">Modo Escuro</span>
+                            </button>
+                            <button id="logoutBtn" class="btn btn-danger" style="width: auto; margin-top:0;">
+                                <i class="fas fa-sign-out-alt"></i> Sair
+                            </button>
+                        </div>
                     </div>
                 </header>
             
@@ -1584,17 +1684,17 @@
                                 <div class="stat-title">Total Finalizadas</div>
                                 <div class="stat-value" id="finalizadoCount">0</div>
                             </div>
-                            <div class="stat-card">
-                                <div class="stat-title">Aprovadas</div>
-                                <div class="stat-value" id="finalizadoAprovadaCount">0</div>
+                             <div class="stat-card">
+                                <div class="stat-title">Aprovadas (Fábrica)</div>
+                                <div class="stat-value" id="finalizadoAprovadaFabricaCount">0</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-title">Reprovadas (Prazo)</div>
-                                <div class="stat-value" id="finalizadoReprovadaPrazoCount">0</div>
+                                <div class="stat-title">Aprovadas (Cortesia)</div>
+                                <div class="stat-value" id="finalizadoAprovadaCortesiaCount">0</div>
                             </div>
                             <div class="stat-card">
-                                <div class="stat-title">Reprovadas (Fora)</div>
-                                <div class="stat-value" id="finalizadoReprovadaForaCount">0</div>
+                                <div class="stat-title">Reprovadas (Total)</div>
+                                <div class="stat-value" id="finalizadoReprovadaCount">0</div>
                             </div>
                         </div>
                         <div class="table-container">
@@ -1673,10 +1773,17 @@
                                     <label for="finalActionFilter">Filtrar por Ação Final:</label>
                                     <select id="finalActionFilter" class="form-control">
                                         <option value="">Todas as Ações</option>
-                                        <option value="APROVADA - ENVIAR NOVA">APROVADA - ENVIAR NOVA</option>
-                                        <option value="REPROVADA - DEVOLVER AO CLIENTE">REPROVADA - DEVOLVER AO CLIENTE</option>
-                                        <option value="REPROVADA - SUCATEAR">REPROVADA - SUCATEAR</option>
+                                        <option value="APROVADA (TROCA DE FÁBRICA)">APROVADA (TROCA DE FÁBRICA)</option>
+                                        <option value="GARANTIA CORTESIA (ENVIAR NOVA)">GARANTIA CORTESIA (ENVIAR NOVA)</option>
+                                        <option value="REPROVADA (DEVOLVER AO CLIENTE)">REPROVADA (DEVOLVER AO CLIENTE)</option>
+                                        <option value="REPROVADA (MAU USO / SUCATEAR)">REPROVADA (MAU USO / SUCATEAR)</option>
                                         <option value="REPROVADA - FORA DO PRAZO">REPROVADA - FORA DO PRAZO</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="modelFilter">Filtrar por Modelo:</label>
+                                    <select id="modelFilter" class="form-control">
+                                        <option value="">Todos os Modelos</option>
                                     </select>
                                 </div>
                             </div>
@@ -1695,8 +1802,11 @@
                                     <input type="date" id="endDate" class="form-control">
                                 </div>
                             </div>
-                            
-                            <div class="filter-buttons">
+
+                             <div class="filter-buttons" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
+                                <button id="filterTodayBtn" class="btn btn-info">Hoje</button>
+                                <button id="filterWeekBtn" class="btn btn-info">Últimos 7 Dias</button>
+                                <button id="filterMonthBtn" class="btn btn-info">Este Mês</button>
                                 <button id="applyFilter" class="btn btn-primary">Aplicar Filtros</button>
                                 <button id="clearFilter" class="btn btn-danger">Limpar Filtros</button>
                             </div>
@@ -1859,9 +1969,10 @@
                 <label for="analysisFinalAction">Ação Final</label>
                 <select id="analysisFinalAction" class="form-control">
                     <option value="">-- Selecione uma ação --</option>
-                    <option value="APROVADA - ENVIAR NOVA">APROVADA - ENVIAR NOVA</option>
-                    <option value="REPROVADA - DEVOLVER AO CLIENTE">REPROVADA - DEVOLVER AO CLIENTE</option>
-                    <option value="REPROVADA - SUCATEAR">REPROVADA - SUCATEAR</option>
+                    <option value="APROVADA (TROCA DE FÁBRICA)">APROVADA (TROCA DE FÁBRICA)</option>
+                    <option value="GARANTIA CORTESIA (ENVIAR NOVA)">GARANTIA CORTESIA (ENVIAR NOVA)</option>
+                    <option value="REPROVADA (DEVOLVER AO CLIENTE)">REPROVADA (DEVOLVER AO CLIENTE)</option>
+                    <option value="REPROVADA (MAU USO / SUCATEAR)">REPROVADA (MAU USO / SUCATEAR)</option>
                 </select>
             </div>
              <button id="analysisAddObservationBtn" class="btn btn-info" style="margin-top: -10px; margin-bottom: 10px;"><i class="fas fa-comment-alt"></i> Adicionar Observações</button>
@@ -1942,18 +2053,38 @@
         </div>
     </div>
 
-    <!-- Modal de Seleção de Relatório WhatsApp -->
-    <div class="modal" id="whatsappModal">
+    <!-- Modal de Confirmação com Senha -->
+    <div class="modal" id="passwordConfirmModal">
         <div class="modal-content">
-            <span class="modal-close" id="closeWhatsappModal">&times;</span>
-            <h3 class="modal-title">Escolha o Relatório para Enviar</h3>
-            <div class="info-section" style="margin-top: 0; margin-bottom: 20px;">
-                <p>Selecione o tipo de relatório que deseja gerar e enviar via WhatsApp.</p>
+            <span class="modal-close" id="closePasswordConfirmModal">&times;</span>
+            <h3 class="modal-title">Confirmar Limpeza Total</h3>
+            <p style="text-align: center; font-size: 14px; margin-bottom: 20px; color: var(--fabreck-danger); font-weight: bold;">
+                ATENÇÃO: AÇÃO IRREVERSÍVEL!<br>Para confirmar a exclusão de TODOS os dados, digite sua senha de administrador.
+            </p>
+            <form id="passwordConfirmForm">
+                 <div class="form-group">
+                    <label for="adminPasswordConfirm">Sua Palavra-passe</label>
+                    <input type="password" id="adminPasswordConfirm" class="form-control" required>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                     <button type="button" id="cancelPasswordConfirmBtn" class="btn btn-info" style="margin-top:0;">Cancelar</button>
+                     <button type="submit" class="btn btn-danger" style="margin-top:0;">Confirmar e Apagar Tudo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Pré-visualização do WhatsApp -->
+    <div class="modal" id="whatsappPreviewModal">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="modal-close" id="closeWhatsappPreviewModal">&times;</span>
+            <h3 class="modal-title">Pré-visualização da Mensagem</h3>
+            <div class="info-section" style="margin-top: 0; margin-bottom: 20px; max-height: 40vh; overflow-y: auto;">
+                <pre id="whatsappMessagePreview" style="white-space: pre-wrap; word-wrap: break-word; font-size: 14px;"></pre>
             </div>
-            <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
-                 <button id="sendFilteredReportBtn" class="btn btn-primary" style="margin-top:0;">Relatório do Filtro Atual</button>
-                 <button id="sendGeneralReportBtn" class="btn btn-warning" style="margin-top:0;">Relatório Geral Completo</button>
-                 <button id="sendTodayReportBtn" class="btn btn-info" style="margin-top:0;">Resumo dos Registos de Hoje</button>
+            <div style="display: flex; gap: 10px;">
+                 <button id="cancelWhatsappBtn" class="btn btn-warning" style="margin-top:0;">Cancelar</button>
+                 <button id="sendWhatsappBtn" class="btn btn-success" style="margin-top:0;"><i class="fab fa-whatsapp"></i> Enviar Agora</button>
             </div>
         </div>
     </div>
@@ -2001,10 +2132,14 @@
         const clientFilter = document.getElementById('clientFilter');
         const salesmanFilter = document.getElementById('salesmanFilter');
         const finalActionFilter = document.getElementById('finalActionFilter');
+        const modelFilter = document.getElementById('modelFilter');
         const statusFilter = document.getElementById('statusFilter'); 
         const workflowStatusFilter = document.getElementById('workflowStatusFilter');
         const applyFilterBtn = document.getElementById('applyFilter');
         const clearFilterBtn = document.getElementById('clearFilter');
+        const filterTodayBtn = document.getElementById('filterTodayBtn');
+        const filterWeekBtn = document.getElementById('filterWeekBtn');
+        const filterMonthBtn = document.getElementById('filterMonthBtn');
         const navBtns = document.querySelectorAll('.nav-btn');
         const sidebarBtns = document.querySelectorAll('.sidebar-btn');
         const pages = document.querySelectorAll('.page');
@@ -2045,10 +2180,7 @@
         const finalizadoCount = document.getElementById('finalizadoCount');
         const finalizedCountReport = document.getElementById('finalizedCountReport');
         const inAnalysisCountReport = document.getElementById('inAnalysisCountReport');
-        const finalizadoAprovadaCount = document.getElementById('finalizadoAprovadaCount');
-        const finalizadoReprovadaPrazoCount = document.getElementById('finalizadoReprovadaPrazoCount');
-        const finalizadoReprovadaForaCount = document.getElementById('finalizadoReprovadaForaCount');
-
+        
         const analysisModal = document.getElementById('analysisModal');
         const closeAnalysisModal = document.getElementById('closeAnalysisModal');
         const analysisModalTitle = document.getElementById('analysisModalTitle');
@@ -2111,12 +2243,19 @@
         const laudoImagePreviews = document.getElementById('laudoImagePreviews');
 
         const whatsappBtn = document.getElementById('whatsappBtn');
-        const whatsappModal = document.getElementById('whatsappModal');
-        const closeWhatsappModal = document.getElementById('closeWhatsappModal');
-        const sendFilteredReportBtn = document.getElementById('sendFilteredReportBtn');
-        const sendGeneralReportBtn = document.getElementById('sendGeneralReportBtn');
-        const sendTodayReportBtn = document.getElementById('sendTodayReportBtn');
+        const whatsappPreviewModal = document.getElementById('whatsappPreviewModal');
+        const closeWhatsappPreviewModal = document.getElementById('closeWhatsappPreviewModal');
+        const whatsappMessagePreview = document.getElementById('whatsappMessagePreview');
+        const sendWhatsappBtn = document.getElementById('sendWhatsappBtn');
+        const cancelWhatsappBtn = document.getElementById('cancelWhatsappBtn');
+
         const whatsappAnalysisBtn = document.getElementById('whatsappAnalysisBtn');
+        
+        const passwordConfirmModal = document.getElementById('passwordConfirmModal');
+        const closePasswordConfirmModal = document.getElementById('closePasswordConfirmModal');
+        const passwordConfirmForm = document.getElementById('passwordConfirmForm');
+        const cancelPasswordConfirmBtn = document.getElementById('cancelPasswordConfirmBtn');
+        const adminPasswordConfirmInput = document.getElementById('adminPasswordConfirm');
         // #endregion
 
         // #region Estado do Sistema
@@ -2134,6 +2273,7 @@
             status: '',
             workflowStatus: '',
             finalAction: '',
+            model: '',
             startDate: '',
             endDate: '',
             code: ''
@@ -2153,6 +2293,7 @@
         let syncDebounceTimer = null;
         let filterDebounceTimer = null;
         let laudoImages = [];
+        let whatsappUrl = '';
 
         const ADMIN_USERS_KEY = 'fabreck_admin_users';
         const NEEDS_SYNC_KEY = 'fabreck_needs_sync';
@@ -2169,7 +2310,7 @@
 
         // #region IndexedDB Helper
         const dbPromise = new Promise((resolve, reject) => {
-            const request = indexedDB.open('FabreckDB_v2', 1); // Nome da BD atualizado para evitar conflitos
+            const request = indexedDB.open('FabreckDB_v2', 1);
 
             request.onerror = (event) => {
                 console.error("Erro ao abrir IndexedDB:", event.target.error);
@@ -2354,20 +2495,24 @@
             
             applyFilterBtn?.addEventListener('click', applyFilters);
             clearFilterBtn?.addEventListener('click', clearFilters);
+            filterTodayBtn?.addEventListener('click', setDateFilterToday);
+            filterWeekBtn?.addEventListener('click', setDateFilterWeek);
+            filterMonthBtn?.addEventListener('click', setDateFilterMonth);
             previewPdfBtn?.addEventListener('click', previewPDF);
             pdfBtn?.addEventListener('click', downloadPDF);
             batchPdfBtn?.addEventListener('click', generateBatchPDFs);
             excelBtn?.addEventListener('click', exportToFormattedExcel);
-            clearBtn?.addEventListener('click', () => showConfirmModal('Limpar Todos os Dados', 'TEM CERTEZA? Todos os dados de garantia serão apagados permanentemente.', clearData));
+            clearBtn?.addEventListener('click', promptClearData);
             
-            whatsappBtn?.addEventListener('click', () => whatsappModal.classList.add('active'));
-            closeWhatsappModal?.addEventListener('click', () => whatsappModal.classList.remove('active'));
-
-            sendFilteredReportBtn?.addEventListener('click', sendFilteredViaWhatsApp);
-            sendGeneralReportBtn?.addEventListener('click', sendGeneralWhatsAppReport);
-            sendTodayReportBtn?.addEventListener('click', sendTodaySummaryViaWhatsApp);
+            whatsappBtn?.addEventListener('click', () => openWhatsAppModal('filtered'));
+            whatsappAnalysisBtn?.addEventListener('click', () => openWhatsAppModal('analysis'));
             
-            whatsappAnalysisBtn?.addEventListener('click', sendAnalysisViaWhatsApp);
+            closeWhatsappPreviewModal?.addEventListener('click', () => whatsappPreviewModal.classList.remove('active'));
+            cancelWhatsappBtn?.addEventListener('click', () => whatsappPreviewModal.classList.remove('active'));
+            sendWhatsappBtn?.addEventListener('click', () => {
+                window.open(whatsappUrl, '_blank');
+                whatsappPreviewModal.classList.remove('active');
+            });
             
             codeFilter?.addEventListener('input', () => {
                 clearTimeout(filterDebounceTimer);
@@ -2442,9 +2587,11 @@
             changePasswordBtn?.addEventListener('click', () => passwordModal.classList.add('active'));
             closePasswordModal?.addEventListener('click', () => passwordModal.classList.remove('active'));
             passwordChangeForm?.addEventListener('submit', saveNewPassword);
-            addLaudoImageBtn?.addEventListener('click', () => laudoImageUpload.click());
-            laudoImageUpload?.addEventListener('change', handleLaudoImageUpload);
+            passwordConfirmForm?.addEventListener('submit', handleClearDataConfirmation);
             
+            cancelPasswordConfirmBtn?.addEventListener('click', () => passwordConfirmModal.classList.remove('active'));
+            
+            // Listeners do modal de confirmação
             cancelConfirmBtn?.addEventListener('click', () => confirmModal.classList.remove('active'));
             confirmActionBtn?.addEventListener('click', () => {
                 confirmCallback?.();
@@ -2501,7 +2648,14 @@
         }
         
         function showPage(pageId) {
-            document.getElementById('mainContentWrapper').scrollTop = 0; // Garante que a nova página comece no topo
+            document.getElementById('mainContentWrapper').scrollTop = 0;
+            const header = document.querySelector('header');
+            
+            if (pageId === 'scanPage') {
+                header.classList.remove('minimal');
+            } else {
+                header.classList.add('minimal');
+            }
 
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById(pageId)?.classList.add('active');
@@ -2668,7 +2822,7 @@
                     showNotification(`Bateria ${code} finalizada (Fora do Prazo).`, 'warning');
                     addActivity('fas fa-clock', `Bateria ${code} finalizada (Fora do Prazo).`);
                 } else { // Análise por vídeo
-                    newBattery.finalAction = recommendation.toUpperCase().includes('PROCEDENTE') ? 'APROVADA - ENVIAR NOVA' : 'REPROVADA - DEVOLVER AO CLIENTE';
+                    newBattery.finalAction = recommendation.toUpperCase().includes('PROCEDENTE') ? 'APROVADA (TROCA DE FÁBRICA)' : 'REPROVADA (DEVOLVER AO CLIENTE)';
                     showNotification(`Bateria ${code} finalizada no registo.`, 'success');
                     addActivity('fas fa-check-circle', `Bateria ${code} finalizada no registo.`);
                 }
@@ -2689,12 +2843,15 @@
         }
 
         async function removeBattery(id) {
-            const removed = batteryData.find(b => b.id === id);
-            await dbManager.delete('batteries', id);
-            batteryData = batteryData.filter(b => b.id !== id);
+            const batteryIdAsNumber = parseInt(id, 10);
+            const removed = batteryData.find(b => b.id === batteryIdAsNumber);
+            await dbManager.delete('batteries', batteryIdAsNumber);
+            batteryData = batteryData.filter(b => b.id !== batteryIdAsNumber);
             updateUI();
             showNotification('Bateria removida com sucesso!', 'success');
-            addActivity('fas fa-trash-alt', `Bateria removida: ${removed.code}`);
+            if (removed) {
+                addActivity('fas fa-trash-alt', `Bateria removida: ${removed.code}`);
+            }
             triggerAutoSync();
         }
 
@@ -2713,16 +2870,20 @@
         
         async function exportData() {
             const dataToExport = await dbManager.getAll('batteries');
-            if (dataToExport.length === 0) return showNotification('Não há dados para exportar', 'info');
-            const dataStr = JSON.stringify(dataToExport);
+            if (dataToExport.length === 0) {
+                showNotification('Não há dados para exportar', 'info');
+                return false;
+            }
+            const dataStr = JSON.stringify(dataToExport, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
             const exportFileDefaultName = `fabreck_backup_${new Date().toISOString().slice(0,10)}.json`;
             const linkElement = document.createElement('a');
             linkElement.href = dataUri;
             linkElement.download = exportFileDefaultName;
             linkElement.click();
-            showNotification('Dados exportados com sucesso!', 'success');
+            showNotification('Backup local exportado com sucesso!', 'success');
             addActivity('fas fa-download', 'Dados exportados');
+            return true;
         }
         
         async function handleRestoreFile(file) {
@@ -2749,6 +2910,40 @@
                 }
             };
             reader.readAsText(file);
+        }
+
+        function promptClearData() {
+            if(exportData()){
+                showNotification('Backup de segurança gerado antes da limpeza.', 'info');
+                passwordConfirmModal.classList.add('active');
+                adminPasswordConfirmInput.value = '';
+                adminPasswordConfirmInput.focus();
+            }
+        }
+
+        async function handleClearDataConfirmation(e) {
+            e.preventDefault();
+            const enteredPassword = adminPasswordConfirmInput.value;
+            const loggedInUser = sessionStorage.getItem('currentUser');
+
+            if (!loggedInUser) {
+                showNotification('Erro: Utilizador não identificado.', 'error');
+                passwordConfirmModal.classList.remove('active');
+                return;
+            }
+
+            const adminUsersData = await dbManager.get('settings', ADMIN_USERS_KEY);
+            const adminUsers = adminUsersData.value;
+            const userToUpdate = adminUsers.find(admin => admin.user === loggedInUser);
+
+            if (userToUpdate && enteredPassword === userToUpdate.pass) {
+                showNotification('Senha correta. A limpar os dados...', 'warning');
+                passwordConfirmModal.classList.remove('active');
+                await clearData();
+            } else {
+                showNotification('Palavra-passe incorreta. A limpeza foi cancelada.', 'error');
+                adminPasswordConfirmInput.value = '';
+            }
         }
         // #endregion
 
@@ -2812,7 +3007,7 @@
             factoryRadio.checked = type === 'factory';
             analyzedRadio.checked = type === 'analyzed';
             factoryOption.classList.toggle('selected', type === 'factory');
-            analyzedOption.classList.toggle('selected', type !== 'analyzed');
+            analyzedOption.classList.toggle('selected', type === 'analyzed');
             videoAnalysisOptions.classList.toggle('hidden', type !== 'analyzed');
             await dbManager.set('settings', { key: LAST_WARRANTY_TYPE_KEY, value: type });
         }
@@ -2820,9 +3015,9 @@
 
         // #region Renderização e Atualização da UI
         function updateUI() {
-            // Os dados já devem estar na memória (batteryData)
             updateClientFilter();
             updateSalesmanFilter();
+            updateModelFilter();
             updateReportTable();
             updateAnalysisClientFilter();
             updateAnalysisTable();
@@ -2843,12 +3038,11 @@
             inAnalysisCount.textContent = inAnalysis;
             finalizadoCount.textContent = finalized;
 
-            finalizadoAprovadaCount.textContent = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('APROVADA')).length;
-            finalizadoReprovadaPrazoCount.textContent = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('REPROVADA') && b.warranty_period_status === 'warranty').length;
-            finalizadoReprovadaForaCount.textContent = batteryData.filter(b => b.status === 'finalized' && b.warranty_period_status === 'expired').length;
+            document.getElementById('finalizadoAprovadaFabricaCount').textContent = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('APROVADA')).length;
+            document.getElementById('finalizadoAprovadaCortesiaCount').textContent = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('CORTESIA')).length;
+            document.getElementById('finalizadoReprovadaCount').textContent = batteryData.filter(b => b.status === 'finalized' && b.finalAction.includes('REPROVADA')).length;
         }
 
-        // --- Funções de Renderização Refatoradas ---
         function renderRecentRegistrationRow(battery) {
             return `
                 <tr>
@@ -2865,6 +3059,7 @@
             
             let actionClass = '';
             if (battery.finalAction.includes('APROVADA')) actionClass = 'action-approved';
+            else if (battery.finalAction.includes('CORTESIA')) actionClass = 'action-courtesy';
             else if (battery.finalAction.includes('DEVOLVER')) actionClass = 'action-rejected';
             else if (battery.finalAction.includes('SUCATEAR') || battery.finalAction.includes('PRAZO')) actionClass = 'action-scrapped';
             const finalActionBadge = battery.finalAction ? `<span class="status-badge ${actionClass}">${battery.finalAction}</span>` : '-';
@@ -2907,6 +3102,7 @@
         function renderFinalizadoTableRow(battery) {
             let actionClass = '';
             if (battery.finalAction.includes('APROVADA')) actionClass = 'action-approved';
+            else if (battery.finalAction.includes('CORTESIA')) actionClass = 'action-courtesy';
             else if (battery.finalAction.includes('DEVOLVER')) actionClass = 'action-rejected';
             else if (battery.finalAction.includes('SUCATEAR') || battery.finalAction.includes('PRAZO')) actionClass = 'action-scrapped';
             const finalActionBadge = battery.finalAction ? `<span class="status-badge ${actionClass}">${battery.finalAction}</span>` : '-';
@@ -2960,10 +3156,9 @@
             selectAllCheckbox.checked = false;
             if (dataToAnalyze.length === 0) {
                 analysisBody.innerHTML = `<tr><td colspan="7" style="text-align: center;">Nenhuma bateria na fila de análise.</td></tr>`;
-                return;
+            } else {
+                analysisBody.innerHTML = dataToAnalyze.map(renderAnalysisTableRow).join('');
             }
-            
-            analysisBody.innerHTML = dataToAnalyze.map(renderAnalysisTableRow).join('');
 
             analysisBody.querySelectorAll('.analyze-btn').forEach(btn => btn.addEventListener('click', function() { openSingleAnalysisModal(parseInt(this.dataset.id)); }));
             analysisBody.querySelectorAll('.analysis-checkbox').forEach(box => box.addEventListener('change', updateBatchAnalyzeButtonState));
@@ -2992,6 +3187,12 @@
             const uniqueSalesmen = [...new Set(batteryData.map(b => b.salesman))].sort();
             const salesmanOptions = uniqueSalesmen.map(salesman => `<option value="${salesman}">${salesman}</option>`).join('');
             salesmanFilter.innerHTML = '<option value="">Todos os Vendedores</option>' + salesmanOptions;
+        }
+
+        function updateModelFilter() {
+            const uniqueModels = [...new Set(batteryData.map(b => b.batteryModel))].sort();
+            const modelOptions = uniqueModels.map(model => `<option value="${model}">${model}</option>`).join('');
+            modelFilter.innerHTML = '<option value="">Todos os Modelos</option>' + modelOptions;
         }
 
         function updateAnalysisClientFilter() {
@@ -3031,14 +3232,15 @@
 
             const summary = finalizedData.reduce((acc, battery) => {
                 const model = battery.batteryModel || 'N/A';
-                let category = 'rejected'; // Padrão
+                let category = 'rejected';
                 if (battery.finalAction.includes('APROVADA')) category = 'approved';
+                else if (battery.finalAction.includes('CORTESIA')) category = 'courtesy';
                 else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'expired';
                 else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'recharge';
                 
                 acc[category][model] = (acc[category][model] || 0) + 1;
                 return acc;
-            }, { approved: {}, rejected: {}, recharge: {}, expired: {} });
+            }, { approved: {}, rejected: {}, recharge: {}, expired: {}, courtesy: {} });
             
             const createSummaryLine = (title, data) => {
                 if (Object.keys(data).length > 0) {
@@ -3049,7 +3251,8 @@
             };
 
             const html = [
-                createSummaryLine('BATERIAS APROVADAS (PARA TROCA)', summary.approved),
+                createSummaryLine('BATERIAS APROVADAS (TROCA DE FÁBRICA)', summary.approved),
+                createSummaryLine('BATERIAS TROCADAS (CORTESIA)', summary.courtesy),
                 createSummaryLine('BATERIAS REPROVADAS', summary.rejected),
                 createSummaryLine('BATERIAS PARA RECARREGAR', summary.recharge),
                 createSummaryLine('BATERIAS FORA DO PRAZO', summary.expired)
@@ -3066,11 +3269,11 @@
 
         // #region Lógica de Análise e Edição
         async function openSingleAnalysisModal(id) {
-            const battery = await dbManager.get('batteries', id);
+            const battery = await dbManager.get('batteries', parseInt(id, 10));
             if (!battery) return;
 
             analysisMode = 'single';
-            analyzingBatteryId = id;
+            analyzingBatteryId = parseInt(id, 10);
             
             analysisModalTitle.textContent = `Analisar Bateria: ${battery.code}`;
             analysisSingleInfo.style.display = 'block';
@@ -3099,12 +3302,18 @@
         }
 
         async function saveAnalysis() {
-            const newRecommendation = analysisRecommendation.value.trim();
+            let newRecommendation = analysisRecommendation.value.trim();
             const newFinalAction = analysisFinalAction.value;
-            if (!newRecommendation || !newFinalAction) return showNotification('Preencha o Parecer e a Ação Final.', 'error');
+            if (!newFinalAction) return showNotification('Selecione uma Ação Final.', 'error');
+            
+            if (newFinalAction.includes('CORTESIA') && !newRecommendation) {
+                newRecommendation = 'Bateria sem defeito aparente (descarregada), troca enviada como cortesia ao cliente.';
+            }
+            if (!newRecommendation) return showNotification('Preencha o Parecer Técnico.', 'error');
 
             const idsToUpdate = analysisMode === 'single' ? [analyzingBatteryId] : batchAnalysisIds;
             let updatedCount = 0;
+            let batteriesToNotify = [];
             
             for (const id of idsToUpdate) {
                 const battery = await dbManager.get('batteries', id);
@@ -3114,17 +3323,28 @@
                     battery.finalAction = newFinalAction;
                     battery.technicalOpinionDate = new Date().toISOString();
                     await dbManager.set('batteries', battery);
+                    batteriesToNotify.push(battery);
                     updatedCount++;
                 }
             }
 
             if (updatedCount > 0) {
-                await loadFromDB(); // Recarrega todos os dados para a memória
+                await loadFromDB();
                 analysisModal.classList.remove('active');
                 showNotification(`${updatedCount} análise(s) salva(s)!`, 'success');
                 addActivity('fas fa-clipboard-check', `${updatedCount} bateria(s) analisada(s).`);
                 updateUI();
                 triggerAutoSync();
+
+                if (batteriesToNotify.length > 0) {
+                     showConfirmModal(
+                        'Notificar Cliente?',
+                        `A análise foi finalizada. Deseja enviar uma notificação para o cliente ${batteriesToNotify[0].client} via WhatsApp agora?`,
+                        () => {
+                            sendAnalysisResultViaWhatsApp(batteriesToNotify);
+                        }
+                    );
+                }
             }
         }
 
@@ -3146,13 +3366,12 @@
         }
 
         async function openClientEditModal(id) {
-            const battery = await dbManager.get('batteries', id);
+            const battery = await dbManager.get('batteries', parseInt(id, 10));
             if (!battery) return;
-            editingBatteryId = id;
+            editingBatteryId = parseInt(id, 10);
             editClientNameInput.value = battery.client;
             editSalesmanNameInput.value = battery.salesman;
             
-            // Procura o telefone mais recente para este cliente
             const allClientEntries = batteryData.filter(b => b.client === battery.client && b.clientPhone);
             const latestEntry = allClientEntries.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))[0];
             editClientPhoneInput.value = latestEntry ? latestEntry.clientPhone : '';
@@ -3175,7 +3394,7 @@
                 let updated = false;
                 if (battery.client === oldClientName) { 
                     battery.client = newClientName; 
-                    battery.clientPhone = newClientPhone; // Atualiza o telefone junto com o nome
+                    battery.clientPhone = newClientPhone;
                     updated = true; 
                 }
                 if (battery.salesman === oldSalesmanName) { 
@@ -3245,6 +3464,7 @@
                 status: statusFilter.value,
                 workflowStatus: workflowStatusFilter.value,
                 finalAction: finalActionFilter.value,
+                model: modelFilter.value,
                 startDate: startDateInput.value,
                 endDate: endDateInput.value,
                 code: codeFilter.value
@@ -3253,7 +3473,7 @@
         }
         
         function clearFilters() {
-            clientFilter.value = ''; salesmanFilter.value = ''; statusFilter.value = ''; workflowStatusFilter.value = ''; finalActionFilter.value = '';
+            clientFilter.value = ''; salesmanFilter.value = ''; statusFilter.value = ''; workflowStatusFilter.value = ''; finalActionFilter.value = ''; modelFilter.value = '';
             startDateInput.value = ''; endDateInput.value = ''; codeFilter.value = '';
             applyFilters();
             showNotification('Filtros limpos!', 'success');
@@ -3266,6 +3486,7 @@
                 const statusMatch = !currentFilters.status || b.warranty_period_status === currentFilters.status;
                 const workflowMatch = !currentFilters.workflowStatus || b.status === currentFilters.workflowStatus;
                 const finalActionMatch = !currentFilters.finalAction || b.finalAction === currentFilters.finalAction;
+                const modelMatch = !currentFilters.model || b.batteryModel === currentFilters.model;
                 const codeMatch = !currentFilters.code || b.code.toLowerCase().includes(currentFilters.code.toLowerCase());
                 
                 let dateMatch = true;
@@ -3275,41 +3496,49 @@
                     const endDate = new Date(currentFilters.endDate + 'T23:59:59');
                     dateMatch = batteryDate >= startDate && batteryDate <= endDate;
                 }
-                return clientMatch && salesmanMatch && statusMatch && workflowMatch && finalActionMatch && codeMatch && dateMatch;
+                return clientMatch && salesmanMatch && statusMatch && workflowMatch && finalActionMatch && modelMatch && codeMatch && dateMatch;
             });
         }
         
-        function drawPdfHeader(doc, clientName, salesmanName) {
-            // Logo como texto
-            doc.setFontSize(22);
-            doc.setFont(undefined, 'bold');
-            doc.setTextColor('#0047AB'); // Azul Fabreck
-            doc.text('FABRECK', 15, 20);
-            doc.setTextColor(0, 0, 0);
+        function setDateFilter(start, end) {
+            startDateInput.value = start.toISOString().split('T')[0];
+            endDateInput.value = end.toISOString().split('T')[0];
+            applyFilters();
+        }
 
-            // Informações da Empresa e Relatório
-            doc.setFontSize(10);
-            doc.setFont(undefined, 'normal');
+        function setDateFilterToday() {
+            const today = new Date();
+            setDateFilter(today, today);
+        }
+
+        function setDateFilterWeek() {
+            const today = new Date();
+            const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+            setDateFilter(lastWeek, today);
+        }
+
+        function setDateFilterMonth() {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+            setDateFilter(firstDay, today);
+        }
+
+        function drawPdfHeader(doc, clientName, salesmanName) {
+            doc.setFontSize(22).setFont(undefined, 'bold').setTextColor('#0047AB').text('FABRECK', 15, 20);
+            doc.setTextColor(0,0,0);
+            doc.setFontSize(10).setFont(undefined, 'normal');
             doc.text('FABRECK DO BRASIL', 195, 15, { align: 'right' });
             doc.text('Relatório de Análise de Garantia', 195, 20, { align: 'right' });
             doc.text(`Data de Emissão: ${new Date().toLocaleDateString('pt-BR')}`, 195, 25, { align: 'right' });
-
-            // Linha Separadora
-            doc.setLineWidth(0.5);
-            doc.line(15, 35, 195, 35);
-
-            // Informações do Cliente
+            doc.setLineWidth(0.5).line(15, 35, 195, 35);
             doc.setFontSize(12);
             doc.text(`Cliente: ${clientName}`, 15, 45);
             doc.text(`Vendedor: ${salesmanName}`, 15, 51);
-            
-            // Responsáveis
-            doc.setFontSize(9); 
-            doc.setFont(undefined, 'bold'); 
+            doc.setFontSize(9).setFont(undefined, 'bold'); 
             doc.text('RESPONSÁVEL TÉCNICO: REGINALDO SANTOS', 15, 62);
             doc.text('ANÁLISE DE GARANTIA: JENILTON CRUZ', 195, 62, { align: 'right' }); 
             doc.setFont(undefined, 'normal');
-            return 72; // Nova posição Y inicial
+            return 72;
         }
 
         function drawPdfFooter(doc) {
@@ -3317,8 +3546,7 @@
             doc.setFontSize(8);
             for (let i = 1; i <= pageCount; i++) {
                 doc.setPage(i);
-                doc.setLineWidth(0.2);
-                doc.line(15, 285, 195, 285);
+                doc.setLineWidth(0.2).line(15, 285, 195, 285);
                 doc.text(`Relatório gerado em ${new Date().toLocaleString('pt-BR')}`, 15, 290);
                 doc.text(`Página ${i} de ${pageCount}`, 195, 290, { align: 'right' });
             }
@@ -3328,13 +3556,9 @@
             let currentY = startY;
             const finalizedData = clientBatteries.filter(b => b.status === 'finalized');
 
-            // --- SEÇÃO DE RESUMO ---
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.setFillColor('#0047AB');
+            doc.setFontSize(12).setFont(undefined, 'bold').setFillColor('#0047AB');
             doc.rect(15, currentY - 5, 180, 7, 'F');
-            doc.setTextColor('#FFFFFF');
-            doc.text('Resumo para Separação', 20, currentY);
+            doc.setTextColor('#FFFFFF').text('Resumo para Separação', 20, currentY);
             doc.setTextColor(0,0,0);
             currentY += 10;
 
@@ -3344,8 +3568,9 @@
             } else {
                 const summary = finalizedData.reduce((acc, battery) => {
                     const model = battery.batteryModel || 'N/A';
-                    let category = 'Reprovadas'; // Padrão
-                    if (battery.finalAction.includes('APROVADA')) category = 'Aprovadas (Troca)';
+                    let category = 'Reprovadas';
+                    if (battery.finalAction.includes('APROVADA')) category = 'Aprovadas (Troca de Fábrica)';
+                    else if (battery.finalAction.includes('CORTESIA')) category = 'Trocadas (Garantia Cortesia)';
                     else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'Reprovadas (Fora do Prazo)';
                     else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'Para Recarregar';
                     
@@ -3354,37 +3579,28 @@
                     return acc;
                 }, {});
 
-                const order = ['Aprovadas (Troca)', 'Para Recarregar', 'Reprovadas', 'Reprovadas (Fora do Prazo)'];
+                const order = ['Aprovadas (Troca de Fábrica)', 'Trocadas (Garantia Cortesia)', 'Para Recarregar', 'Reprovadas', 'Reprovadas (Fora do Prazo)'];
                 
                 order.forEach(category => {
                     if (summary[category]) {
-                        if (currentY > 250) { doc.addPage(); currentY = 20; } // Adiciona nova página se não houver espaço
+                        if (currentY > 250) { doc.addPage(); currentY = 20; }
                         const total = Object.values(summary[category]).reduce((s, c) => s + c, 0);
                         
-                        doc.setFontSize(11);
-                        doc.setFont(undefined, 'bold');
-                        doc.text(`${category.toUpperCase()} - TOTAL: ${total}`, 15, currentY);
+                        doc.setFontSize(11).setFont(undefined, 'bold').text(`${category.toUpperCase()} - TOTAL: ${total}`, 15, currentY);
                         currentY += 6;
-
-                        doc.setFontSize(9);
-                        doc.setFont(undefined, 'normal');
                         const details = Object.entries(summary[category]).map(([model, count]) => `  - ${model}: ${count}`).join('\n');
-                        doc.text(details, 15, currentY);
-                        currentY += (details.split('\n').length * 5) + 5; // Ajusta o Y baseado no número de modelos
+                        doc.setFontSize(9).setFont(undefined, 'normal').text(details, 15, currentY);
+                        currentY += (details.split('\n').length * 5) + 5;
                     }
                 });
 
-                currentY += 5; // Espaço extra antes da próxima seção
+                currentY += 5;
             }
             
-            // --- SEÇÃO DE DETALHAMENTO ---
             if (currentY > 250) { doc.addPage(); currentY = 20; }
-            doc.setFontSize(12);
-            doc.setFont(undefined, 'bold');
-            doc.setFillColor('#0047AB');
+            doc.setFontSize(12).setFont(undefined, 'bold').setFillColor('#0047AB');
             doc.rect(15, currentY - 5, 180, 7, 'F');
-            doc.setTextColor('#FFFFFF');
-            doc.text('Detalhamento de Todas as Baterias Registadas', 20, currentY);
+            doc.setTextColor('#FFFFFF').text('Detalhamento de Todas as Baterias Registadas', 20, currentY);
             doc.setTextColor(0,0,0);
             currentY += 10;
 
@@ -3396,11 +3612,8 @@
             });
             currentY = doc.lastAutoTable.finalY + 15;
 
-            // --- SEÇÃO DE CRITÉRIOS ---
             if (currentY > 240) { doc.addPage(); currentY = 20; }
-            doc.setFontSize(10);
-            doc.setFont(undefined, 'bold');
-            doc.text('Critérios para Análise de Garantia', 15, currentY);
+            doc.setFontSize(10).setFont(undefined, 'bold').text('Critérios para Análise de Garantia', 15, currentY);
             currentY += 6;
             doc.setFontSize(8); doc.setFont(undefined, 'normal');
             doc.text(`APROVADA (TROCA): ${warrantyInstructions.approved}`, 17, currentY, { maxWidth: 180 }); currentY += 10;
@@ -3426,7 +3639,7 @@
                     buildClientPDFPage(doc, clientBatteries, startY);
                 });
 
-                drawPdfFooter(doc); // Adiciona o rodapé em todas as páginas
+                drawPdfFooter(doc);
                 return doc;
             } catch (error) {
                 showNotification(`Erro ao gerar PDF: ${error.message}`, 'error');
@@ -3712,9 +3925,115 @@
         // #endregion
 
         // #region WhatsApp
+        function openWhatsAppModal(type, data = null) {
+            let message = '';
+            let targetPhone = '';
+
+            if (type === 'analysis') {
+                const selectedClient = analysisClientFilter.value;
+                if (!selectedClient) return showNotification('Selecione um cliente para notificar.', 'error');
+                const batteriesInAnalysis = batteryData.filter(b => b.client === selectedClient && b.status === 'in_analysis');
+                if (batteriesInAnalysis.length === 0) return showNotification('Este cliente não tem baterias em análise.', 'info');
+                
+                targetPhone = batteriesInAnalysis[0]?.clientPhone;
+                message = generateWhatsAppAnalysisMessage(batteriesInAnalysis);
+
+            } else if (type === 'analysisResult') {
+                targetPhone = data[0]?.clientPhone;
+                message = generateWhatsAppAnalysisResultMessage(data);
+
+            } else { // 'filtered'
+                const filteredData = getFilteredData();
+                if (filteredData.length === 0) return showNotification('Não há dados no filtro atual para enviar.', 'error');
+                
+                const uniqueClients = [...new Set(filteredData.map(b => b.client))];
+                if (uniqueClients.length === 1 && filteredData[0].clientPhone) {
+                    targetPhone = filteredData[0].clientPhone;
+                }
+                message = generateWhatsAppClientSectionBody(filteredData);
+            }
+
+            if (!message) return;
+
+            whatsappMessagePreview.textContent = message;
+            
+            const encodedMessage = encodeURIComponent(message);
+            whatsappUrl = targetPhone 
+                ? `https://wa.me/${targetPhone.replace(/\D/g, '')}?text=${encodedMessage}`
+                : `https://web.whatsapp.com/send?text=${encodedMessage}`;
+
+            whatsappPreviewModal.classList.add('active');
+        }
+
+        function generateWhatsAppAnalysisMessage(batteries) {
+            const clientName = batteries[0]?.client || 'Cliente';
+            const salesmanName = batteries[0]?.salesman || 'nosso vendedor';
+            const submissionDate = new Date(batteries[0]?.submissionDate).toLocaleDateString('pt-BR');
+
+            let message = `*INFORME DE GARANTIA FABRECK BATERIAS*\n\n`;
+            message += `Prezado(a) cliente *${clientName}*,\n\n`;
+            message += `Confirmamos o recebimento dos seus produtos para análise de garantia, intermediado pelo vendedor *${salesmanName}*.\n\n`;
+            message += `*Data de Envio para Análise:* ${submissionDate}\n\n`;
+            message += `*Produtos Recebidos:*\n`;
+
+            const groupedByModel = batteries.reduce((acc, battery) => {
+                const model = battery.batteryModel || 'N/A';
+                if (!acc[model]) acc[model] = [];
+                acc[model].push(battery.code);
+                return acc;
+            }, {});
+
+            Object.keys(groupedByModel).sort().forEach(model => {
+                const codes = groupedByModel[model];
+                message += ` • *${model} (${codes.length} unid.):* ${codes.join(', ')}\n`;
+            });
+
+            message += `\nO prazo para conclusão da análise é de *até 10 dias úteis* a partir da data de envio. Entraremos em contato com o parecer final.\n\n`;
+            message += `Atenciosamente,\n*Equipe de Garantia FABRECK BATERIAS*`;
+            return message;
+        }
+
+        function generateWhatsAppAnalysisResultMessage(batteries) {
+            const clientName = batteries[0]?.client || 'Cliente';
+            const salesmanName = batteries[0]?.salesman || 'nosso vendedor';
+            const analysisDate = new Date(batteries[0]?.technicalOpinionDate).toLocaleDateString('pt-BR');
+
+            let message = `*RESULTADO DE ANÁLISE DE GARANTIA - FABRECK BATERIAS*\n\n`;
+            message += `Prezado(a) cliente *${clientName}*,\n\n`;
+            message += `Informamos o resultado da análise de garantia, intermediada pelo vendedor *${salesmanName}*.\n\n`;
+            message += `*Data da Análise:* ${analysisDate}\n\n`;
+            message += `*PARECER TÉCNICO:* ${batteries[0].recommendation}\n\n`;
+            message += `*AÇÃO FINAL:* ${batteries[0].finalAction}\n\n`;
+            message += `*Produtos Analisados:*\n`;
+
+            batteries.forEach(b => {
+                const submissionDate = new Date(b.submissionDate).toLocaleDateString('pt-BR');
+                message += ` • *${b.batteryModel} (${b.code})* - Enviada em: ${submissionDate}\n`;
+            });
+            
+            message += `\nPara mais detalhes sobre a retirada ou troca do produto, por favor, entre em contato com o seu vendedor.\n\n`;
+            message += `Atenciosamente,\n*Equipe de Garantia FABRECK BATERIAS*`;
+
+            return message;
+        }
+        
+        function sendFilteredViaWhatsApp() {
+            openWhatsAppModal('filtered');
+        }
+
+        function sendAnalysisResultViaWhatsApp(batteries) {
+            openWhatsAppModal('analysisResult', batteries);
+        }
+
+        function sendAnalysisViaWhatsApp() {
+            openWhatsAppModal('analysis');
+        }
+
         function generateWhatsAppClientSectionBody(data) {
             const clientName = data[0]?.client || 'N/A';
-            let message = `*Cliente:* ${clientName}\n\n`;
+            const salesmanName = data[0]?.salesman || 'N/A';
+            let message = `*Cliente:* ${clientName}\n`;
+            message += `*Vendedor:* ${salesmanName}\n\n`;
 
             // --- Secção de Baterias Finalizadas ---
             const finalizedData = data.filter(b => b.status === 'finalized');
@@ -3722,42 +4041,39 @@
             message += `--------------------------------------\n`;
 
             if (finalizedData.length === 0) {
-                message += "Nenhuma bateria com análise concluída para este cliente.\n\n";
+                message += "Nenhuma bateria com análise concluída.\n\n";
             } else {
                 const summary = {};
                 finalizedData.forEach(battery => {
                     let category = 'Reprovadas';
-                    if (battery.finalAction.includes('APROVADA')) category = 'Aprovadas (Troca)';
+                    if (battery.finalAction.includes('APROVADA')) category = 'Aprovadas (Troca de Fábrica)';
+                    else if (battery.finalAction.includes('CORTESIA')) category = 'Trocadas (Garantia Cortesia)';
                     else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'Reprovadas (Fora do Prazo)';
                     else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'Para Recarregar';
                     
-                    if (!summary[category]) summary[category] = {};
-                    const model = battery.batteryModel || 'N/A';
-                    if (!summary[category][model]) summary[category][model] = [];
-                    summary[category][model].push(battery.code);
+                    if (!summary[category]) summary[category] = [];
+                    summary[category].push(battery);
                 });
 
 
-                const order = ['Aprovadas (Troca)', 'Para Recarregar', 'Reprovadas', 'Reprovadas (Fora do Prazo)'];
+                const order = ['Aprovadas (Troca de Fábrica)', 'Trocadas (Garantia Cortesia)', 'Para Recarregar', 'Reprovadas', 'Reprovadas (Fora do Prazo)'];
                 let hasContent = false;
                 
                 order.forEach(category => {
                     if (summary[category]) {
                         hasContent = true;
-                        const models = summary[category];
-                        const total = Object.values(models).reduce((sum, codes) => sum + codes.length, 0);
+                        const batteriesInCategory = summary[category];
+                        message += `\n*${category.toUpperCase()} - TOTAL: ${batteriesInCategory.length}*\n`;
                         
-                        message += `\n*${category.toUpperCase()} - TOTAL: ${total}*\n`;
-                        
-                        Object.keys(models).sort().forEach(model => {
-                            const codes = models[model];
-                            message += `  • *${model} (${codes.length}):* ${codes.join(', ')}\n`;
+                        batteriesInCategory.forEach(b => {
+                           const analysisDate = b.technicalOpinionDate ? new Date(b.technicalOpinionDate).toLocaleDateString('pt-BR') : 'N/A';
+                           message += ` • *${b.batteryModel} (${b.code})* - Análise: ${analysisDate}\n`;
                         });
                     }
                 });
 
                 if (!hasContent) {
-                    message += "Nenhuma bateria com parecer finalizado para este cliente.\n";
+                    message += "Nenhuma bateria com parecer finalizado.\n";
                 }
                 message += `\n`;
             }
@@ -3768,19 +4084,10 @@
             message += `--------------------------------------\n`;
 
             if (inAnalysisData.length > 0) {
-                const total = inAnalysisData.length;
-                message += `Total de ${total} bateria(s) aguardando parecer técnico:\n`;
-
-                const groupedByModel = {};
-                inAnalysisData.forEach(battery => {
-                    const model = battery.batteryModel || 'N/A';
-                    if (!groupedByModel[model]) groupedByModel[model] = [];
-                    groupedByModel[model].push(battery.code);
-                });
-
-                Object.keys(groupedByModel).sort().forEach(model => {
-                    const codes = groupedByModel[model];
-                    message += `  • *${model} (${codes.length}):* ${codes.join(', ')}\n`;
+                message += `Total de ${inAnalysisData.length} bateria(s) aguardando parecer:\n`;
+                inAnalysisData.forEach(b => {
+                    const submissionDate = b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : 'N/A';
+                    message += ` • *${b.batteryModel} (${b.code})* - Enviada em: ${submissionDate}\n`;
                 });
                 message += `\n`;
             } else {
@@ -3790,69 +4097,7 @@
             return message;
         }
 
-        function sendFilteredViaWhatsApp() {
-            whatsappModal.classList.remove('active');
-            const filteredData = getFilteredData();
-            if (filteredData.length === 0) {
-                return showNotification('Não há dados no filtro atual para enviar.', 'error');
-            }
-
-            let fullMessage = '';
-            const uniqueSalespeople = [...new Set(filteredData.map(b => b.salesman))];
-
-            if (uniqueSalespeople.length === 1 && uniqueSalespeople[0]) {
-                const salesmanName = uniqueSalespeople[0];
-                
-                fullMessage += `*Relatório de Garantia - FABRECK BATERIAS*\n\n`;
-                fullMessage += `*Vendedor:* ${salesmanName}\n`;
-                fullMessage += `*Data de Emissão:* ${new Date().toLocaleDateString('pt-BR')}\n\n`;
-                fullMessage += `Prezado(a) ${salesmanName.split(' ')[0]},\nSegue abaixo o status de garantia atualizado para os seus clientes, com base nos filtros aplicados:\n\n`;
-
-                const groupedByClient = filteredData.reduce((acc, battery) => {
-                    (acc[battery.client] = acc[battery.client] || []).push(battery);
-                    return acc;
-                }, {});
-
-                Object.keys(groupedByClient).sort().forEach(clientName => {
-                    fullMessage += generateWhatsAppClientSectionBody(groupedByClient[clientName]);
-                    fullMessage += `------------------------------------\n\n`;
-                });
-
-            } 
-            else {
-                fullMessage = `*Relatório Consolidado (Filtrado) - FABRECK BATERIAS*\n`;
-                fullMessage += `*Data de Emissão:* ${new Date().toLocaleDateString('pt-BR')}\n`;
-                fullMessage += `====================================\n\n`;
-
-                const groupedBySalesman = filteredData.reduce((acc, battery) => {
-                    (acc[battery.salesman] = acc[battery.salesman] || []).push(battery);
-                    return acc;
-                }, {});
-
-                Object.keys(groupedBySalesman).sort().forEach(salesmanName => {
-                    fullMessage += `*VENDEDOR: ${salesmanName}*\n\n`;
-                    const salesmanData = groupedBySalesman[salesmanName];
-                    const groupedByClient = salesmanData.reduce((acc, battery) => {
-                        (acc[battery.client] = acc[battery.client] || []).push(battery);
-                        return acc;
-                    }, {});
-
-                    Object.keys(groupedByClient).sort().forEach(clientName => {
-                        fullMessage += generateWhatsAppClientSectionBody(groupedByClient[clientName]);
-                        fullMessage += `------------------------------------\n\n`;
-                    });
-                });
-            }
-
-            fullMessage += `_Mensagem gerada automaticamente pelo Sistema de Garantia Fabreck._`;
-
-            const encodedMessage = encodeURIComponent(fullMessage);
-            window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
-            showNotification('O seu relatório filtrado está pronto para enviar!', 'success');
-        }
-
         function sendGeneralWhatsAppReport() {
-            whatsappModal.classList.remove('active');
             if (batteryData.length === 0) {
                 return showNotification('Não há dados para gerar o relatório.', 'error');
             }
@@ -3882,13 +4127,9 @@
 
             fullMessage += `_Relatório gerado pelo Sistema de Garantia Fabreck._`;
 
-            const encodedMessage = encodeURIComponent(fullMessage);
-            window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
-            showNotification('O seu relatório geral para o WhatsApp está pronto!', 'success');
+            openWhatsAppModal('custom', { message: fullMessage });
         }
-
         function sendTodaySummaryViaWhatsApp() {
-            whatsappModal.classList.remove('active');
             const today = new Date();
             today.setHours(0, 0, 0, 0);
 
@@ -3902,7 +4143,7 @@
                 return showNotification('Nenhum registo de garantia feito hoje.', 'info');
             }
 
-            let message = `*Resumo de Registos de Garantia - ${today.toLocaleDateString('pt-BR')}*\n\n`;
+            let message = `*Resumo de Registos de Garantia - ${new Date().toLocaleDateString('pt-BR')}*\n\n`;
 
             const groupedBySalesman = todaysEntries.reduce((acc, battery) => {
                 (acc[battery.salesman] = acc[battery.salesman] || []).push(battery);
@@ -3915,58 +4156,16 @@
                 const count = entries.length;
                 totalToday += count;
                 message += `*Vendedor: ${salesman}*\n`;
-                message += `Total de Baterias: ${count}\n`;
+                message += `Total de Baterias Registadas: ${count}\n`;
                 
                 const clients = [...new Set(entries.map(e => e.client))].join(', ');
-                message += `Clientes: ${clients}\n\n`;
+                message += `Clientes Atendidos: ${clients}\n\n`;
             });
 
             message += `*Total Geral do Dia: ${totalToday} baterias*\n\n`;
             message += `_Relatório gerado pelo Sistema de Garantia Fabreck._`;
             
-            const encodedMessage = encodeURIComponent(message);
-            window.open(`https://web.whatsapp.com/send?text=${encodedMessage}`, '_blank');
-            showNotification('Resumo do dia pronto para enviar!', 'success');
-        }
-        
-        function sendAnalysisViaWhatsApp() {
-            const selectedClient = analysisClientFilter.value;
-            if (!selectedClient) return showNotification('Selecione um cliente para notificar.', 'error');
-            
-            const batteriesInAnalysis = batteryData.filter(b => b.client === selectedClient && b.status === 'in_analysis');
-            if (batteriesInAnalysis.length === 0) return showNotification('Este cliente não tem baterias em análise.', 'info');
-
-            const clientPhone = batteriesInAnalysis[0]?.clientPhone;
-            const salesmanName = batteriesInAnalysis[0]?.salesman || 'nosso vendedor';
-            
-            let message = `Prezado(a) *${selectedClient.split(' ')[0]}*,\n\n`;
-            message += `Informamos, por intermédio do seu vendedor *${salesmanName}*, que as seguintes baterias foram recebidas e estão em processo de análise técnica de garantia na Fabreck:\n\n`;
-
-            const groupedByModel = batteriesInAnalysis.reduce((acc, battery) => {
-                const model = battery.batteryModel || 'N/A';
-                if (!acc[model]) acc[model] = [];
-                acc[model].push(battery.code);
-                return acc;
-            }, {});
-
-            Object.keys(groupedByModel).sort().forEach(model => {
-                const codes = groupedByModel[model];
-                message += `*${model}* - ${codes.length} unidade(s)\n`;
-                codes.forEach(code => {
-                    message += `  • Código: ${code}\n`;
-                });
-            });
-
-            message += `\nO prazo para conclusão da análise é de até 5 dias úteis. Entraremos em contato assim que houver um parecer.\n\n`;
-            message += `Atenciosamente,\n*Equipe de Garantia FABRECK BATERIAS*`;
-
-            const encodedMessage = encodeURIComponent(message);
-            const url = clientPhone 
-                ? `https://wa.me/${clientPhone.replace(/\D/g, '')}?text=${encodedMessage}`
-                : `https://web.whatsapp.com/send?text=${encodedMessage}`;
-            
-            window.open(url, '_blank');
-            showNotification('Mensagem de notificação pronta!', 'success');
+            openWhatsAppModal('custom', { message: message });
         }
         // #endregion
 
