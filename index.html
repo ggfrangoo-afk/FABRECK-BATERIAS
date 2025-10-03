@@ -41,9 +41,12 @@
             -webkit-tap-highlight-color: transparent; /* Remove highlight em mobile */
         }
         
+        html {
+            scroll-behavior: smooth;
+        }
+
         html, body {
             height: 100%;
-            overflow: hidden; /* Previne scroll no body, a rolagem será interna */
         }
 
         body {
@@ -102,7 +105,6 @@
         /* --- LAYOUT PRINCIPAL DINÂMICO --- */
         #layoutContainer {
             display: flex;
-            height: 100vh;
             width: 100%;
         }
 
@@ -115,14 +117,15 @@
             padding: 20px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.1);
             transition: background 0.3s ease;
+            position: sticky;
+            top: 0;
+            height: 100vh;
         }
         
         #mainContentWrapper {
             flex: 1;
-            overflow-y: auto; /* Permite scroll apenas na área de conteúdo */
             position: relative;
             padding: 10px;
-            scroll-behavior: smooth;
         }
 
         .container {
@@ -1224,13 +1227,13 @@
         /* --- NOVOS ESTILOS PARA WIDESCREEN OTIMIZADO --- */
         @media (min-width: 1200px) {
             /* Aplica um layout de 2 colunas para a página de Registo */
-            #scanPage {
+            #scanPage.active {
                 display: grid;
                 grid-template-columns: minmax(450px, 1.2fr) 1fr; /* Coluna do formulário um pouco maior */
                 gap: 20px;
                 align-items: start;
             }
-            #scanPage .card {
+            #scanPage.active .card {
                 margin-bottom: 0;
             }
             
@@ -1240,18 +1243,18 @@
             }
 
             /* Reorganiza a página de Análise para melhor uso do espaço */
-            #analysisPage > .card {
+            #analysisPage.active > .card {
                 display: grid;
                 grid-template-columns: 300px 1fr; /* Coluna lateral para filtros e stats */
                 gap: 20px;
                 align-items: start;
             }
             /* Posiciona os elementos dentro do grid da página de Análise */
-            #analysisPage .card-header { grid-column: 1 / -1; } /* Header ocupa a largura toda */
-            #analysisPage .info-section { grid-column: 1 / 2; }
-            #analysisPage .stat-cards { grid-column: 1 / 2; }
-            #analysisPage .batch-actions { grid-column: 1 / 2; }
-            #analysisPage .table-container {
+            #analysisPage.active .card-header { grid-column: 1 / -1; } /* Header ocupa a largura toda */
+            #analysisPage.active .info-section { grid-column: 1 / 2; }
+            #analysisPage.active .stat-cards { grid-column: 1 / 2; }
+            #analysisPage.active .batch-actions { grid-column: 1 / 2; }
+            #analysisPage.active .table-container {
                 grid-column: 2 / 3;
                 grid-row: 2 / 6; /* Ocupa as linhas ao lado dos filtros */
                 margin-top: 0;
@@ -1259,7 +1262,7 @@
             }
 
             /* Aplica layout de 2 colunas para a página de Ajustes */
-            #settingsPage {
+            #settingsPage.active {
                 display: grid;
                 grid-template-columns: 1fr 1fr;
                 gap: 20px;
@@ -2459,7 +2462,7 @@
             const lastSalesman = await dbManager.get('settings', LAST_SALESMAN_KEY);
             if (lastSalesman) {
                 salesmanNameInput.value = lastSalesman.value;
-                currentSalesman.textContent = lastSalesman.value;
+                if(currentSalesman) currentSalesman.textContent = lastSalesman.value;
             }
             
             const lastClient = await dbManager.get('settings', LAST_CLIENT_KEY);
@@ -2494,7 +2497,7 @@
             salesmanNameInput?.addEventListener('blur', async () => {
                 const name = salesmanNameInput.value.trim().toUpperCase();
                 if (name) {
-                    currentSalesman.textContent = name;
+                    if(currentSalesman) currentSalesman.textContent = name;
                     await dbManager.set('settings', { key: LAST_SALESMAN_KEY, value: name });
                 }
             });
@@ -2610,7 +2613,6 @@
             
             cancelPasswordConfirmBtn?.addEventListener('click', () => passwordConfirmModal.classList.remove('active'));
             
-            // Listeners do modal de confirmação
             cancelConfirmBtn?.addEventListener('click', () => confirmModal.classList.remove('active'));
             confirmActionBtn?.addEventListener('click', () => {
                 confirmCallback?.();
@@ -2667,7 +2669,7 @@
         }
         
         function showPage(pageId) {
-            document.getElementById('mainContentWrapper').scrollTo({ top: 0, behavior: 'smooth' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById(pageId)?.classList.add('active');
@@ -2833,7 +2835,7 @@
                     newBattery.recommendation = newBattery.recommendation || 'Finalizada automaticamente: Bateria fora do prazo de garantia.';
                     showNotification(`Bateria ${code} finalizada (Fora do Prazo).`, 'warning');
                     addActivity('fas fa-clock', `Bateria ${code} finalizada (Fora do Prazo).`);
-                } else { // Análise por vídeo
+                } else { 
                     newBattery.finalAction = recommendation.toUpperCase().includes('PROCEDENTE') ? 'APROVADA (TROCA DE FÁBRICA)' : 'REPROVADA (DEVOLVER AO CLIENTE)';
                     showNotification(`Bateria ${code} finalizada no registo.`, 'success');
                     addActivity('fas fa-check-circle', `Bateria ${code} finalizada no registo.`);
@@ -2910,7 +2912,7 @@
                         await dbManager.set('batteries', item);
                     }
                     batteryData = importedData;
-                    activityData = []; // Limpa log local para evitar inconsistência
+                    activityData = []; 
                     await dbManager.clear('activity');
 
                     updateUI();
@@ -3129,7 +3131,6 @@
                 </tr>`;
         }
 
-        // --- Funções de Atualização das Tabelas ---
         function updateRecentRegistrationsLog() {
             const recentBatteries = [...batteryData].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10);
             if (recentBatteries.length === 0) {
@@ -3152,7 +3153,6 @@
             
             reportBody.innerHTML = filteredData.map(renderReportTableRow).join('');
 
-            // Adiciona os event listeners após a renderização
             reportBody.querySelectorAll('.remove-btn').forEach(btn => btn.addEventListener('click', function() { showConfirmModal('Remover Bateria', 'Tem a certeza que deseja remover esta bateria? A ação é irreversível.', () => removeBattery(parseInt(this.dataset.id))); }));
             reportBody.querySelectorAll('.name-edit-btn').forEach(btn => btn.addEventListener('click', function() { openClientEditModal(parseInt(this.dataset.id)); }));
 
@@ -3943,7 +3943,6 @@
                 const data = await response.json();
                 if (!data || !Array.isArray(data.batteries)) throw new Error('Dados da nuvem inválidos.');
 
-                // Compara as datas do último dado local e da nuvem
                 const localLastUpdate = batteryData.length > 0 ? Math.max(...batteryData.map(b => new Date(b.timestamp).getTime())) : 0;
                 const cloudLastUpdate = new Date(data.savedAt).getTime();
 
@@ -3951,11 +3950,11 @@
                     await applyCloudData(data);
                 } else {
                      if (!isSilent) showNotification('Os seus dados locais estão mais recentes que os da nuvem.', 'info');
-                     updateOnlineStatus(); // Apenas atualiza o status se não carregar nada
+                     updateOnlineStatus();
                 }
             } catch (error) {
                 if (!isSilent) showNotification(`Falha ao carregar: ${error.message}`, 'error');
-                updateOnlineStatus(); // Atualiza o status em caso de erro
+                updateOnlineStatus();
             }
         }
 
@@ -3992,6 +3991,9 @@
             } else if (type === 'analysisResult') {
                 targetPhone = data[0]?.clientPhone;
                 message = generateWhatsAppAnalysisResultMessage(data);
+
+            } else if (type === 'custom') {
+                message = data.message;
 
             } else { // 'filtered'
                 const filteredData = getFilteredData();
@@ -4086,7 +4088,6 @@
             let message = `*Cliente:* ${clientName}\n`;
             message += `*Vendedor:* ${salesmanName}\n\n`;
 
-            // --- Secção de Baterias Finalizadas ---
             const finalizedData = data.filter(b => b.status === 'finalized');
             message += `*STATUS DE BATERIAS FINALIZADAS*\n`;
             message += `--------------------------------------\n`;
@@ -4129,7 +4130,6 @@
                 message += `\n`;
             }
 
-            // --- Secção de Baterias em Análise ---
             const inAnalysisData = data.filter(b => b.status === 'in_analysis');
             message += `*BATERIAS PENDENTES DE ANÁLISE*\n`;
             message += `--------------------------------------\n`;
@@ -4219,7 +4219,6 @@
             openWhatsAppModal('custom', { message: message });
         }
         // #endregion
-
 
         document.addEventListener('DOMContentLoaded', init);
     </script>
