@@ -122,6 +122,7 @@
             overflow-y: auto; /* Permite scroll apenas na área de conteúdo */
             position: relative;
             padding: 10px;
+            scroll-behavior: smooth;
         }
 
         .container {
@@ -353,8 +354,10 @@
             text-align: center;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            overflow: hidden;
-            position: relative;
+            position: sticky;
+            top: 0;
+            z-index: 101;
+            transition: padding 0.3s ease;
         }
 
         /* --- NOVO LOGO EM TEXTO --- */
@@ -1960,19 +1963,29 @@
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="analysisRecommendation">Parecer Técnico Final</label>
-                <textarea id="analysisRecommendation" class="form-control" placeholder="Ex: Capacidade baixa, teste de CCA falhou..."></textarea>
+             <div class="form-group">
+                <label>Diagnóstico Técnico</label>
+                <div class="warranty-type">
+                    <div class="warranty-option" id="analysisApprovedRadioContainer">
+                        <input type="radio" id="analysisApprovedRadio" name="analysisDiagnosis" value="approved" style="display:none;">
+                        <label for="analysisApprovedRadio" style="width:100%; cursor:pointer;">Aprovada (Defeito de Fábrica)</label>
+                    </div>
+                    <div class="warranty-option" id="analysisRejectedRadioContainer">
+                        <input type="radio" id="analysisRejectedRadio" name="analysisDiagnosis" value="rejected" style="display:none;">
+                        <label for="analysisRejectedRadio" style="width:100%; cursor:pointer;">Reprovada (Sem Defeito / Mau Uso)</label>
+                    </div>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="analysisFinalAction">Ação Final</label>
-                <select id="analysisFinalAction" class="form-control">
-                    <option value="">-- Selecione uma ação --</option>
-                    <option value="APROVADA (TROCA DE FÁBRICA)">APROVADA (TROCA DE FÁBRICA)</option>
-                    <option value="GARANTIA CORTESIA (ENVIAR NOVA)">GARANTIA CORTESIA (ENVIAR NOVA)</option>
-                    <option value="REPROVADA (DEVOLVER AO CLIENTE)">REPROVADA (DEVOLVER AO CLIENTE)</option>
-                    <option value="REPROVADA (MAU USO / SUCATEAR)">REPROVADA (MAU USO / SUCATEAR)</option>
+                <label for="analysisRecommendation">Parecer Técnico (Descrição)</label>
+                <textarea id="analysisRecommendation" class="form-control" placeholder="Descreva o defeito ou o motivo da reprovação..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="analysisFinalAction">Ação Comercial Final</label>
+                <select id="analysisFinalAction" class="form-control" disabled>
+                    <option value="">-- Selecione o diagnóstico primeiro --</option>
                 </select>
             </div>
              <button id="analysisAddObservationBtn" class="btn btn-info" style="margin-top: -10px; margin-bottom: 10px;"><i class="fas fa-comment-alt"></i> Adicionar Observações</button>
@@ -2193,6 +2206,10 @@
         const analysisFinalAction = document.getElementById('analysisFinalAction');
         const saveAnalysisBtn = document.getElementById('saveAnalysisBtn');
         const analysisAddObservationBtn = document.getElementById('analysisAddObservationBtn');
+        const analysisApprovedRadio = document.getElementById('analysisApprovedRadio');
+        const analysisRejectedRadio = document.getElementById('analysisRejectedRadio');
+        const analysisApprovedRadioContainer = document.getElementById('analysisApprovedRadioContainer');
+        const analysisRejectedRadioContainer = document.getElementById('analysisRejectedRadioContainer');
 
         const clientEditModal = document.getElementById('clientEditModal');
         const closeClientEditModal = document.getElementById('closeClientEditModal');
@@ -2544,6 +2561,8 @@
             });
             selectAllCheckbox?.addEventListener('change', handleSelectAll);
             batchAnalyzeBtn?.addEventListener('click', openBatchAnalysisModal);
+            analysisApprovedRadioContainer?.addEventListener('click', () => handleDiagnosisChange('approved'));
+            analysisRejectedRadioContainer?.addEventListener('click', () => handleDiagnosisChange('rejected'));
 
             closeClientEditModal?.addEventListener('click', () => clientEditModal.classList.remove('active'));
             saveClientEditBtn?.addEventListener('click', saveEditedClientData);
@@ -2648,14 +2667,7 @@
         }
         
         function showPage(pageId) {
-            document.getElementById('mainContentWrapper').scrollTop = 0;
-            const header = document.querySelector('header');
-            
-            if (pageId === 'scanPage') {
-                header.classList.remove('minimal');
-            } else {
-                header.classList.add('minimal');
-            }
+            document.getElementById('mainContentWrapper').scrollTo({ top: 0, behavior: 'smooth' });
 
             pages.forEach(page => page.classList.remove('active'));
             document.getElementById(pageId)?.classList.add('active');
@@ -3282,8 +3294,14 @@
             analysisSalesmanName.textContent = battery.salesman;
             analysisBatteryModel.textContent = battery.batteryModel;
             analysisWarrantyStatus.innerHTML = battery.warranty_period_status === 'warranty' ? '<span class="status-badge status-warranty">Em Garantia</span>' : '<span class="status-badge status-expired">Fora do Prazo</span>';
+            
+            analysisApprovedRadio.checked = false;
+            analysisRejectedRadio.checked = false;
+            analysisApprovedRadioContainer.classList.remove('selected');
+            analysisRejectedRadioContainer.classList.remove('selected');
+            analysisFinalAction.innerHTML = '<option value="">-- Selecione o diagnóstico primeiro --</option>';
+            analysisFinalAction.disabled = true;
             analysisRecommendation.value = battery.recommendation || '';
-            analysisFinalAction.value = '';
 
             analysisModal.classList.add('active');
         }
@@ -3296,9 +3314,42 @@
             analysisMode = 'batch';
             analysisModalTitle.textContent = `Analisar ${batchAnalysisIds.length} Baterias em Lote`;
             analysisSingleInfo.style.display = 'none';
+            
+            analysisApprovedRadio.checked = false;
+            analysisRejectedRadio.checked = false;
+            analysisApprovedRadioContainer.classList.remove('selected');
+            analysisRejectedRadioContainer.classList.remove('selected');
+            analysisFinalAction.innerHTML = '<option value="">-- Selecione o diagnóstico primeiro --</option>';
+            analysisFinalAction.disabled = true;
             analysisRecommendation.value = '';
-            analysisFinalAction.value = '';
+            
             analysisModal.classList.add('active');
+        }
+
+        function handleDiagnosisChange(diagnosis) {
+            analysisApprovedRadio.checked = diagnosis === 'approved';
+            analysisRejectedRadio.checked = diagnosis === 'rejected';
+            analysisApprovedRadioContainer.classList.toggle('selected', diagnosis === 'approved');
+            analysisRejectedRadioContainer.classList.toggle('selected', diagnosis === 'rejected');
+
+            analysisFinalAction.disabled = false;
+            let options = '';
+
+            if (diagnosis === 'approved') {
+                options = `<option value="APROVADA (TROCA DE FÁBRICA)">APROVADA (TROCA DE FÁBRICA)</option>`;
+                analysisFinalAction.innerHTML = options;
+            } else if (diagnosis === 'rejected') {
+                options = `
+                    <option value="">-- Selecione a ação comercial --</option>
+                    <option value="GARANTIA CORTESIA (ENVIAR NOVA)">GARANTIA CORTESIA (ENVIAR NOVA)</option>
+                    <option value="REPROVADA (DEVOLVER AO CLIENTE)">REPROVADA (DEVOLVER AO CLIENTE)</option>
+                    <option value="REPROVADA (MAU USO / SUCATEAR)">REPROVADA (MAU USO / SUCATEAR)</option>
+                `;
+                analysisFinalAction.innerHTML = options;
+            } else {
+                analysisFinalAction.innerHTML = '<option value="">-- Selecione o diagnóstico primeiro --</option>';
+                analysisFinalAction.disabled = true;
+            }
         }
 
         async function saveAnalysis() {
