@@ -8,6 +8,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDKs -->
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js"></script>
+
     <style>
         /* Variáveis de cores Fabreck */
         :root {
@@ -604,7 +610,7 @@
             text-align: left;
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
             white-space: nowrap; 
-            overflow: hidden;    
+            overflow: hidden;   
             text-overflow: ellipsis; 
         }
 
@@ -1120,7 +1126,7 @@
         }
          body.dark-mode .form-section {
             border-bottom-color: var(--dark-border);
-         }
+       }
         .form-section h3 {
             color: var(--fabreck-blue);
             margin-bottom: 15px;
@@ -1128,7 +1134,7 @@
         }
          body.dark-mode .form-section h3 {
             color: var(--dark-blue-light);
-         }
+       }
 
         .checkbox-grid {
             display: grid;
@@ -1876,7 +1882,7 @@
                         <input type="file" id="restoreFile" accept=".json" style="display: none;">
 
                         <div class="info-section">
-                            <h3>Última Atualização Local</h3>
+                            <h3>Última Sincronização</h3>
                             <p id="lastUpdate">Nenhuma atualização realizada</p>
                         </div>
                     </div>
@@ -2128,8 +2134,12 @@
     </div>
 
 
-    <script>
-        // #region Elementos DOM
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc, writeBatch, getDocs, query } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/9.15.0/firebase-auth.js";
+
+        // #region Elementos DOM (Oculto para brevidade, sem alterações)
         const clientNameInput = document.getElementById('clientName');
         const salesmanNameInput = document.getElementById('salesmanName');
         const serialCodeInput = document.getElementById('serialCode');
@@ -2276,48 +2286,35 @@
         const passwordConfirmForm = document.getElementById('passwordConfirmForm');
         const cancelPasswordConfirmBtn = document.getElementById('cancelPasswordConfirmBtn');
         const adminPasswordConfirmInput = document.getElementById('adminPasswordConfirm');
+        const syncStatus = document.getElementById('syncStatus');
         // #endregion
 
         // #region Estado do Sistema
-        const ACTIVITY_KEY = 'fabreck_activity_log_v12';
         const LAST_SALESMAN_KEY = 'fabreck_last_salesman_v12';
         const LAST_CLIENT_KEY = 'fabreck_last_client_v12';
         const LAST_WARRANTY_TYPE_KEY = 'fabreck_last_warranty_type_v12';
         const DARK_MODE_KEY = 'fabreck_dark_mode'; 
         const INSTRUCTIONS_KEY = 'fabreck_instructions_v1';
         let batteryData = [];
-        let activityData = [];
+        let activityData = []; // Manteremos o log de atividades localmente
         let currentFilters = {
-            client: '',
-            salesman: '',
-            status: '',
-            workflowStatus: '',
-            finalAction: '',
-            model: '',
-            startDate: '',
-            endDate: '',
-            code: ''
+            client: '', salesman: '', status: '', workflowStatus: '',
+            finalAction: '', model: '', startDate: '', endDate: '', code: ''
         };
         let warrantyInstructions = {};
         let rulesShown = localStorage.getItem('rulesShown') === 'true';
         let analysisMode = 'single';
         let analyzingBatteryId = null; 
-        
         let batchAnalysisIds = []; 
-
         let editingBatteryId = null;
         let observationCallback = null;
         let confirmCallback = null;
         let tempObservation = '';
         let isDarkMode = localStorage.getItem(DARK_MODE_KEY) === 'true';
-        let syncDebounceTimer = null;
         let filterDebounceTimer = null;
         let laudoImages = [];
         let whatsappUrl = '';
-
-        const ADMIN_USERS_KEY = 'fabreck_admin_users';
-        const NEEDS_SYNC_KEY = 'fabreck_needs_sync';
-        const FIXED_SYNC_KEY = '1418850998876823552';
+        const ADMIN_USERS_KEY = 'fabreck_admin_users_local';
         
         const batteryModelMap = {
             'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
@@ -2325,117 +2322,109 @@
             'K': 'FA7D'
         };
         
+        // --- NOVO: Variáveis do Firebase ---
         let db;
+        let auth;
+        let batteriesCollection;
+        let settingsCollection;
+        let unsubscribeBatteries = null; // Para desligar o listener
         // #endregion
 
-        // #region IndexedDB Helper
-        const dbPromise = new Promise((resolve, reject) => {
-            const request = indexedDB.open('FabreckDB_v2', 1);
+        // #region Firebase
+        async function initFirebase() {
+            try {
+                const firebaseConfigFromEnv = typeof __firebase_config !== 'undefined' 
+                    ? JSON.parse(__firebase_config) 
+                    : null;
 
-            request.onerror = (event) => {
-                console.error("Erro ao abrir IndexedDB:", event.target.error);
-                reject("Erro de base de dados");
-            };
+                const firebaseConfig = firebaseConfigFromEnv || {
+                    apiKey: "YOUR_API_KEY",
+                    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+                    projectId: "YOUR_PROJECT_ID",
+                    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+                    messagingSenderId: "YOUR_SENDER_ID",
+                    appId: "YOUR_APP_ID"
+                };
 
-            request.onupgradeneeded = (event) => {
-                const db = event.target.result;
-                if (!db.objectStoreNames.contains('batteries')) {
-                    db.createObjectStore('batteries', { keyPath: 'id' });
+                if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "YOUR_API_KEY") {
+                     throw new Error("Configuração do Firebase não encontrada. Adicione as suas credenciais ou execute num ambiente configurado.");
                 }
-                 if (!db.objectStoreNames.contains('activity')) {
-                    const activityStore = db.createObjectStore('activity', { keyPath: 'id', autoIncrement: true });
-                    activityStore.createIndex('timestamp', 'timestamp', { unique: false });
-                }
-                 if (!db.objectStoreNames.contains('settings')) {
-                    db.createObjectStore('settings', { keyPath: 'key' });
-                }
-            };
 
-            request.onsuccess = (event) => {
-                console.log("Base de dados aberta com sucesso.");
-                db = event.target.result;
-                resolve(db);
-            };
-        });
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
 
-        const dbManager = {
-            async get(storeName, key) {
-                const db = await dbPromise;
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction(storeName, 'readonly');
-                    const store = transaction.objectStore(storeName);
-                    const request = store.get(key);
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = (event) => reject(event.target.error);
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const collectionPath = `artifacts/${appId}/public/data/batteries`;
+                
+                batteriesCollection = collection(db, collectionPath);
+                
+                onAuthStateChanged(auth, user => {
+                    if (user) {
+                        console.log("Utilizador autenticado:", user.uid);
+                        if (!unsubscribeBatteries) {
+                           setupFirestoreListener();
+                        }
+                    }
                 });
-            },
-            async getAll(storeName) {
-                const db = await dbPromise;
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction(storeName, 'readonly');
-                    const store = transaction.objectStore(storeName);
-                    const request = store.getAll();
-                    request.onsuccess = () => resolve(request.result);
-                    request.onerror = (event) => reject(event.target.error);
-                });
-            },
-            async set(storeName, value) {
-                const db = await dbPromise;
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction(storeName, 'readwrite');
-                    const store = transaction.objectStore(storeName);
-                    const request = store.put(value);
-                    transaction.oncomplete = () => resolve(request.result);
-                    transaction.onerror = (event) => reject(event.target.error);
-                });
-            },
-            async delete(storeName, key) {
-                const db = await dbPromise;
-                 return new Promise((resolve, reject) => {
-                    const transaction = db.transaction(storeName, 'readwrite');
-                    const store = transaction.objectStore(storeName);
-                    const request = store.delete(key);
-                    transaction.oncomplete = () => resolve();
-                    transaction.onerror = (event) => reject(event.target.error);
-                });
-            },
-            async clear(storeName) {
-                const db = await dbPromise;
-                return new Promise((resolve, reject) => {
-                    const transaction = db.transaction(storeName, 'readwrite');
-                    const store = transaction.objectStore(storeName);
-                    const request = store.clear();
-                    transaction.oncomplete = () => resolve();
-                    transaction.onerror = (event) => reject(event.target.error);
-                });
+
+                const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                if (authToken) {
+                    await signInWithCustomToken(auth, authToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+            } catch (error) {
+                console.error("Erro ao inicializar Firebase: ", error);
+                syncStatus.textContent = 'Erro de Configuração';
+                syncStatus.style.color = '#E74C3C';
+                showNotification(error.message, 'error');
             }
-        };
-        // #endregion
+        }
 
+        function setupFirestoreListener() {
+            syncStatus.textContent = 'A ligar...';
+            syncStatus.style.color = '#F39C12';
+            
+            if (unsubscribeBatteries) unsubscribeBatteries();
+
+            unsubscribeBatteries = onSnapshot(query(batteriesCollection), (querySnapshot) => {
+                const serverData = [];
+                querySnapshot.forEach((doc) => {
+                    serverData.push({ id: doc.id, ...doc.data() });
+                });
+                
+                batteryData = serverData;
+                updateUI();
+                
+                syncStatus.textContent = 'Sincronizado';
+                syncStatus.style.color = '#2ECC71';
+
+            }, (error) => {
+                console.error("Erro ao ouvir dados do Firestore: ", error);
+                syncStatus.textContent = 'Erro de Sincronização';
+                syncStatus.style.color = '#E74C3C';
+                showNotification('A ligação com a base de dados foi perdida. Verifique as permissões.', 'error');
+            });
+        }
+        // #endregion
+        
         // #region Inicialização e Autenticação
         async function init() {
             console.log("Inicializando sistema...");
             
             setupEventListeners();
-            await dbPromise; 
             await initializeCredentials();
+            await initFirebase();
             checkAuth(); 
         }
 
         async function initializeAppData() {
             showNotification('Autenticado. A carregar dados...', 'info');
             
-            await loadFromDB(); 
-            
-            loadFromCloud(true).then(() => {
-                loadFromDB().then(updateUI);
-            });
-
-            updateUI();
-            updateLastUpdate();
             loadLastUsedData(); 
             applyDarkMode(); 
-            updateOnlineStatus();
 
             const today = new Date();
             const year = today.getFullYear();
@@ -2449,9 +2438,7 @@
                 loginOverlay.classList.add('hidden');
                 layoutContainer.classList.remove('hidden');
                 applyUIRestrictions();
-                if (batteryData.length === 0) { 
-                     initializeAppData();
-                }
+                initializeAppData();
             } else {
                 loginOverlay.classList.remove('hidden');
                 layoutContainer.classList.add('hidden');
@@ -2459,26 +2446,21 @@
         }
         
         async function loadLastUsedData() {
-            const lastSalesman = await dbManager.get('settings', LAST_SALESMAN_KEY);
+            const lastSalesman = localStorage.getItem(LAST_SALESMAN_KEY);
             if (lastSalesman) {
-                salesmanNameInput.value = lastSalesman.value;
-                if(currentSalesman) currentSalesman.textContent = lastSalesman.value;
+                salesmanNameInput.value = lastSalesman;
+                if(currentSalesman) currentSalesman.textContent = lastSalesman;
             }
             
-            const lastClient = await dbManager.get('settings', LAST_CLIENT_KEY);
-            if (lastClient) {
-                clientNameInput.value = lastClient.value;
-            }
+            const lastClient = localStorage.getItem(LAST_CLIENT_KEY);
+            if (lastClient) clientNameInput.value = lastClient;
             
-            const lastWarrantyType = await dbManager.get('settings', LAST_WARRANTY_TYPE_KEY);
-            selectWarrantyType(lastWarrantyType ? lastWarrantyType.value : 'factory');
+            const lastWarrantyType = localStorage.getItem(LAST_WARRANTY_TYPE_KEY);
+            selectWarrantyType(lastWarrantyType || 'factory');
         }
         
         function setupEventListeners() {
             console.log("Configurando event listeners...");
-
-            window.addEventListener('online', autoSyncOfflineChanges);
-            window.addEventListener('offline', updateOnlineStatus);
 
             loginForm?.addEventListener('submit', handleLogin);
             viewerLoginBtn?.addEventListener('click', handleViewerLogin);
@@ -2494,17 +2476,17 @@
             serialCodeInput?.addEventListener('keypress', e => { if (e.key === 'Enter') addBattery(); });
             
             salesmanNameInput?.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-            salesmanNameInput?.addEventListener('blur', async () => {
+            salesmanNameInput?.addEventListener('blur', () => {
                 const name = salesmanNameInput.value.trim().toUpperCase();
                 if (name) {
                     if(currentSalesman) currentSalesman.textContent = name;
-                    await dbManager.set('settings', { key: LAST_SALESMAN_KEY, value: name });
+                    localStorage.setItem(LAST_SALESMAN_KEY, name);
                 }
             });
             clientNameInput?.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-            clientNameInput?.addEventListener('blur', async () => {
+            clientNameInput?.addEventListener('blur', () => {
                 const name = clientNameInput.value.trim().toUpperCase();
-                if (name) await dbManager.set('settings', { key: LAST_CLIENT_KEY, value: name });
+                if (name) localStorage.setItem(LAST_CLIENT_KEY, name);
             });
             
             clearFormBtn?.addEventListener('click', clearCode);
@@ -2543,7 +2525,7 @@
             restoreBtn?.addEventListener('click', () => restoreFileInput.click());
             restoreFileInput?.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
-                     showConfirmModal(
+                    showConfirmModal(
                         'Confirmar Restauração', 
                         'Atenção! Esta ação substituirá TODOS os dados atuais pelos dados do arquivo de backup. A operação não pode ser desfeita.',
                         () => handleRestoreFile(e.target.files[0]),
@@ -2595,10 +2577,10 @@
                 showNotification('Observação salva temporariamente.', 'info');
             }));
             analysisAddObservationBtn?.addEventListener('click', async () => {
-                 const battery = await dbManager.get('batteries', analyzingBatteryId);
+                 const battery = batteryData.find(b => b.id === analyzingBatteryId);
                  if(battery) openObservationModal(battery.observations, async (obs) => {
-                     battery.observations = obs;
-                     await dbManager.set('batteries', battery);
+                     const batteryRef = doc(batteriesCollection, analyzingBatteryId);
+                     await updateDoc(batteryRef, { observations: obs });
                      observationModal?.classList.remove('active');
                      showNotification('Observação atualizada.', 'info');
                  });
@@ -2620,15 +2602,14 @@
             });
         }
         
-        async function handleLogin(e) {
+        function handleLogin(e) {
             e.preventDefault();
             const user = usernameInput.value.trim().toUpperCase();
             const pass = passwordInput.value.trim();
 
-            const adminUsersData = await dbManager.get('settings', ADMIN_USERS_KEY);
-            const adminUsers = adminUsersData ? adminUsersData.value : [];
+            const adminUsersData = JSON.parse(localStorage.getItem(ADMIN_USERS_KEY) || '[]');
             
-            const foundUser = adminUsers.find(admin => admin.user === user && admin.pass === pass);
+            const foundUser = adminUsersData.find(admin => admin.user === user && admin.pass === pass);
             
             if (foundUser) {
                 sessionStorage.setItem('isAuthenticated', 'true');
@@ -2651,6 +2632,7 @@
             sessionStorage.removeItem('userType');
             sessionStorage.removeItem('currentUser');
             batteryData = []; 
+            if (unsubscribeBatteries) unsubscribeBatteries(); // Para o listener ao sair
             checkAuth();
         }
         // #endregion
@@ -2739,14 +2721,14 @@
 
         // #region Lógica de Segurança
         async function initializeCredentials() {
-            const adminUsers = await dbManager.get('settings', ADMIN_USERS_KEY);
+            const adminUsers = localStorage.getItem(ADMIN_USERS_KEY);
             if (!adminUsers) {
                 const initialAdmins = [
                     { user: 'JENILTON', pass: '32582190' },
                     { user: 'REGINALDO', pass: '123456' }
                 ];
-                await dbManager.set('settings', { key: ADMIN_USERS_KEY, value: initialAdmins });
-                console.log('Credenciais de administrador iniciais definidas.');
+                localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify(initialAdmins));
+                console.log('Credenciais de administrador locais definidas.');
             }
         }
 
@@ -2759,8 +2741,7 @@
             const loggedInUser = sessionStorage.getItem('currentUser');
             if (!loggedInUser) return showNotification('Erro: Utilizador não identificado.', 'error');
 
-            const adminUsersData = await dbManager.get('settings', ADMIN_USERS_KEY);
-            let adminUsers = adminUsersData.value;
+            let adminUsers = JSON.parse(localStorage.getItem(ADMIN_USERS_KEY));
             const userToUpdate = adminUsers.find(admin => admin.user === loggedInUser);
 
             if (!userToUpdate || currentPassword !== userToUpdate.pass) return showNotification('A palavra-passe atual está incorreta.', 'error');
@@ -2768,7 +2749,7 @@
             if (newPassword !== confirmNewPassword) return showNotification('As novas palavras-passe não coincidem.', 'error');
 
             userToUpdate.pass = newPassword;
-            await dbManager.set('settings', { key: ADMIN_USERS_KEY, value: adminUsers });
+            localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify(adminUsers));
             showNotification('Palavra-passe alterada com sucesso!', 'success');
             passwordModal.classList.remove('active');
             passwordChangeForm.reset();
@@ -2776,22 +2757,6 @@
         // #endregion
 
         // #region Lógica de Dados (CRUD e Persistência)
-        async function loadFromDB() {
-            batteryData = await dbManager.getAll('batteries');
-            activityData = await dbManager.getAll('activity');
-            const instructions = await dbManager.get('settings', INSTRUCTIONS_KEY);
-            if(instructions) {
-                warrantyInstructions = instructions.value;
-            } else {
-                 warrantyInstructions = {
-                    approved: 'Bateria com defeito de fabricação. Enviar uma nova unidade para o cliente.',
-                    rejected_return: 'Bateria sem defeito, apenas descarregada ou com falha externa. Devolver ao cliente.',
-                    rejected_scrap: 'Bateria com falha por mau uso (ex: sobrecarga, caixa danificada) ou fora do prazo. Sucatear.'
-                };
-                await dbManager.set('settings', {key: INSTRUCTIONS_KEY, value: warrantyInstructions});
-            }
-        }
-        
         async function addBattery() {
             const client = clientNameInput.value.trim().toUpperCase();
             const salesman = salesmanNameInput.value.trim().toUpperCase();
@@ -2813,7 +2778,8 @@
             const submissionDateObj = new Date(Date.UTC(dateParts[0], dateParts[1] - 1, dateParts[2]));
             
             const newBattery = {
-                id: Date.now(), client, salesman, code, submissionDate: submissionDateObj.toISOString(),
+                client, salesman, code, 
+                submissionDate: submissionDateObj.toISOString(),
                 clientPhone: clientPhone,
                 batteryModel: getBatteryModelFromCode(code),
                 manufDate: getManufacturingDate(week, year).toLocaleDateString('pt-BR'),
@@ -2834,60 +2800,71 @@
                     newBattery.finalAction = 'REPROVADA - FORA DO PRAZO';
                     newBattery.recommendation = newBattery.recommendation || 'Finalizada automaticamente: Bateria fora do prazo de garantia.';
                     showNotification(`Bateria ${code} finalizada (Fora do Prazo).`, 'warning');
-                    addActivity('fas fa-clock', `Bateria ${code} finalizada (Fora do Prazo).`);
                 } else { 
                     newBattery.finalAction = recommendation.toUpperCase().includes('PROCEDENTE') ? 'APROVADA (TROCA DE FÁBRICA)' : 'REPROVADA (DEVOLVER AO CLIENTE)';
                     showNotification(`Bateria ${code} finalizada no registo.`, 'success');
-                    addActivity('fas fa-check-circle', `Bateria ${code} finalizada no registo.`);
                 }
             } else {
                 showNotification('Bateria adicionada para análise!', 'success');
-                addActivity('fas fa-battery-full', `Bateria ${code} adicionada para ${client}`);
             }
 
-            await dbManager.set('batteries', newBattery);
-            batteryData.push(newBattery);
-            
-            clearCode();
-            recommendationInput.value = '';
-            tempObservation = '';
-            
-            updateUI();
-            triggerAutoSync();
+            try {
+                await addDoc(batteriesCollection, newBattery);
+                addActivity('fas fa-cloud-upload-alt', `Bateria ${code} salva na nuvem.`);
+                clearCode();
+                recommendationInput.value = '';
+                tempObservation = '';
+            } catch (error) {
+                console.error("Erro ao adicionar bateria: ", error);
+                showNotification('Erro ao salvar na nuvem. Verifique sua conexão.', 'error');
+            }
         }
 
         async function removeBattery(id) {
-            const batteryIdAsNumber = parseInt(id, 10);
-            const removed = batteryData.find(b => b.id === batteryIdAsNumber);
-            await dbManager.delete('batteries', batteryIdAsNumber);
-            batteryData = batteryData.filter(b => b.id !== batteryIdAsNumber);
-            updateUI();
-            showNotification('Bateria removida com sucesso!', 'success');
-            if (removed) {
-                addActivity('fas fa-trash-alt', `Bateria removida: ${removed.code}`);
+            try {
+                const docRef = doc(batteriesCollection, id);
+                const removed = batteryData.find(b => b.id === id);
+                await deleteDoc(docRef);
+                showNotification('Bateria removida com sucesso!', 'success');
+                if (removed) {
+                    addActivity('fas fa-trash-alt', `Bateria removida: ${removed.code}`);
+                }
+            } catch(error) {
+                 console.error("Erro ao remover bateria: ", error);
+                showNotification('Erro ao remover da nuvem.', 'error');
             }
-            triggerAutoSync();
         }
 
         async function clearData() {
             if (batteryData.length === 0) return showNotification('Não há dados para limpar', 'info');
-            await dbManager.clear('batteries');
-            await dbManager.clear('activity');
-            batteryData = [];
-            activityData = [];
-            updateUI();
-            lastUpdate.textContent = "Nenhuma atualização";
-            showNotification('Todos os dados foram removidos.', 'success');
-            addActivity('fas fa-trash-alt', 'Todos os dados foram removidos');
-            triggerAutoSync();
+            
+            showNotification('A limpar todos os dados da nuvem...', 'warning');
+            try {
+                const batch = writeBatch(db);
+                const querySnapshot = await getDocs(batteriesCollection);
+                querySnapshot.forEach(doc => {
+                    batch.delete(doc.ref);
+                });
+                await batch.commit();
+                
+                activityData = [];
+
+                updateUI();
+                lastUpdate.textContent = "Nenhuma atualização";
+                showNotification('Todos os dados foram removidos da nuvem.', 'success');
+                addActivity('fas fa-trash-alt', 'Todos os dados foram removidos');
+            } catch(error) {
+                 console.error("Erro ao limpar dados: ", error);
+                showNotification('Erro ao limpar dados na nuvem.', 'error');
+            }
         }
         
-        async function exportData() {
-            const dataToExport = await dbManager.getAll('batteries');
-            if (dataToExport.length === 0) {
+        function exportData() {
+            if (batteryData.length === 0) {
                 showNotification('Não há dados para exportar', 'info');
                 return false;
             }
+            const dataToExport = batteryData.map(({ id, ...rest }) => rest); // Remove o id do Firestore
             const dataStr = JSON.stringify(dataToExport, null, 2);
             const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
             const exportFileDefaultName = `fabreck_backup_${new Date().toISOString().slice(0,10)}.json`;
@@ -2907,20 +2884,21 @@
                     const importedData = JSON.parse(event.target.result);
                     if (!Array.isArray(importedData)) throw new Error('Estrutura de dados inválida.');
                     
-                    await dbManager.clear('batteries');
-                    for(const item of importedData) {
-                        await dbManager.set('batteries', item);
-                    }
-                    batteryData = importedData;
-                    activityData = []; 
-                    await dbManager.clear('activity');
+                    showNotification(`A restaurar ${importedData.length} registos...`, 'info');
+                    await clearData();
 
-                    updateUI();
-                    showNotification(`${importedData.length} registos restaurados! Os dados atuais foram substituídos.`, 'success');
+                    const batch = writeBatch(db);
+                    importedData.forEach(item => {
+                        const newDocRef = doc(batteriesCollection);
+                        batch.set(newDocRef, item);
+                    });
+                    await batch.commit();
+
+                    showNotification(`${importedData.length} registos restaurados com sucesso na nuvem!`, 'success');
                     addActivity('fas fa-upload', `${importedData.length} baterias restauradas.`);
-                    triggerAutoSync();
                 } catch (error) {
-                    showNotification('Erro ao importar. Arquivo inválido.', 'error');
+                    console.error("Erro ao restaurar", error);
+                    showNotification('Erro ao importar. Verifique o formato do arquivo.', 'error');
                 }
             };
             reader.readAsText(file);
@@ -2946,8 +2924,7 @@
                 return;
             }
 
-            const adminUsersData = await dbManager.get('settings', ADMIN_USERS_KEY);
-            const adminUsers = adminUsersData.value;
+            const adminUsers = JSON.parse(localStorage.getItem(ADMIN_USERS_KEY));
             const userToUpdate = adminUsers.find(admin => admin.user === loggedInUser);
 
             if (userToUpdate && enteredPassword === userToUpdate.pass) {
@@ -2961,7 +2938,7 @@
         }
         // #endregion
 
-        // #region Lógica de Negócio (Garantia, Código)
+        // #region Lógica de Negócio (Garantia, Código) - Sem alterações
         function validateSerialCode(code) { return /^\d{4}[A-Za-z]\d{4}$/.test(code); }
         function parseCode(code) {
             return {
@@ -3023,7 +3000,7 @@
             factoryOption.classList.toggle('selected', type === 'factory');
             analyzedOption.classList.toggle('selected', type === 'analyzed');
             videoAnalysisOptions.classList.toggle('hidden', type !== 'analyzed');
-            await dbManager.set('settings', { key: LAST_WARRANTY_TYPE_KEY, value: type });
+            localStorage.setItem(LAST_WARRANTY_TYPE_KEY, type);
         }
         // #endregion
 
@@ -3039,7 +3016,7 @@
             updateStats();
             updateWarrantyInstructionsUI();
             updateRecentRegistrationsLog();
-            updateActivityLog();
+            updateActivityLog(); // Log de atividades permanece local por enquanto
         }
         
         function updateStats() {
@@ -3153,8 +3130,8 @@
             
             reportBody.innerHTML = filteredData.map(renderReportTableRow).join('');
 
-            reportBody.querySelectorAll('.remove-btn').forEach(btn => btn.addEventListener('click', function() { showConfirmModal('Remover Bateria', 'Tem a certeza que deseja remover esta bateria? A ação é irreversível.', () => removeBattery(parseInt(this.dataset.id))); }));
-            reportBody.querySelectorAll('.name-edit-btn').forEach(btn => btn.addEventListener('click', function() { openClientEditModal(parseInt(this.dataset.id)); }));
+            reportBody.querySelectorAll('.remove-btn').forEach(btn => btn.addEventListener('click', function() { showConfirmModal('Remover Bateria', 'Tem a certeza que deseja remover esta bateria? A ação é irreversível.', () => removeBattery(this.dataset.id)); }));
+            reportBody.querySelectorAll('.name-edit-btn').forEach(btn => btn.addEventListener('click', function() { openClientEditModal(this.dataset.id); }));
 
             updateReportTotals(filteredData);
             updateModelStatusSummary(filteredData);
@@ -3172,7 +3149,7 @@
                 analysisBody.innerHTML = dataToAnalyze.map(renderAnalysisTableRow).join('');
             }
 
-            analysisBody.querySelectorAll('.analyze-btn').forEach(btn => btn.addEventListener('click', function() { openSingleAnalysisModal(parseInt(this.dataset.id)); }));
+            analysisBody.querySelectorAll('.analyze-btn').forEach(btn => btn.addEventListener('click', function() { openSingleAnalysisModal(this.dataset.id); }));
             analysisBody.querySelectorAll('.analysis-checkbox').forEach(box => box.addEventListener('change', updateBatchAnalyzeButtonState));
             updateBatchAnalyzeButtonState();
             updateAnalysisWhatsAppButtonState();
@@ -3281,11 +3258,11 @@
 
         // #region Lógica de Análise e Edição
         async function openSingleAnalysisModal(id) {
-            const battery = await dbManager.get('batteries', parseInt(id, 10));
+            const battery = batteryData.find(b => b.id === id);
             if (!battery) return;
 
             analysisMode = 'single';
-            analyzingBatteryId = parseInt(id, 10);
+            analyzingBatteryId = id;
             
             analysisModalTitle.textContent = `Analisar Bateria: ${battery.code}`;
             analysisSingleInfo.style.display = 'block';
@@ -3310,7 +3287,7 @@
             const selectedCheckboxes = document.querySelectorAll('.analysis-checkbox:checked');
             if (selectedCheckboxes.length === 0) return showNotification('Nenhuma bateria selecionada.', 'error');
 
-            batchAnalysisIds = Array.from(selectedCheckboxes).map(cb => parseInt(cb.dataset.id));
+            batchAnalysisIds = Array.from(selectedCheckboxes).map(cb => cb.dataset.id);
             analysisMode = 'batch';
             analysisModalTitle.textContent = `Analisar ${batchAnalysisIds.length} Baterias em Lote`;
             analysisSingleInfo.style.display = 'none';
@@ -3363,39 +3340,38 @@
             if (!newRecommendation) return showNotification('Preencha o Parecer Técnico.', 'error');
 
             const idsToUpdate = analysisMode === 'single' ? [analyzingBatteryId] : batchAnalysisIds;
-            let updatedCount = 0;
-            let batteriesToNotify = [];
+            const updatedData = {
+                status: 'finalized',
+                recommendation: newRecommendation,
+                finalAction: newFinalAction,
+                technicalOpinionDate: new Date().toISOString()
+            };
             
-            for (const id of idsToUpdate) {
-                const battery = await dbManager.get('batteries', id);
-                if (battery) {
-                    battery.status = 'finalized';
-                    battery.recommendation = newRecommendation;
-                    battery.finalAction = newFinalAction;
-                    battery.technicalOpinionDate = new Date().toISOString();
-                    await dbManager.set('batteries', battery);
-                    batteriesToNotify.push(battery);
-                    updatedCount++;
-                }
-            }
+            try {
+                const batch = writeBatch(db);
+                idsToUpdate.forEach(id => {
+                    const docRef = doc(batteriesCollection, id);
+                    batch.update(docRef, updatedData);
+                });
+                await batch.commit();
 
-            if (updatedCount > 0) {
-                await loadFromDB();
+                const batteriesToNotify = batteryData.filter(b => idsToUpdate.includes(b.id));
+
                 analysisModal.classList.remove('active');
-                showNotification(`${updatedCount} análise(s) salva(s)!`, 'success');
-                addActivity('fas fa-clipboard-check', `${updatedCount} bateria(s) analisada(s).`);
-                updateUI();
-                triggerAutoSync();
-
+                showNotification(`${idsToUpdate.length} análise(s) salva(s)!`, 'success');
+                addActivity('fas fa-clipboard-check', `${idsToUpdate.length} bateria(s) analisada(s).`);
+                
                 if (batteriesToNotify.length > 0) {
                      showConfirmModal(
                         'Notificar Cliente?',
                         `A análise foi finalizada. Deseja enviar uma notificação para o cliente ${batteriesToNotify[0].client} via WhatsApp agora?`,
-                        () => {
-                            sendAnalysisResultViaWhatsApp(batteriesToNotify);
-                        }
+                        () => sendAnalysisResultViaWhatsApp(batteriesToNotify)
                     );
                 }
+
+            } catch(error) {
+                console.error("Erro ao salvar análise: ", error);
+                showNotification("Erro ao salvar análise.", 'error');
             }
         }
 
@@ -3417,9 +3393,9 @@
         }
 
         async function openClientEditModal(id) {
-            const battery = await dbManager.get('batteries', parseInt(id, 10));
+            const battery = batteryData.find(b => b.id === id);
             if (!battery) return;
-            editingBatteryId = parseInt(id, 10);
+            editingBatteryId = id;
             editClientNameInput.value = battery.client;
             editSalesmanNameInput.value = battery.salesman;
             
@@ -3431,7 +3407,7 @@
         }
 
         async function saveEditedClientData() {
-            const originalBattery = await dbManager.get('batteries', editingBatteryId);
+            const originalBattery = batteryData.find(b => b.id === editingBatteryId);
             if (!originalBattery) return;
 
             const newClientName = editClientNameInput.value.trim().toUpperCase();
@@ -3440,27 +3416,35 @@
             if (!newClientName || !newSalesmanName) return showNotification('Os nomes não podem estar em branco.', 'error');
             
             const { client: oldClientName, salesman: oldSalesmanName } = originalBattery;
-            const allBatteries = await dbManager.getAll('batteries');
-            for (const battery of allBatteries) {
-                let updated = false;
-                if (battery.client === oldClientName) { 
-                    battery.client = newClientName; 
-                    battery.clientPhone = newClientPhone;
-                    updated = true; 
-                }
-                if (battery.salesman === oldSalesmanName) { 
-                    battery.salesman = newSalesmanName; 
-                    updated = true; 
-                }
-                if (updated) await dbManager.set('batteries', battery);
-            }
+            
+            try {
+                const batch = writeBatch(db);
+                batteryData.forEach(battery => {
+                    let updated = false;
+                    const updatePayload = {};
+                    if (battery.client === oldClientName) { 
+                        updatePayload.client = newClientName; 
+                        updatePayload.clientPhone = newClientPhone;
+                        updated = true; 
+                    }
+                    if (battery.salesman === oldSalesmanName) { 
+                        updatePayload.salesman = newSalesmanName; 
+                        updated = true; 
+                    }
+                    if (updated) {
+                         const docRef = doc(batteriesCollection, battery.id);
+                         batch.update(docRef, updatePayload);
+                    }
+                });
+                await batch.commit();
 
-            await loadFromDB();
-            updateUI();
-            clientEditModal.classList.remove('active');
-            showNotification('Dados do cliente atualizados em todos os registos!', 'success');
-            addActivity('fas fa-pencil-alt', `Dados do cliente '${oldClientName}' atualizados.`);
-            triggerAutoSync();
+                clientEditModal.classList.remove('active');
+                showNotification('Dados do cliente atualizados em todos os registos!', 'success');
+                addActivity('fas fa-pencil-alt', `Dados do cliente '${oldClientName}' atualizados.`);
+            } catch (error) {
+                console.error("Erro ao editar dados do cliente:", error);
+                showNotification("Erro ao atualizar dados.", "error");
+            }
         }
 
         function openObservationModal(currentObservation, callback) {
@@ -3472,15 +3456,12 @@
         
         // #region Histórico e Log de Atividades
         function updateLastUpdate() {
-            if(batteryData.length > 0) {
-                 const latestTimestamp = Math.max(...batteryData.map(b => new Date(b.timestamp).getTime()));
-                 lastUpdate.textContent = new Date(latestTimestamp).toLocaleString('pt-BR');
-            } else {
-                 lastUpdate.textContent = "Nenhuma atualização";
-            }
+            const latestTimestamp = batteryData.length > 0 ? Math.max(...batteryData.map(b => new Date(b.timestamp).getTime())) : 0;
+            lastUpdate.textContent = latestTimestamp > 0 ? new Date(latestTimestamp).toLocaleString('pt-BR') : "Nenhuma atualização";
         }
         
         async function updateActivityLog() {
+            // A atividade agora é apenas local, então não precisamos de async
             const logContainer = document.getElementById('activityLog');
             const recentActivities = activityData.sort((a,b) => b.id - a.id).slice(0, 5);
             
@@ -3497,9 +3478,8 @@
             `).join('');
         }
         
-        async function addActivity(icon, message) {
-            const newActivity = { icon, message, timestamp: Date.now(), time: new Date().toLocaleTimeString('pt-BR') };
-            await dbManager.set('activity', newActivity);
+        function addActivity(icon, message) {
+            const newActivity = { id: Date.now(), icon, message, timestamp: Date.now(), time: new Date().toLocaleTimeString('pt-BR') };
             activityData.push(newActivity);
             if (activityData.length > 50) activityData.shift();
             updateActivityLog();
@@ -3507,7 +3487,7 @@
 
         // #endregion
 
-        // #region Filtros e PDF/Excel
+        // #region Filtros e PDF/Excel (sem alterações, exceto remoção de await)
         function applyFilters() {
             currentFilters = {
                 client: clientFilter.value,
@@ -3745,7 +3725,7 @@
         }
         // #endregion
 
-        // #region Lógica do Laudo Padrão
+        // #region Lógica do Laudo Padrão - Sem alterações
         function getLaudoData() {
             const data = {
                 client: document.getElementById('laudoClientName').value.trim().toUpperCase(),
@@ -3872,109 +3852,8 @@
             });
         }
         // #endregion
-
-        // #region Sincronização em Nuvem e Offline
-        function updateOnlineStatus() {
-            const syncStatus = document.getElementById('syncStatus');
-            if (navigator.onLine) {
-                syncStatus.textContent = 'Online';
-                syncStatus.style.color = '#2ECC71';
-            } else {
-                syncStatus.textContent = 'Offline - A trabalhar localmente';
-                syncStatus.style.color = '#E74C3C';
-            }
-        }
-
-        async function autoSyncOfflineChanges() {
-            updateOnlineStatus();
-            const needsSync = await dbManager.get('settings', NEEDS_SYNC_KEY);
-            if (needsSync?.value) {
-                showNotification('Conexão restaurada. A sincronizar alterações...', 'info');
-                await saveToCloud(false); 
-                await dbManager.set('settings', { key: NEEDS_SYNC_KEY, value: false });
-            }
-        }
-
-        async function triggerAutoSync() {
-            if (navigator.onLine) {
-                const syncStatus = document.getElementById('syncStatus');
-                syncStatus.textContent = 'A guardar alterações...';
-                syncStatus.style.color = '#F39C12';
-                clearTimeout(syncDebounceTimer);
-                syncDebounceTimer = setTimeout(() => saveToCloud(true), 2500);
-            } else {
-                updateOnlineStatus();
-                await dbManager.set('settings', { key: NEEDS_SYNC_KEY, value: true });
-                showNotification('Offline. Alterações salvas localmente.', 'info');
-            }
-        }
-
-        async function saveToCloud(isSilent = false) {
-            const syncStatus = document.getElementById('syncStatus');
-            if (!isSilent) syncStatus.textContent = 'A sincronizar...';
-            
-            try {
-                const response = await fetch(`https://jsonblob.com/api/jsonBlob/${FIXED_SYNC_KEY}`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                    body: JSON.stringify({ batteries: await dbManager.getAll('batteries'), savedAt: new Date().toISOString() })
-                });
-                if (!response.ok) throw new Error(`Erro no servidor: ${response.statusText}`);
-
-                syncStatus.textContent = `Sincronizado às ${new Date().toLocaleTimeString('pt-BR')}`;
-                syncStatus.style.color = '#2ECC71';
-                if (!isSilent) showNotification('Dados salvos na nuvem!', 'success');
-                addActivity('fas fa-cloud-upload-alt', 'Dados sincronizados com a nuvem.');
-                await dbManager.set('settings', { key: NEEDS_SYNC_KEY, value: false });
-            } catch (error) {
-                syncStatus.textContent = 'Erro de sincronização';
-                syncStatus.style.color = '#E74C3C';
-                showNotification('Falha ao sincronizar os dados. Verifique a sua ligação.', 'error');
-            }
-        }
-
-        async function loadFromCloud(isSilent = false) {
-            const syncStatus = document.getElementById('syncStatus');
-            if (!isSilent) syncStatus.textContent = 'A carregar da nuvem...';
-
-            try {
-                const response = await fetch(`https://jsonblob.com/api/jsonBlob/${FIXED_SYNC_KEY}`);
-                if (!response.ok) throw new Error(response.status === 404 ? 'Nenhum backup na nuvem.' : `Erro no servidor: ${response.statusText}`);
-                const data = await response.json();
-                if (!data || !Array.isArray(data.batteries)) throw new Error('Dados da nuvem inválidos.');
-
-                const localLastUpdate = batteryData.length > 0 ? Math.max(...batteryData.map(b => new Date(b.timestamp).getTime())) : 0;
-                const cloudLastUpdate = new Date(data.savedAt).getTime();
-
-                if (cloudLastUpdate > localLastUpdate) {
-                    await applyCloudData(data);
-                } else {
-                     if (!isSilent) showNotification('Os seus dados locais estão mais recentes que os da nuvem.', 'info');
-                     updateOnlineStatus();
-                }
-            } catch (error) {
-                if (!isSilent) showNotification(`Falha ao carregar: ${error.message}`, 'error');
-                updateOnlineStatus();
-            }
-        }
-
-        async function applyCloudData(data) {
-            await dbManager.clear('batteries');
-            for (const battery of data.batteries) {
-                await dbManager.set('batteries', battery);
-            }
-            await loadFromDB();
-            updateUI();
-            
-            const syncStatus = document.getElementById('syncStatus');
-            syncStatus.textContent = `Sincronizado em ${new Date(data.savedAt).toLocaleString('pt-BR')}`;
-            syncStatus.style.color = '#2ECC71';
-            showNotification(`${data.batteries.length} registos carregados da nuvem!`, 'success');
-            addActivity('fas fa-cloud-download-alt', 'Dados carregados da nuvem.');
-        }
-        // #endregion
-
-        // #region WhatsApp
+        
+        // #region WhatsApp - Sem alterações
         function openWhatsAppModal(type, data = null) {
             let message = '';
             let targetPhone = '';
