@@ -3,16 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FABRECK DO BRASIL - App de Garantia</title>
+    <title>FABRECK DO BRASIL - App de Garantia (Nuvem com Login)</title>
     <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Firebase SDKs (versão 8, compatível com a estrutura do seu script) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <!-- Firebase SDKs (Versões atualizadas para maior segurança e performance) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc, writeBatch, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+        // Variáveis globais do Firebase para acesso fácil no script principal
+        window.firebase = {
+            initializeApp,
+            getFirestore,
+            collection,
+            onSnapshot,
+            addDoc,
+            doc,
+            deleteDoc,
+            updateDoc,
+            writeBatch,
+            getDocs,
+            query,
+            where,
+            getAuth,
+            signInAnonymously,
+            onAuthStateChanged
+        };
+    </script>
 
     <style>
         /* Variáveis de cores Fabreck */
@@ -106,12 +127,21 @@
         .login-card .form-group {
             text-align: left;
         }
+        .login-card .logo-main {
+             color: var(--fabreck-red);
+             -webkit-text-stroke-color: var(--fabreck-blue);
+        }
+        .login-card .logo-sub {
+             color: var(--fabreck-blue);
+        }
          /* --- FIM ESTILOS DO LOGIN --- */
+
 
         /* --- LAYOUT PRINCIPAL DINÂMICO --- */
         #layoutContainer {
             display: flex;
             width: 100%;
+            visibility: hidden; /* Esconde até o JS verificar o login */
         }
 
         #sidebar {
@@ -393,14 +423,6 @@
             letter-spacing: 2px;
             margin-top: -5px;
             text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        }
-        /* Ajuste do logo no card de login */
-        .login-card .logo-main {
-             color: var(--fabreck-red);
-             -webkit-text-stroke-color: var(--fabreck-blue);
-        }
-        .login-card .logo-sub {
-             color: var(--fabreck-blue);
         }
         /* Ajuste do logo na sidebar */
         .sidebar-header .logo-main {
@@ -832,7 +854,7 @@
         }
         
         .hidden {
-            display: none;
+            display: none !important;
         }
         
         /* Pré-visualização do código */
@@ -1380,7 +1402,8 @@
         </div>
     </div>
 
-    <div id="layoutContainer" class="hidden">
+
+    <div id="layoutContainer">
         <!-- Sidebar para Desktop -->
         <nav id="sidebar">
             <div class="sidebar-header">
@@ -1419,13 +1442,12 @@
                             <p class="active-salesman">Vendedor Ativo: <span id="currentSalesman">N/A</span></p>
                         </div>
                     </div>
-                    <div class="header-controls">
-                        <div id="syncStatus" style="color: white; font-size: 12px; opacity: 0.8; font-weight: 600;">A ligar...</div>
-                        <div class="header-buttons" style="display: flex; gap: 10px;">
+                     <div class="header-controls">
+                        <div class="header-buttons" style="display: flex; gap: 10px; margin-left: auto;">
                             <button id="toggleDarkModeBtn" class="btn btn-info" style="width: auto; margin-top:0;">
                                 <i class="fas fa-moon"></i> <span id="darkModeText">Modo Escuro</span>
                             </button>
-                            <button id="logoutBtn" class="btn btn-danger" style="width: auto; margin-top:0;">
+                             <button id="logoutBtn" class="btn btn-danger" style="width: auto; margin-top:0;">
                                 <i class="fas fa-sign-out-alt"></i> Sair
                             </button>
                         </div>
@@ -1871,19 +1893,21 @@
                 <div id="settingsPage" class="page">
                     <div class="card">
                         <div class="card-header">
-                            <h2 class="card-title">Banco de Dados</h2>
-                            <div class="card-icon"><i class="fas fa-database"></i></div>
+                            <h2 class="card-title">Backup e Restauração (Nuvem)</h2>
+                            <div class="card-icon"><i class="fas fa-cloud-upload-alt"></i></div>
                         </div>
-                        
+                        <div class="info-section" style="margin-top:0;">
+                            <p>Use os botões abaixo para guardar uma cópia de segurança de todos os dados da nuvem para o seu computador, ou para restaurar os dados de um ficheiro de backup para a nuvem.</p>
+                        </div>
                         <div class="form-row viewer-hidden">
-                            <button id="backupBtn" class="btn btn-primary"><i class="fas fa-download"></i> Exportar Dados (Backup Local)</button>
-                            <button id="restoreBtn" class="btn btn-primary"><i class="fas fa-upload"></i> Importar Dados (Restaurar Backup)</button>
+                            <button id="backupBtn" class="btn btn-primary"><i class="fas fa-download"></i> Exportar Dados (Backup)</button>
+                            <button id="restoreBtn" class="btn btn-primary"><i class="fas fa-upload"></i> Importar Dados (Restaurar)</button>
                         </div>
                         <input type="file" id="restoreFile" accept=".json" style="display: none;">
 
                         <div class="info-section">
-                            <h3>Última Sincronização</h3>
-                            <p id="lastUpdate">Nenhuma atualização realizada</p>
+                            <h3>Última Sincronização com a Nuvem</h3>
+                            <p id="lastUpdate">A ligar...</p>
                         </div>
                     </div>
 
@@ -1895,7 +1919,7 @@
                         <div id="warrantyInstructionsContainer" class="info-section" style="margin-top:0;">
                         </div>
                     </div>
-
+                    
                     <div class="card viewer-hidden">
                         <div class="card-header">
                             <h2 class="card-title">Segurança</h2>
@@ -2136,7 +2160,20 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // #region Elementos DOM (Oculto para brevidade, sem alterações)
+
+            const {
+                initializeApp, getFirestore, collection, onSnapshot, addDoc, doc, deleteDoc, updateDoc, writeBatch, getDocs, query, where, getAuth, signInAnonymously, onAuthStateChanged
+            } = window.firebase;
+
+            // #region Elementos DOM
+            const layoutContainer = document.getElementById('layoutContainer');
+            const loginOverlay = document.getElementById('loginOverlay');
+            const loginForm = document.getElementById('loginForm');
+            const usernameInput = document.getElementById('usernameInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const viewerLoginBtn = document.getElementById('viewerLoginBtn');
+            const logoutBtn = document.getElementById('logoutBtn');
+            
             const clientNameInput = document.getElementById('clientName');
             const salesmanNameInput = document.getElementById('salesmanName');
             const serialCodeInput = document.getElementById('serialCode');
@@ -2252,19 +2289,6 @@
             
             const generateLaudoPdfBtn = document.getElementById('generateLaudoPdfBtn');
             
-            const loginOverlay = document.getElementById('loginOverlay');
-            const layoutContainer = document.getElementById('layoutContainer');
-            const loginForm = document.getElementById('loginForm');
-            const usernameInput = document.getElementById('usernameInput');
-            const passwordInput = document.getElementById('passwordInput');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const viewerLoginBtn = document.getElementById('viewerLoginBtn');
-            
-            const changePasswordBtn = document.getElementById('changePasswordBtn');
-            const passwordModal = document.getElementById('passwordModal');
-            const closePasswordModal = document.getElementById('closePasswordModal');
-            const passwordChangeForm = document.getElementById('passwordChangeForm');
-            
             const addLaudoImageBtn = document.getElementById('addLaudoImageBtn');
             const laudoImageUpload = document.getElementById('laudoImageUpload');
             const laudoImagePreviews = document.getElementById('laudoImagePreviews');
@@ -2277,21 +2301,27 @@
             const cancelWhatsappBtn = document.getElementById('cancelWhatsappBtn');
 
             const whatsappAnalysisBtn = document.getElementById('whatsappAnalysisBtn');
-            
+
             const passwordConfirmModal = document.getElementById('passwordConfirmModal');
             const closePasswordConfirmModal = document.getElementById('closePasswordConfirmModal');
             const passwordConfirmForm = document.getElementById('passwordConfirmForm');
             const cancelPasswordConfirmBtn = document.getElementById('cancelPasswordConfirmBtn');
             const adminPasswordConfirmInput = document.getElementById('adminPasswordConfirm');
-            const syncStatus = document.getElementById('syncStatus');
+
+            const changePasswordBtn = document.getElementById('changePasswordBtn');
+            const passwordModal = document.getElementById('passwordModal');
+            const closePasswordModal = document.getElementById('closePasswordModal');
+            const passwordChangeForm = document.getElementById('passwordChangeForm');
             // #endregion
 
             // #region Estado do Sistema
+            const ACTIVITY_DATA_KEY = 'fabreck_activity_data_v2';
             const LAST_SALESMAN_KEY = 'fabreck_last_salesman_v12';
             const LAST_CLIENT_KEY = 'fabreck_last_client_v12';
             const LAST_WARRANTY_TYPE_KEY = 'fabreck_last_warranty_type_v12';
             const DARK_MODE_KEY = 'fabreck_dark_mode'; 
-            const INSTRUCTIONS_KEY = 'fabreck_instructions_v1';
+            const ADMIN_USERS_KEY = 'fabreck_admin_users_local';
+            
             let batteryData = [];
             let activityData = [];
             let currentFilters = {
@@ -2311,302 +2341,53 @@
             let filterDebounceTimer = null;
             let laudoImages = [];
             let whatsappUrl = '';
-            const ADMIN_USERS_KEY = 'fabreck_admin_users_local';
+
+            let db;
+            let auth;
+            let batteriesCollection;
+            let unsubscribeFromFirestore = null;
             
             const batteryModelMap = {
                 'A': 'FA6AD', 'B': 'FA4D', 'C': 'FA5AD', 'D': 'FA5D', 'E': 'FA5,5D',
                 'F': 'FA6D', 'G': 'FA7E', 'H': 'FA8AE', 'I': 'FA8E', 'J': 'FA7AE',
                 'K': 'FA7D'
             };
-            
-            // --- Variáveis do Firebase ---
-            let db;
-            let auth;
-            let batteriesCollection;
-            let unsubscribeBatteries = null;
-            // #endregion
-
-            // #region Firebase
-            async function initFirebase() {
-                try {
-                    let firebaseConfig = typeof __firebase_config !== 'undefined' 
-                        ? JSON.parse(__firebase_config) 
-                        : null;
-
-                    if (!firebaseConfig) {
-                         firebaseConfig = {
-                            apiKey: "YOUR_API_KEY", // Substitua se necessário
-                            authDomain: "YOUR_AUTH_DOMAIN",
-                            projectId: "YOUR_PROJECT_ID",
-                            storageBucket: "YOUR_STORAGE_BUCKET",
-                            messagingSenderId: "YOUR_SENDER_ID",
-                            appId: "YOUR_APP_ID"
-                        };
-                    }
-                     // Se a chave de API padrão ainda estiver presente, significa que não foi configurada
-                    if (!firebaseConfig.apiKey || firebaseConfig.apiKey.startsWith("YOUR_")) {
-                         console.warn("Configuração do Firebase não encontrada. Usando dados locais.");
-                         syncStatus.textContent = 'Modo Offline';
-                         syncStatus.style.color = '#F39C12';
-                         return; // Sai da função para não tentar inicializar o Firebase
-                    }
-
-
-                    firebase.initializeApp(firebaseConfig);
-                    db = firebase.firestore();
-                    auth = firebase.auth();
-                    
-                    const appId = typeof __app_id !== 'undefined' ? __app_id : 'standalone';
-                    const collectionPath = appId === 'standalone' ? 'batteries' : `artifacts/${appId}/public/data/batteries`;
-                    
-                    batteriesCollection = db.collection(collectionPath);
-                    
-                    auth.onAuthStateChanged(user => {
-                        if (user) {
-                            console.log("Utilizador autenticado:", user.uid);
-                            if (!unsubscribeBatteries) {
-                               setupFirestoreListener();
-                            }
-                        }
-                    });
-
-                    const authToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
-                    if (authToken) {
-                        await auth.signInWithCustomToken(authToken);
-                    } else if(!auth.currentUser) {
-                        await auth.signInAnonymously();
-                    }
-
-                } catch (error) {
-                    console.error("Erro ao inicializar Firebase: ", error);
-                    syncStatus.textContent = 'Erro de Configuração';
-                    syncStatus.style.color = '#E74C3C';
-                    showNotification("Falha ao conectar com o Firebase. Verifique a configuração e sua conexão.", 'error');
-                }
-            }
-
-            function setupFirestoreListener() {
-                if (!batteriesCollection) {
-                    console.log("Listener do Firestore não iniciado (modo offline).");
-                    return;
-                }
-                syncStatus.textContent = 'A ligar...';
-                syncStatus.style.color = '#F39C12';
-                
-                if (unsubscribeBatteries) unsubscribeBatteries();
-
-                unsubscribeBatteries = batteriesCollection.onSnapshot((querySnapshot) => {
-                    const serverData = [];
-                    querySnapshot.forEach((doc) => {
-                        serverData.push({ id: doc.id, ...doc.data() });
-                    });
-                    
-                    batteryData = serverData;
-                    updateUI();
-                    
-                    syncStatus.textContent = 'Sincronizado';
-                    syncStatus.style.color = '#2ECC71';
-
-                }, (error) => {
-                    console.error("Erro ao ouvir dados do Firestore: ", error);
-                    syncStatus.textContent = 'Erro de Permissão';
-                    syncStatus.style.color = '#E74C3C';
-                    showNotification('Falha de permissão ao ler dados. Verifique as regras de segurança do seu Firestore.', 'error');
-                });
-            }
             // #endregion
             
-            // #region Inicialização e Autenticação
+            // #region Inicialização, Login e Firebase
             async function init() {
                 console.log("Inicializando sistema...");
                 setupEventListeners();
                 await initializeCredentials();
-                await initFirebase();
-                checkAuth(); 
+                checkAuth();
             }
 
-            function initializeAppData() {
-                showNotification('Autenticado. A carregar dados...', 'info');
-                loadLastUsedData(); 
-                applyDarkMode(); 
+            async function initializeAppData() {
+                await initFirebase();
+                loadLastUsedData();
+                applyDarkMode();
                 
                 const today = new Date();
                 const year = today.getFullYear();
                 const month = String(today.getMonth() + 1).padStart(2, '0');
                 const day = String(today.getDate()).padStart(2, '0');
                 submissionDateInput.value = `${year}-${month}-${day}`;
+
+                const storedActivities = localStorage.getItem(ACTIVITY_DATA_KEY);
+                activityData = storedActivities ? JSON.parse(storedActivities) : [];
+                updateActivityLog();
             }
 
             function checkAuth() {
                 if (sessionStorage.getItem('isAuthenticated') === 'true') {
                     loginOverlay.classList.add('hidden');
-                    layoutContainer.classList.remove('hidden');
+                    layoutContainer.style.visibility = 'visible';
                     applyUIRestrictions();
                     initializeAppData();
                 } else {
                     loginOverlay.classList.remove('hidden');
-                    layoutContainer.classList.add('hidden');
+                    layoutContainer.style.visibility = 'hidden';
                 }
-            }
-            
-            async function loadLastUsedData() {
-                const lastSalesman = localStorage.getItem(LAST_SALESMAN_KEY);
-                if (lastSalesman) {
-                    salesmanNameInput.value = lastSalesman;
-                    if(currentSalesman) currentSalesman.textContent = lastSalesman;
-                }
-                
-                const lastClient = localStorage.getItem(LAST_CLIENT_KEY);
-                if (lastClient) clientNameInput.value = lastClient;
-                
-                const lastWarrantyType = localStorage.getItem(LAST_WARRANTY_TYPE_KEY);
-                selectWarrantyType(lastWarrantyType || 'factory');
-            }
-            
-            function setupEventListeners() {
-                console.log("Configurando event listeners...");
-
-                loginForm?.addEventListener('submit', handleLogin);
-                viewerLoginBtn?.addEventListener('click', handleViewerLogin);
-                logoutBtn?.addEventListener('click', handleLogout);
-                
-                navBtns.forEach(btn => btn.addEventListener('click', () => showPage(btn.getAttribute('data-page'))));
-                sidebarBtns.forEach(btn => btn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showPage(btn.getAttribute('data-page'));
-                }));
-                
-                serialCodeInput?.addEventListener('input', handleSerialInput);
-                serialCodeInput?.addEventListener('keypress', e => { if (e.key === 'Enter') addBattery(); });
-                
-                salesmanNameInput?.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-                salesmanNameInput?.addEventListener('blur', () => {
-                    const name = salesmanNameInput.value.trim().toUpperCase();
-                    if (name) {
-                        if(currentSalesman) currentSalesman.textContent = name;
-                        localStorage.setItem(LAST_SALESMAN_KEY, name);
-                    }
-                });
-                clientNameInput?.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
-                clientNameInput?.addEventListener('blur', () => {
-                    const name = clientNameInput.value.trim().toUpperCase();
-                    if (name) localStorage.setItem(LAST_CLIENT_KEY, name);
-                });
-                
-                clearFormBtn?.addEventListener('click', clearCode);
-                addBtn?.addEventListener('click', addBattery);
-                
-                factoryOption?.addEventListener('click', () => selectWarrantyType('factory'));
-                analyzedOption?.addEventListener('click', () => selectWarrantyType('analyzed'));
-                
-                applyFilterBtn?.addEventListener('click', applyFilters);
-                clearFilterBtn?.addEventListener('click', clearFilters);
-                filterTodayBtn?.addEventListener('click', setDateFilterToday);
-                filterWeekBtn?.addEventListener('click', setDateFilterWeek);
-                filterMonthBtn?.addEventListener('click', setDateFilterMonth);
-                previewPdfBtn?.addEventListener('click', previewPDF);
-                pdfBtn?.addEventListener('click', downloadPDF);
-                batchPdfBtn?.addEventListener('click', generateBatchPDFs);
-                excelBtn?.addEventListener('click', exportToFormattedExcel);
-                clearBtn?.addEventListener('click', promptClearData);
-                
-                whatsappBtn?.addEventListener('click', () => openWhatsAppModal('filtered'));
-                whatsappAnalysisBtn?.addEventListener('click', () => openWhatsAppModal('analysis'));
-                
-                closeWhatsappPreviewModal?.addEventListener('click', () => whatsappPreviewModal.classList.remove('active'));
-                cancelWhatsappBtn?.addEventListener('click', () => whatsappPreviewModal.classList.remove('active'));
-                sendWhatsappBtn?.addEventListener('click', () => {
-                    window.open(whatsappUrl, '_blank');
-                    whatsappPreviewModal.classList.remove('active');
-                });
-                
-                codeFilter?.addEventListener('input', () => {
-                    clearTimeout(filterDebounceTimer);
-                    filterDebounceTimer = setTimeout(applyFilters, 500);
-                });
-                
-                backupBtn?.addEventListener('click', exportData);
-                restoreBtn?.addEventListener('click', () => restoreFileInput.click());
-                restoreFileInput?.addEventListener('change', (e) => {
-                    if (e.target.files.length > 0) {
-                        showConfirmModal(
-                            'Confirmar Restauração', 
-                            'Atenção! Esta ação substituirá TODOS os dados atuais pelos dados do arquivo de backup. A operação não pode ser desfeita.',
-                            () => handleRestoreFile(e.target.files[0]),
-                            () => e.target.value = ''
-                        );
-                    }
-                });
-                
-                helpBtn?.addEventListener('click', showRulesModal);
-                closeRulesModal?.addEventListener('click', () => rulesModal.classList.remove('active'));
-                confirmRules?.addEventListener('click', () => rulesModal.classList.remove('active'));
-                
-                closeAnalysisModal?.addEventListener('click', () => analysisModal.classList.remove('active'));
-                saveAnalysisBtn?.addEventListener('click', saveAnalysis);
-                analysisClientFilter?.addEventListener('change', () => {
-                    updateAnalysisTable();
-                    updateAnalysisWhatsAppButtonState();
-                });
-                selectAllCheckbox?.addEventListener('change', handleSelectAll);
-                batchAnalyzeBtn?.addEventListener('click', openBatchAnalysisModal);
-                analysisApprovedRadioContainer?.addEventListener('click', () => handleDiagnosisChange('approved'));
-                analysisRejectedRadioContainer?.addEventListener('click', () => handleDiagnosisChange('rejected'));
-
-                closeClientEditModal?.addEventListener('click', () => clientEditModal.classList.remove('active'));
-                saveClientEditBtn?.addEventListener('click', saveEditedClientData);
-
-                closeObservationModal?.addEventListener('click', () => observationModal.classList.remove('active'));
-                saveObservationBtn?.addEventListener('click', () => {
-                    observationCallback?.(observationText.value);
-                });
-
-                procedenteBtn?.addEventListener('click', () => procedenteModal.classList.add('active'));
-                closeProcedenteModal?.addEventListener('click', () => procedenteModal.classList.remove('active'));
-                capacidadeBaixaBtn?.addEventListener('click', () => {
-                    if(recommendationInput) recommendationInput.value = 'PROCEDENTE - CAPACIDADE BAIXA';
-                    procedenteModal?.classList.remove('active');
-                });
-                ccaBaixoBtn?.addEventListener('click', () => {
-                    if(recommendationInput) recommendationInput.value = 'PROCEDENTE - CCA BAIXO';
-                    procedenteModal?.classList.remove('active');
-                });
-
-                descarregadaBtn?.addEventListener('click', () => {
-                    if(recommendationInput) recommendationInput.value = 'RECARREGAR A BATERIA POR 6H EM CARGA LENTA E REFAZER O TESTE';
-                });
-                addObservationBtn?.addEventListener('click', () => openObservationModal(tempObservation, (obs) => {
-                    tempObservation = obs;
-                    observationModal?.classList.remove('active');
-                    showNotification('Observação salva temporariamente.', 'info');
-                }));
-                analysisAddObservationBtn?.addEventListener('click', async () => {
-                     const battery = batteryData.find(b => b.id === analyzingBatteryId);
-                     if(battery) openObservationModal(battery.observations, async (obs) => {
-                         const batteryRef = batteriesCollection.doc(analyzingBatteryId);
-                         await batteryRef.update({ observations: obs });
-                         observationModal?.classList.remove('active');
-                         showNotification('Observação atualizada.', 'info');
-                     });
-                });
-
-                toggleDarkModeBtn?.addEventListener('click', toggleDarkMode);
-                generateLaudoPdfBtn?.addEventListener('click', previewLaudoPDF);
-                changePasswordBtn?.addEventListener('click', () => passwordModal.classList.add('active'));
-                closePasswordModal?.addEventListener('click', () => passwordModal.classList.remove('active'));
-                passwordChangeForm?.addEventListener('submit', saveNewPassword);
-                passwordConfirmForm?.addEventListener('submit', handleClearDataConfirmation);
-                
-                cancelPasswordConfirmBtn?.addEventListener('click', () => passwordConfirmModal.classList.remove('active'));
-                
-                cancelConfirmBtn?.addEventListener('click', () => confirmModal.classList.remove('active'));
-                confirmActionBtn?.addEventListener('click', () => {
-                    confirmCallback?.();
-                    confirmModal.classList.remove('active');
-                });
-
-                addLaudoImageBtn.addEventListener('click', () => laudoImageUpload.click());
-                laudoImageUpload.addEventListener('change', handleLaudoImageUpload);
             }
             
             function handleLogin(e) {
@@ -2638,16 +2419,297 @@
                 sessionStorage.removeItem('isAuthenticated');
                 sessionStorage.removeItem('userType');
                 sessionStorage.removeItem('currentUser');
-                batteryData = []; 
-                if (unsubscribeBatteries) {
-                    unsubscribeBatteries();
-                    unsubscribeBatteries = null;
+                
+                if (unsubscribeFromFirestore) {
+                    unsubscribeFromFirestore();
+                    unsubscribeFromFirestore = null;
                 }
                 checkAuth();
             }
+
+            async function initFirebase() {
+                // Configuração padrão do Firebase. Substitua se tiver as suas próprias credenciais.
+                let firebaseConfig = {
+                    apiKey: "AIzaSyAI2t_u1T2f737QkyJ6940Hup-ZY-eYd9E",
+                    authDomain: "studio-8037364926-f4af4.firebaseapp.com",
+                    projectId: "studio-8037364926-f4af4",
+                    storageBucket: "studio-8037364926-f4af4.appspot.com",
+                    messagingSenderId: "875276153303",
+                    appId: "1:875276153303:web:8d3c060072f2523b11db92"
+                };
+
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    
+                    // Lógica robusta de autenticação:
+                    // 1. Tenta autenticar anonimamente
+                    // 2. O onAuthStateChanged só ativa o listener do Firestore DEPOIS que a autenticação (user) for confirmada.
+                    onAuthStateChanged(auth, (user) => {
+                        if (user) {
+                            console.log("Autenticação anónima bem-sucedida:", user.uid);
+                            // Só cria o listener se ainda não existir
+                            if (!unsubscribeFromFirestore) {
+                                batteriesCollection = collection(db, "batteries");
+                                setupFirestoreListener();
+                            }
+                        } else {
+                             // Se o utilizador não estiver autenticado (p. ex. depois de um logout forçado), tenta autenticar de novo.
+                             console.log("Nenhum utilizador autenticado. A tentar autenticação anónima...");
+                             signInAnonymously(auth).catch(error => {
+                                console.error("Falha na autenticação anónima:", error);
+                                showNotification("Erro crítico de autenticação com a nuvem.", "error");
+                            });
+                        }
+                    });
+
+                } catch (error) {
+                    console.error("Erro ao inicializar o Firebase:", error);
+                    showNotification("Não foi possível ligar à base de dados na nuvem.", "error");
+                    lastUpdate.textContent = 'ERRO DE LIGAÇÃO';
+                }
+            }
+
+            function setupFirestoreListener() {
+                if (unsubscribeFromFirestore) unsubscribeFromFirestore(); 
+                if (!auth.currentUser) return console.log("A aguardar autenticação para iniciar o listener...");
+
+                unsubscribeFromFirestore = onSnapshot(batteriesCollection, (snapshot) => {
+                    batteryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    updateUI(); 
+                    updateLastUpdate(); 
+                    console.log(`Dados sincronizados: ${batteryData.length} registos carregados.`);
+                }, (error) => {
+                    console.error("Erro ao receber dados da nuvem: ", error);
+                    showNotification("Falha ao sincronizar. Verifique a sua ligação e as regras de segurança.", "error");
+                    lastUpdate.textContent = 'FALHA NA LIGAÇÃO';
+                });
+            }
+
+            function loadLastUsedData() {
+                const lastSalesman = localStorage.getItem(LAST_SALESMAN_KEY);
+                if (lastSalesman) {
+                    salesmanNameInput.value = lastSalesman;
+                    if(currentSalesman) currentSalesman.textContent = lastSalesman;
+                }
+                
+                const lastClient = localStorage.getItem(LAST_CLIENT_KEY);
+                if (lastClient) clientNameInput.value = lastClient;
+                
+                const lastWarrantyType = localStorage.getItem(LAST_WARRANTY_TYPE_KEY);
+                selectWarrantyType(lastWarrantyType || 'factory');
+            }
+            
+            function setupEventListeners() {
+                // A centralização dos event listeners permanece a mesma
+                loginForm?.addEventListener('submit', handleLogin);
+                viewerLoginBtn?.addEventListener('click', handleViewerLogin);
+                logoutBtn?.addEventListener('click', handleLogout);
+                navBtns.forEach(btn => btn.addEventListener('click', () => showPage(btn.getAttribute('data-page'))));
+                sidebarBtns.forEach(btn => btn.addEventListener('click', (e) => { e.preventDefault(); showPage(btn.getAttribute('data-page')); }));
+                serialCodeInput?.addEventListener('input', handleSerialInput);
+                serialCodeInput?.addEventListener('keypress', e => { if (e.key === 'Enter') addBattery(); });
+                salesmanNameInput?.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+                salesmanNameInput?.addEventListener('blur', () => {
+                    const name = salesmanNameInput.value.trim().toUpperCase();
+                    if (name) {
+                        if(currentSalesman) currentSalesman.textContent = name;
+                        localStorage.setItem(LAST_SALESMAN_KEY, name);
+                    }
+                });
+                clientNameInput?.addEventListener('input', (e) => e.target.value = e.target.value.toUpperCase());
+                clientNameInput?.addEventListener('blur', () => {
+                    const name = clientNameInput.value.trim().toUpperCase();
+                    if (name) localStorage.setItem(LAST_CLIENT_KEY, name);
+                });
+                clearFormBtn?.addEventListener('click', clearCode);
+                addBtn?.addEventListener('click', addBattery);
+                factoryOption?.addEventListener('click', () => selectWarrantyType('factory'));
+                analyzedOption?.addEventListener('click', () => selectWarrantyType('analyzed'));
+                applyFilterBtn?.addEventListener('click', applyFilters);
+                clearFilterBtn?.addEventListener('click', clearFilters);
+                filterTodayBtn?.addEventListener('click', setDateFilterToday);
+                filterWeekBtn?.addEventListener('click', setDateFilterWeek);
+                filterMonthBtn?.addEventListener('click', setDateFilterMonth);
+                previewPdfBtn?.addEventListener('click', previewPDF);
+                pdfBtn?.addEventListener('click', downloadPDF);
+                batchPdfBtn?.addEventListener('click', generateBatchPDFs);
+                excelBtn?.addEventListener('click', exportToFormattedExcel);
+                clearBtn?.addEventListener('click', promptClearData);
+                whatsappBtn?.addEventListener('click', () => openWhatsAppModal('filtered'));
+                whatsappAnalysisBtn?.addEventListener('click', () => openWhatsAppModal('analysis'));
+                closeWhatsappPreviewModal?.addEventListener('click', () => whatsappPreviewModal.classList.remove('active'));
+                cancelWhatsappBtn?.addEventListener('click', () => whatsappPreviewModal.classList.remove('active'));
+                sendWhatsappBtn?.addEventListener('click', () => { window.open(whatsappUrl, '_blank'); whatsappPreviewModal.classList.remove('active'); });
+                codeFilter?.addEventListener('input', () => { clearTimeout(filterDebounceTimer); filterDebounceTimer = setTimeout(applyFilters, 500); });
+                backupBtn?.addEventListener('click', exportData);
+                restoreBtn?.addEventListener('click', () => restoreFileInput.click());
+                restoreFileInput?.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        showConfirmModal(
+                            'Confirmar Restauração para a Nuvem', 
+                            `Atenção! Esta ação substituirá TODOS os dados da nuvem pelos dados do ficheiro.`,
+                            () => handleRestoreFile(e.target.files[0]),
+                            () => e.target.value = ''
+                        );
+                    }
+                });
+                helpBtn?.addEventListener('click', showRulesModal);
+                closeRulesModal?.addEventListener('click', () => rulesModal.classList.remove('active'));
+                confirmRules?.addEventListener('click', () => rulesModal.classList.remove('active'));
+                closeAnalysisModal?.addEventListener('click', () => analysisModal.classList.remove('active'));
+                saveAnalysisBtn?.addEventListener('click', saveAnalysis);
+                analysisClientFilter?.addEventListener('change', () => { updateAnalysisTable(); updateAnalysisWhatsAppButtonState(); });
+                selectAllCheckbox?.addEventListener('change', handleSelectAll);
+                batchAnalyzeBtn?.addEventListener('click', openBatchAnalysisModal);
+                analysisApprovedRadioContainer?.addEventListener('click', () => handleDiagnosisChange('approved'));
+                analysisRejectedRadioContainer?.addEventListener('click', () => handleDiagnosisChange('rejected'));
+                closeClientEditModal?.addEventListener('click', () => clientEditModal.classList.remove('active'));
+                saveClientEditBtn?.addEventListener('click', saveEditedClientData);
+                closeObservationModal?.addEventListener('click', () => observationModal.classList.remove('active'));
+                saveObservationBtn?.addEventListener('click', () => { observationCallback?.(observationText.value); });
+                procedenteBtn?.addEventListener('click', () => procedenteModal.classList.add('active'));
+                closeProcedenteModal?.addEventListener('click', () => procedenteModal.classList.remove('active'));
+                capacidadeBaixaBtn?.addEventListener('click', () => { if(recommendationInput) recommendationInput.value = 'PROCEDENTE - CAPACIDADE BAIXA'; procedenteModal?.classList.remove('active'); });
+                ccaBaixoBtn?.addEventListener('click', () => { if(recommendationInput) recommendationInput.value = 'PROCEDENTE - CCA BAIXO'; procedenteModal?.classList.remove('active'); });
+                descarregadaBtn?.addEventListener('click', () => { if(recommendationInput) recommendationInput.value = 'RECARREGAR A BATERIA POR 6H EM CARGA LENTA E REFAZER O TESTE'; });
+                addObservationBtn?.addEventListener('click', () => openObservationModal(tempObservation, (obs) => { tempObservation = obs; observationModal?.classList.remove('active'); showNotification('Observação salva temporariamente.', 'info'); }));
+                analysisAddObservationBtn?.addEventListener('click', async () => {
+                    const battery = batteryData.find(b => b.id === analyzingBatteryId);
+                    if(battery) openObservationModal(battery.observations, async (obs) => {
+                        try {
+                            const docRef = doc(db, "batteries", analyzingBatteryId);
+                            await updateDoc(docRef, { observations: obs });
+                            observationModal?.classList.remove('active');
+                            showNotification('Observação atualizada.', 'info');
+                        } catch (error) { console.error("Erro ao atualizar observação:", error); showNotification("Erro ao salvar observação.", "error"); }
+                    });
+                });
+                toggleDarkModeBtn?.addEventListener('click', toggleDarkMode);
+                generateLaudoPdfBtn?.addEventListener('click', previewLaudoPDF);
+                cancelConfirmBtn?.addEventListener('click', () => confirmModal.classList.remove('active'));
+                confirmActionBtn?.addEventListener('click', () => { confirmCallback?.(); confirmModal.classList.remove('active'); });
+                addLaudoImageBtn.addEventListener('click', () => laudoImageUpload.click());
+                laudoImageUpload.addEventListener('change', handleLaudoImageUpload);
+                changePasswordBtn?.addEventListener('click', () => passwordModal.classList.add('active'));
+                closePasswordModal?.addEventListener('click', () => passwordModal.classList.remove('active'));
+                passwordChangeForm?.addEventListener('submit', saveNewPassword);
+                passwordConfirmForm?.addEventListener('submit', handleClearDataConfirmation);
+                cancelPasswordConfirmBtn?.addEventListener('click', () => passwordConfirmModal.classList.remove('active'));
+            }
             // #endregion
 
-            // #region Lógica de UI (Páginas, Modos, Notificações, Modais)
+            // #region Lógica de UI e Segurança
+            function applyUIRestrictions() {
+                const userType = sessionStorage.getItem('userType');
+                const isViewer = userType === 'viewer';
+
+                document.querySelectorAll('.viewer-hidden').forEach(el => {
+                    el.style.display = isViewer ? 'none' : '';
+                });
+
+                document.querySelectorAll('.actions-cell').forEach(cell => {
+                    cell.style.display = isViewer ? 'none' : '';
+                });
+                
+                const elementsToDisable = 'input, textarea, select, button';
+
+                if (isViewer) {
+                    document.querySelectorAll(elementsToDisable).forEach(el => {
+                        if (!el.closest('.report-filters') && !el.closest('.nav-btn') && !el.closest('.sidebar-btn') && !el.closest('header .header-controls')) {
+                            el.disabled = true;
+                        }
+                    });
+                     document.querySelectorAll('.warranty-option').forEach(option => {
+                        option.style.pointerEvents = 'none';
+                        option.style.opacity = '0.7';
+                     });
+                     
+                     showPage('reportPage');
+                } else { // Admin
+                     document.querySelectorAll(elementsToDisable).forEach(el => el.disabled = false);
+                     document.querySelectorAll('.warranty-option').forEach(option => {
+                        option.style.pointerEvents = 'auto';
+                        option.style.opacity = '1';
+                    });
+                    showPage('scanPage');
+                }
+            }
+            
+            // Gerencia as credenciais dos administradores no armazenamento local.
+            // NOTA: Para um ambiente de produção com dados sensíveis, utilize um sistema de autenticação do Firebase (Email/Senha, Google etc.).
+            async function initializeCredentials() {
+                const adminUsers = localStorage.getItem(ADMIN_USERS_KEY);
+                if (!adminUsers) {
+                    const initialAdmins = [
+                        { user: 'JENILTON', pass: '32582190' },
+                        { user: 'REGINALDO', pass: '123456' }
+                    ];
+                    localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify(initialAdmins));
+                    console.log('Credenciais de administrador locais definidas.');
+                }
+            }
+
+            async function saveNewPassword(e) {
+                e.preventDefault();
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+                const loggedInUser = sessionStorage.getItem('currentUser');
+                if (!loggedInUser) return showNotification('Erro: Utilizador não identificado.', 'error');
+
+                let adminUsers = JSON.parse(localStorage.getItem(ADMIN_USERS_KEY));
+                const userToUpdate = adminUsers.find(admin => admin.user === loggedInUser);
+
+                if (!userToUpdate || currentPassword !== userToUpdate.pass) return showNotification('A palavra-passe atual está incorreta.', 'error');
+                if (newPassword.length < 6) return showNotification('A nova palavra-passe deve ter pelo menos 6 caracteres.', 'error');
+                if (newPassword !== confirmNewPassword) return showNotification('As novas palavras-passe não coincidem.', 'error');
+
+                userToUpdate.pass = newPassword;
+                localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify(adminUsers));
+                showNotification('Palavra-passe alterada com sucesso!', 'success');
+                passwordModal.classList.remove('active');
+                passwordChangeForm.reset();
+            }
+            
+            function promptClearData() {
+                if (sessionStorage.getItem('userType') !== 'admin') {
+                    return showNotification('Apenas administradores podem limpar os dados.', 'error');
+                }
+                if(exportData()){
+                    showNotification('Backup de segurança gerado antes da limpeza.', 'info');
+                    passwordConfirmModal.classList.add('active');
+                    adminPasswordConfirmInput.value = '';
+                    adminPasswordConfirmInput.focus();
+                }
+            }
+
+            async function handleClearDataConfirmation(e) {
+                e.preventDefault();
+                const enteredPassword = adminPasswordConfirmInput.value;
+                const loggedInUser = sessionStorage.getItem('currentUser');
+
+                if (!loggedInUser) {
+                    showNotification('Erro: Utilizador não identificado.', 'error');
+                    passwordConfirmModal.classList.remove('active');
+                    return;
+                }
+
+                const adminUsers = JSON.parse(localStorage.getItem(ADMIN_USERS_KEY));
+                const userToUpdate = adminUsers.find(admin => admin.user === loggedInUser);
+
+                if (userToUpdate && enteredPassword === userToUpdate.pass) {
+                    showNotification('Senha correta. A limpar os dados...', 'warning');
+                    passwordConfirmModal.classList.remove('active');
+                    await clearData();
+                } else {
+                    showNotification('Palavra-passe incorreta. A limpeza foi cancelada.', 'error');
+                    adminPasswordConfirmInput.value = '';
+                }
+            }
+
             function applyDarkMode() {
                 document.body.classList.toggle('dark-mode', isDarkMode);
                 darkModeText.textContent = isDarkMode ? 'Modo Claro' : 'Modo Escuro';
@@ -2698,75 +2760,9 @@
                 };
                 cancelConfirmBtn.addEventListener('click', cancelHandler, { once: true });
             }
-
-
-            function applyUIRestrictions() {
-                const userType = sessionStorage.getItem('userType');
-                const isViewer = userType === 'viewer';
-
-                document.querySelectorAll('.viewer-hidden').forEach(el => el.style.display = isViewer ? 'none' : '');
-                document.querySelectorAll('.actions-cell').forEach(cell => cell.style.display = isViewer ? 'none' : '');
-                
-                const elementsToDisable = 'input, textarea, select, button';
-                if (isViewer) {
-                    document.querySelectorAll(elementsToDisable).forEach(el => {
-                        if (!el.closest('.report-filters') && !el.closest('.nav-btn') && !el.closest('header') && !el.closest('.sidebar-btn')) {
-                            el.disabled = true;
-                        }
-                    });
-                     document.querySelectorAll('.warranty-option').forEach(option => {
-                        option.style.pointerEvents = 'none';
-                        option.style.opacity = '0.7';
-                     });
-                } else {
-                     document.querySelectorAll(elementsToDisable).forEach(el => el.disabled = false);
-                     document.querySelectorAll('.warranty-option').forEach(option => {
-                        option.style.pointerEvents = 'auto';
-                        option.style.opacity = '1';
-                    });
-                }
-                showPage(isViewer ? 'reportPage' : 'scanPage');
-            }
             // #endregion
 
-            // #region Lógica de Segurança
-            async function initializeCredentials() {
-                const adminUsers = localStorage.getItem(ADMIN_USERS_KEY);
-                if (!adminUsers) {
-                    const initialAdmins = [
-                        { user: 'JENILTON', pass: '32582190' },
-                        { user: 'REGINALDO', pass: '123456' }
-                    ];
-                    localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify(initialAdmins));
-                    console.log('Credenciais de administrador locais definidas.');
-                }
-            }
-
-            async function saveNewPassword(e) {
-                e.preventDefault();
-                const currentPassword = document.getElementById('currentPassword').value;
-                const newPassword = document.getElementById('newPassword').value;
-                const confirmNewPassword = document.getElementById('confirmNewPassword').value;
-
-                const loggedInUser = sessionStorage.getItem('currentUser');
-                if (!loggedInUser) return showNotification('Erro: Utilizador não identificado.', 'error');
-
-                let adminUsers = JSON.parse(localStorage.getItem(ADMIN_USERS_KEY));
-                const userToUpdate = adminUsers.find(admin => admin.user === loggedInUser);
-
-                if (!userToUpdate || currentPassword !== userToUpdate.pass) return showNotification('A palavra-passe atual está incorreta.', 'error');
-                if (newPassword.length < 6) return showNotification('A nova palavra-passe deve ter pelo menos 6 caracteres.', 'error');
-                if (newPassword !== confirmNewPassword) return showNotification('As novas palavras-passe não coincidem.', 'error');
-
-                userToUpdate.pass = newPassword;
-                localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify(adminUsers));
-                showNotification('Palavra-passe alterada com sucesso!', 'success');
-                passwordModal.classList.remove('active');
-                passwordChangeForm.reset();
-            }
-            // #endregion
-
-            // #region Lógica de Dados (CRUD e Persistência)
+            // #region Lógica de Dados (CRUD na Nuvem)
             async function addBattery() {
                 const client = clientNameInput.value.trim().toUpperCase();
                 const salesman = salesmanNameInput.value.trim().toUpperCase();
@@ -2800,7 +2796,8 @@
                     observations: tempObservation,
                     finalAction: '',
                     timestamp: new Date().toISOString(),
-                    technicalOpinionDate: null
+                    technicalOpinionDate: null,
+                    createdBy: auth.currentUser ? auth.currentUser.uid : 'unknown' // Adiciona o UID do criador
                 };
 
                 if (warrantyStatus === 'expired' || recommendation) {
@@ -2809,70 +2806,57 @@
                     if (warrantyStatus === 'expired') {
                         newBattery.finalAction = 'REPROVADA - FORA DO PRAZO';
                         newBattery.recommendation = newBattery.recommendation || 'Finalizada automaticamente: Bateria fora do prazo de garantia.';
-                        showNotification(`Bateria ${code} finalizada (Fora do Prazo).`, 'warning');
                     } else { 
                         newBattery.finalAction = recommendation.toUpperCase().includes('PROCEDENTE') ? 'APROVADA (TROCA DE FÁBRICA)' : 'REPROVADA (DEVOLVER AO CLIENTE)';
-                        showNotification(`Bateria ${code} finalizada no registo.`, 'success');
                     }
-                } else {
-                    showNotification('Bateria adicionada para análise!', 'success');
-                }
-
-                if (!batteriesCollection) {
-                    showNotification('Modo offline. Os dados não serão salvos na nuvem.', 'warning');
-                    return;
                 }
 
                 try {
-                    await batteriesCollection.add(newBattery);
+                    const newDocRef = await addDoc(batteriesCollection, newBattery);
+                    console.log("Bateria adicionada com ID: ", newDocRef.id);
                     addActivity('fas fa-cloud-upload-alt', `Bateria ${code} salva na nuvem.`);
                     clearCode();
                     recommendationInput.value = '';
                     tempObservation = '';
                 } catch (error) {
-                    console.error("Erro ao adicionar bateria: ", error);
-                    showNotification('Erro ao salvar na nuvem. Verifique sua conexão e permissões.', 'error');
+                    console.error("Erro ao adicionar bateria na nuvem:", error);
+                    showNotification("Erro ao salvar na nuvem. Verifique a sua conexão.", "error");
                 }
             }
 
             async function removeBattery(id) {
-                if (!batteriesCollection) return showNotification('Modo offline.', 'error');
+                const removed = batteryData.find(b => b.id === id);
                 try {
-                    const docRef = batteriesCollection.doc(id);
-                    const removed = batteryData.find(b => b.id === id);
-                    await docRef.delete();
+                    await deleteDoc(doc(db, "batteries", id));
                     showNotification('Bateria removida com sucesso!', 'success');
                     if (removed) {
                         addActivity('fas fa-trash-alt', `Bateria removida: ${removed.code}`);
                     }
-                } catch(error) {
-                     console.error("Erro ao remover bateria: ", error);
-                    showNotification('Erro ao remover da nuvem.', 'error');
+                } catch (error) {
+                    console.error("Erro ao remover bateria da nuvem:", error);
+                    showNotification("Erro ao remover da nuvem.", "error");
                 }
             }
 
             async function clearData() {
                 if (batteryData.length === 0) return showNotification('Não há dados para limpar', 'info');
-                if (!batteriesCollection) return showNotification('Modo offline.', 'error');
-
+                
                 showNotification('A limpar todos os dados da nuvem...', 'warning');
                 try {
-                    const batch = db.batch();
-                    const querySnapshot = await batteriesCollection.get();
+                    const batch = writeBatch(db);
+                    const querySnapshot = await getDocs(batteriesCollection);
                     querySnapshot.forEach(doc => {
                         batch.delete(doc.ref);
                     });
                     await batch.commit();
                     
-                    activityData = [];
-
-                    updateUI();
-                    lastUpdate.textContent = "Nenhuma atualização";
                     showNotification('Todos os dados foram removidos da nuvem.', 'success');
-                    addActivity('fas fa-trash-alt', 'Todos os dados foram removidos');
-                } catch(error) {
-                     console.error("Erro ao limpar dados: ", error);
-                    showNotification('Erro ao limpar dados na nuvem.', 'error');
+                    activityData = [];
+                    localStorage.removeItem(ACTIVITY_DATA_KEY);
+                    addActivity('fas fa-trash-alt', 'Todos os dados da nuvem foram removidos');
+                } catch (error) {
+                    console.error("Erro ao limpar dados na nuvem:", error);
+                    showNotification("Erro ao limpar dados na nuvem.", "error");
                 }
             }
             
@@ -2881,8 +2865,7 @@
                     showNotification('Não há dados para exportar', 'info');
                     return false;
                 }
-                const dataToExport = batteryData.map(({ id, ...rest }) => rest); // Remove o id do Firestore
-                const dataStr = JSON.stringify(dataToExport, null, 2);
+                const dataStr = JSON.stringify(batteryData, null, 2);
                 const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
                 const exportFileDefaultName = `fabreck_backup_${new Date().toISOString().slice(0,10)}.json`;
                 const linkElement = document.createElement('a');
@@ -2890,73 +2873,39 @@
                 linkElement.download = exportFileDefaultName;
                 linkElement.click();
                 showNotification('Backup local exportado com sucesso!', 'success');
-                addActivity('fas fa-download', 'Dados exportados');
+                addActivity('fas fa-download', 'Dados da nuvem exportados');
                 return true;
             }
             
             async function handleRestoreFile(file) {
-                 if (!batteriesCollection) return showNotification('Modo offline.', 'error');
                 const reader = new FileReader();
                 reader.onload = async function(event) {
                     try {
                         const importedData = JSON.parse(event.target.result);
                         if (!Array.isArray(importedData)) throw new Error('Estrutura de dados inválida.');
                         
-                        showNotification(`A restaurar ${importedData.length} registos...`, 'info');
                         await clearData();
+                        showNotification(`A importar ${importedData.length} registos para a nuvem...`, 'info');
 
-                        const batch = db.batch();
+                        const batch = writeBatch(db);
                         importedData.forEach(item => {
-                            const newDocRef = batteriesCollection.doc();
-                            batch.set(newDocRef, item);
+                            const { id, ...data } = item;
+                            const newDocRef = doc(batteriesCollection);
+                            batch.set(newDocRef, data);
                         });
-                        await batch.commit();
 
-                        showNotification(`${importedData.length} registos restaurados com sucesso na nuvem!`, 'success');
-                        addActivity('fas fa-upload', `${importedData.length} baterias restauradas.`);
+                        await batch.commit();
+                        showNotification('Dados restaurados na nuvem com sucesso!', 'success');
                     } catch (error) {
-                        console.error("Erro ao restaurar", error);
-                        showNotification('Erro ao importar. Verifique o formato do arquivo.', 'error');
+                        console.error("Erro ao restaurar para a nuvem:", error);
+                        showNotification('Erro ao restaurar. Verifique o ficheiro e a conexão.', 'error');
                     }
                 };
                 reader.readAsText(file);
             }
-
-            function promptClearData() {
-                if(exportData()){
-                    showNotification('Backup de segurança gerado antes da limpeza.', 'info');
-                    passwordConfirmModal.classList.add('active');
-                    adminPasswordConfirmInput.value = '';
-                    adminPasswordConfirmInput.focus();
-                }
-            }
-
-            async function handleClearDataConfirmation(e) {
-                e.preventDefault();
-                const enteredPassword = adminPasswordConfirmInput.value;
-                const loggedInUser = sessionStorage.getItem('currentUser');
-
-                if (!loggedInUser) {
-                    showNotification('Erro: Utilizador não identificado.', 'error');
-                    passwordConfirmModal.classList.remove('active');
-                    return;
-                }
-
-                const adminUsers = JSON.parse(localStorage.getItem(ADMIN_USERS_KEY));
-                const userToUpdate = adminUsers.find(admin => admin.user === loggedInUser);
-
-                if (userToUpdate && enteredPassword === userToUpdate.pass) {
-                    showNotification('Senha correta. A limpar os dados...', 'warning');
-                    passwordConfirmModal.classList.remove('active');
-                    await clearData();
-                } else {
-                    showNotification('Palavra-passe incorreta. A limpeza foi cancelada.', 'error');
-                    adminPasswordConfirmInput.value = '';
-                }
-            }
             // #endregion
 
-            // #region Lógica de Negócio (Garantia, Código) - Sem alterações
+            // #region Lógica de Negócio (Garantia, Código)
             function validateSerialCode(code) { return /^\d{4}[A-Za-z]\d{4}$/.test(code); }
             function parseCode(code) {
                 return {
@@ -3012,7 +2961,7 @@
                 serialCodeInput.focus();
             }
 
-            async function selectWarrantyType(type) {
+            function selectWarrantyType(type) {
                 factoryRadio.checked = type === 'factory';
                 analyzedRadio.checked = type === 'analyzed';
                 factoryOption.classList.toggle('selected', type === 'factory');
@@ -3128,7 +3077,7 @@
 
             function updateRecentRegistrationsLog() {
                 const recentBatteries = [...batteryData].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)).slice(0, 10);
-                if (recentRegistrationsBody.length === 0) {
+                if (recentBatteries.length === 0) {
                     recentRegistrationsBody.innerHTML = `<tr><td colspan="4" style="text-align: center;">Nenhum registo ainda.</td></tr>`;
                 } else {
                     recentRegistrationsBody.innerHTML = recentBatteries.map(renderRecentRegistrationRow).join('');
@@ -3148,7 +3097,7 @@
                 
                 reportBody.innerHTML = filteredData.map(renderReportTableRow).join('');
 
-                reportBody.querySelectorAll('.remove-btn').forEach(btn => btn.addEventListener('click', function() { showConfirmModal('Remover Bateria', 'Tem a certeza que deseja remover esta bateria? A ação é irreversível.', () => removeBattery(this.dataset.id)); }));
+                reportBody.querySelectorAll('.remove-btn').forEach(btn => btn.addEventListener('click', function() { showConfirmModal('Remover Bateria da Nuvem', 'Tem a certeza que deseja remover esta bateria? A ação é irreversível.', () => removeBattery(this.dataset.id)); }));
                 reportBody.querySelectorAll('.name-edit-btn').forEach(btn => btn.addEventListener('click', function() { openClientEditModal(this.dataset.id); }));
 
                 updateReportTotals(filteredData);
@@ -3250,10 +3199,9 @@
                     else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'expired';
                     else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'recharge';
                     
-                    acc[category] = acc[category] || {};
                     acc[category][model] = (acc[category][model] || 0) + 1;
                     return acc;
-                }, {});
+                }, { approved: {}, rejected: {}, recharge: {}, expired: {}, courtesy: {} });
                 
                 const createSummaryLine = (title, data) => {
                     if (Object.keys(data).length > 0) {
@@ -3264,11 +3212,11 @@
                 };
 
                 const html = [
-                    createSummaryLine('BATERIAS APROVADAS (TROCA DE FÁBRICA)', summary.approved || {}),
-                    createSummaryLine('BATERIAS TROCADAS (CORTESIA)', summary.courtesy || {}),
-                    createSummaryLine('BATERIAS REPROVADAS', summary.rejected || {}),
-                    createSummaryLine('BATERIAS PARA RECARREGAR', summary.recharge || {}),
-                    createSummaryLine('BATERIAS FORA DO PRAZO', summary.expired || {})
+                    createSummaryLine('BATERIAS APROVADAS (TROCA DE FÁBRICA)', summary.approved),
+                    createSummaryLine('BATERIAS TROCADAS (CORTESIA)', summary.courtesy),
+                    createSummaryLine('BATERIAS REPROVADAS', summary.rejected),
+                    createSummaryLine('BATERIAS PARA RECARREGAR', summary.recharge),
+                    createSummaryLine('BATERIAS FORA DO PRAZO', summary.expired)
                 ].join('');
 
                 if (html.trim()) {
@@ -3281,7 +3229,7 @@
             // #endregion
 
             // #region Lógica de Análise e Edição
-            async function openSingleAnalysisModal(id) {
+            function openSingleAnalysisModal(id) {
                 const battery = batteryData.find(b => b.id === id);
                 if (!battery) return;
 
@@ -3354,7 +3302,6 @@
             }
 
             async function saveAnalysis() {
-                if (!batteriesCollection) return showNotification('Modo offline.', 'error');
                 let newRecommendation = analysisRecommendation.value.trim();
                 const newFinalAction = analysisFinalAction.value;
                 if (!newFinalAction) return showNotification('Selecione uma Ação Final.', 'error');
@@ -3371,32 +3318,31 @@
                     finalAction: newFinalAction,
                     technicalOpinionDate: new Date().toISOString()
                 };
-                
+
+                const batteriesToNotify = batteryData.filter(b => idsToUpdate.includes(b.id));
+
                 try {
-                    const batch = db.batch();
+                    const batch = writeBatch(db);
                     idsToUpdate.forEach(id => {
-                        const docRef = batteriesCollection.doc(id);
+                        const docRef = doc(db, "batteries", id);
                         batch.update(docRef, updatedData);
                     });
                     await batch.commit();
-
-                    const batteriesToNotify = batteryData.filter(b => idsToUpdate.includes(b.id));
-
+                    
                     analysisModal.classList.remove('active');
                     showNotification(`${idsToUpdate.length} análise(s) salva(s)!`, 'success');
                     addActivity('fas fa-clipboard-check', `${idsToUpdate.length} bateria(s) analisada(s).`);
                     
                     if (batteriesToNotify.length > 0) {
-                         showConfirmModal(
+                        showConfirmModal(
                             'Notificar Cliente?',
                             `A análise foi finalizada. Deseja enviar uma notificação para o cliente ${batteriesToNotify[0].client} via WhatsApp agora?`,
                             () => sendAnalysisResultViaWhatsApp(batteriesToNotify)
                         );
                     }
-
-                } catch(error) {
-                    console.error("Erro ao salvar análise: ", error);
-                    showNotification("Erro ao salvar análise.", 'error');
+                } catch (error) {
+                    console.error("Erro ao salvar análise na nuvem:", error);
+                    showNotification("Erro ao salvar análise.", "error");
                 }
             }
 
@@ -3417,7 +3363,7 @@
                 whatsappAnalysisBtn.disabled = !selectedClient;
             }
 
-            async function openClientEditModal(id) {
+            function openClientEditModal(id) {
                 const battery = batteryData.find(b => b.id === id);
                 if (!battery) return;
                 editingBatteryId = id;
@@ -3432,7 +3378,6 @@
             }
 
             async function saveEditedClientData() {
-                if (!batteriesCollection) return showNotification('Modo offline.', 'error');
                 const originalBattery = batteryData.find(b => b.id === editingBatteryId);
                 if (!originalBattery) return;
 
@@ -3444,31 +3389,25 @@
                 const { client: oldClientName, salesman: oldSalesmanName } = originalBattery;
                 
                 try {
-                    const batch = db.batch();
-                    batteryData.forEach(battery => {
-                        let updated = false;
-                        const updatePayload = {};
-                        if (battery.client === oldClientName) { 
-                            updatePayload.client = newClientName; 
-                            updatePayload.clientPhone = newClientPhone;
-                            updated = true; 
-                        }
-                        if (battery.salesman === oldSalesmanName) { 
-                            updatePayload.salesman = newSalesmanName; 
-                            updated = true; 
-                        }
-                        if (updated) {
-                             const docRef = batteriesCollection.doc(battery.id);
-                             batch.update(docRef, updatePayload);
-                        }
+                    const batch = writeBatch(db);
+                    
+                    const clientQuery = query(batteriesCollection, where("client", "==", oldClientName));
+                    const clientSnapshot = await getDocs(clientQuery);
+                    clientSnapshot.forEach((document) => {
+                        batch.update(document.ref, { client: newClientName, clientPhone: newClientPhone });
                     });
-                    await batch.commit();
 
+                    const salesmanQuery = query(batteriesCollection, where("salesman", "==", oldSalesmanName));
+                    const salesmanSnapshot = await getDocs(salesmanQuery);
+                    salesmanSnapshot.forEach((document) => {
+                        batch.update(document.ref, { salesman: newSalesmanName });
+                    });
+
+                    await batch.commit();
                     clientEditModal.classList.remove('active');
-                    showNotification('Dados do cliente atualizados em todos os registos!', 'success');
-                    addActivity('fas fa-pencil-alt', `Dados do cliente '${oldClientName}' atualizados.`);
+                    showNotification('Dados atualizados em todos os registos!', 'success');
                 } catch (error) {
-                    console.error("Erro ao editar dados do cliente:", error);
+                    console.error("Erro ao editar dados em lote:", error);
                     showNotification("Erro ao atualizar dados.", "error");
                 }
             }
@@ -3482,14 +3421,12 @@
             
             // #region Histórico e Log de Atividades
             function updateLastUpdate() {
-                const latestTimestamp = batteryData.length > 0 ? Math.max(...batteryData.map(b => new Date(b.timestamp).getTime())) : 0;
-                lastUpdate.textContent = latestTimestamp > 0 ? new Date(latestTimestamp).toLocaleString('pt-BR') : "Nenhuma atualização";
+                lastUpdate.textContent = new Date().toLocaleString('pt-BR');
             }
             
-            async function updateActivityLog() {
-                // Manter log local por enquanto
+            function updateActivityLog() {
                 const logContainer = document.getElementById('activityLog');
-                const recentActivities = activityData.sort((a,b) => b.id - a.id).slice(0, 5);
+                const recentActivities = [...activityData].reverse().slice(0, 5);
                 
                 if (recentActivities.length === 0) {
                     logContainer.innerHTML = `<div class="activity-item"><div class="activity-icon"><i class="fas fa-info-circle"></i></div><div class="activity-content">Nenhuma atividade recente</div></div>`;
@@ -3504,16 +3441,17 @@
                 `).join('');
             }
             
-            async function addActivity(icon, message) {
-                const newActivity = { id: Date.now(), icon, message, timestamp: Date.now(), time: new Date().toLocaleTimeString('pt-BR') };
+            function addActivity(icon, message) {
+                const newActivity = { icon, message, time: new Date().toLocaleTimeString('pt-BR') };
                 activityData.push(newActivity);
                 if (activityData.length > 50) activityData.shift();
+                localStorage.setItem(ACTIVITY_DATA_KEY, JSON.stringify(activityData));
                 updateActivityLog();
             }
 
             // #endregion
 
-            // #region Filtros e PDF/Excel (sem alterações)
+            // #region Filtros e PDF/Excel
             function applyFilters() {
                 currentFilters = {
                     client: clientFilter.value,
@@ -3751,7 +3689,7 @@
             }
             // #endregion
 
-            // #region Lógica do Laudo Padrão - Sem alterações
+            // #region Lógica do Laudo Padrão
             function getLaudoData() {
                 const data = {
                     client: document.getElementById('laudoClientName').value.trim().toUpperCase(),
@@ -3879,7 +3817,7 @@
             }
             // #endregion
             
-            // #region WhatsApp - Sem alterações
+            // #region WhatsApp
             function openWhatsAppModal(type, data = null) {
                 let message = '';
                 let targetPhone = '';
@@ -3975,16 +3913,8 @@
                 return message;
             }
             
-            function sendFilteredViaWhatsApp() {
-                openWhatsAppModal('filtered');
-            }
-
             function sendAnalysisResultViaWhatsApp(batteries) {
                 openWhatsAppModal('analysisResult', batteries);
-            }
-
-            function sendAnalysisViaWhatsApp() {
-                openWhatsAppModal('analysis');
             }
 
             function generateWhatsAppClientSectionBody(data) {
@@ -4052,81 +3982,13 @@
                 
                 return message;
             }
-
-            function sendGeneralWhatsAppReport() {
-                if (batteryData.length === 0) {
-                    return showNotification('Não há dados para gerar o relatório.', 'error');
-                }
-
-                let fullMessage = `*Relatório Geral de Garantia - FABRECK BATERIAS*\n`;
-                fullMessage += `*Data de Emissão:* ${new Date().toLocaleDateString('pt-BR')}\n`;
-                fullMessage += `====================================\n\n`;
-
-                const groupedBySalesman = batteryData.reduce((acc, battery) => {
-                    (acc[battery.salesman] = acc[battery.salesman] || []).push(battery);
-                    return acc;
-                }, {});
-
-                Object.keys(groupedBySalesman).sort().forEach(salesmanName => {
-                    fullMessage += `*VENDEDOR: ${salesmanName}*\n\n`;
-                    const salesmanData = groupedBySalesman[salesmanName];
-                    const groupedByClient = salesmanData.reduce((acc, battery) => {
-                        (acc[battery.client] = acc[battery.client] || []).push(battery);
-                        return acc;
-                    }, {});
-
-                    Object.keys(groupedByClient).sort().forEach(clientName => {
-                        fullMessage += generateWhatsAppClientSectionBody(groupedByClient[clientName]);
-                        fullMessage += `------------------------------------\n\n`;
-                    });
-                });
-
-                fullMessage += `_Relatório gerado pelo Sistema de Garantia Fabreck._`;
-
-                openWhatsAppModal('custom', { message: fullMessage });
-            }
-            function sendTodaySummaryViaWhatsApp() {
-                const today = new Date();
-                today.setHours(0, 0, 0, 0);
-
-                const todaysEntries = batteryData.filter(b => {
-                    const entryDate = new Date(b.timestamp);
-                    entryDate.setHours(0, 0, 0, 0);
-                    return entryDate.getTime() === today.getTime();
-                });
-
-                if (todaysEntries.length === 0) {
-                    return showNotification('Nenhum registo de garantia feito hoje.', 'info');
-                }
-
-                let message = `*Resumo de Registos de Garantia - ${new Date().toLocaleDateString('pt-BR')}*\n\n`;
-
-                const groupedBySalesman = todaysEntries.reduce((acc, battery) => {
-                    (acc[battery.salesman] = acc[battery.salesman] || []).push(battery);
-                    return acc;
-                }, {});
-
-                let totalToday = 0;
-                Object.keys(groupedBySalesman).sort().forEach(salesman => {
-                    const entries = groupedBySalesman[salesman];
-                    const count = entries.length;
-                    totalToday += count;
-                    message += `*Vendedor: ${salesman}*\n`;
-                    message += `Total de Baterias Registadas: ${count}\n`;
-                    
-                    const clients = [...new Set(entries.map(e => e.client))].join(', ');
-                    message += `Clientes Atendidos: ${clients}\n\n`;
-                });
-
-                message += `*Total Geral do Dia: ${totalToday} baterias*\\n\\n`;
-                message += `_Relatório gerado pelo Sistema de Garantia Fabreck._`;
-                
-                openWhatsAppModal('custom', { message: message });
-            }
             // #endregion
 
+            // Iniciar a aplicação
             init();
         });
     </script>
 </body>
 </html>
+
+
