@@ -74,13 +74,93 @@
 
         html, body {
             height: 100%;
+            overflow: hidden; /* Previne scroll durante o loading */
         }
 
-        body {
-            background: var(--fabreck-light);
-            color: var(--fabreck-dark);
-            line-height: 1.6;
-            transition: background 0.3s ease, color 0.3s ease;
+        body.loaded {
+            overflow: auto; /* Permite scroll após o carregamento */
+        }
+
+        /* --- TELA DE CARREGAMENTO --- */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--fabreck-dark), #000);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s ease-out;
+            overflow: hidden;
+        }
+        
+        .loading-text {
+            color: var(--fabreck-white);
+            text-align: center;
+            z-index: 10;
+            animation: pulse-logo 2.5s infinite ease-in-out;
+        }
+
+        @keyframes pulse-logo {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+
+        .loading-text p {
+            font-size: 16px;
+            opacity: 0.8;
+            letter-spacing: 1px;
+            margin-top: 15px;
+        }
+        .loading-text .logo-main {
+            font-size: 8vw;
+            max-font-size: 96px;
+            -webkit-text-stroke: 3px var(--fabreck-white);
+            color: var(--fabreck-red);
+        }
+        .loading-text .logo-sub {
+            font-size: 3vw;
+            max-font-size: 32px;
+            margin-top: -15px;
+            color: var(--fabreck-white);
+        }
+        
+        #lightning-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .lightning {
+            position: absolute;
+            width: 100px;
+            height: 150px;
+            fill: rgba(0, 100, 224, 0.6); /* Azul Fabreck com transparência */
+            opacity: 0;
+            animation: flash 3.5s infinite ease-in-out;
+            transform-origin: center;
+        }
+
+        .bolt1 { top: 10%; left: 15%; transform: rotate(-20deg); animation-delay: 0s; }
+        .bolt2 { top: 20%; right: 10%; transform: rotate(30deg) scale(0.8); animation-delay: 0.7s; }
+        .bolt3 { bottom: 15%; left: 25%; transform: rotate(-10deg) scale(1.2); animation-delay: 1.5s; }
+        .bolt4 { bottom: 5%; right: 20%; transform: rotate(15deg) scale(1.1); animation-delay: 2.2s; }
+        .bolt5 { top: 50%; left: 5%; transform: rotate(-30deg) scale(0.7); animation-delay: 2.8s; }
+
+        @keyframes flash {
+            0%, 100% { opacity: 0; transform: scale(0.8); }
+            2% { opacity: 0.7; transform: scale(1.1); }
+            4% { opacity: 0; }
+            6% { opacity: 0.5; transform: scale(1); }
+            8%, 95% { opacity: 0; }
         }
 
         /* --- ESTILOS DO LOGIN --- */
@@ -109,7 +189,31 @@
             width: 90%;
             max-width: 400px;
             text-align: center;
+            transition: opacity 0.5s ease;
         }
+        
+        #screensaverOverlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.9);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 3001;
+            cursor: pointer;
+        }
+        #screensaverOverlay .loading-text p {
+            animation: pulse-text 2s infinite ease-in-out;
+        }
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+        
         body.dark-mode .login-card {
             background: var(--dark-card-bg);
         }
@@ -856,6 +960,35 @@
         .hidden {
             display: none !important;
         }
+
+        .status-tabs {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .status-tab {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--fabreck-blue);
+            background: transparent;
+            color: var(--fabreck-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        .status-tab.active {
+            background: var(--fabreck-blue);
+            color: var(--fabreck-white);
+        }
+        body.dark-mode .status-tab {
+            border-color: var(--dark-blue-light);
+            color: var(--dark-blue-light);
+        }
+        body.dark-mode .status-tab.active {
+            background: var(--dark-blue-light);
+            color: var(--dark-card-bg);
+        }
         
         /* Pré-visualização do código */
         .code-preview {
@@ -1378,7 +1511,37 @@
     </style>
 </head>
 <body>
-    <div class="login-overlay" id="loginOverlay">
+    <div id="loadingOverlay">
+        <div id="lightning-container">
+            <svg class="lightning bolt1" viewBox="0 0 50 120"><path d="M 50 0 L 20 60 L 45 60 L 15 120 L 50 70 L 25 70 L 50 0 Z"></path></svg>
+            <svg class="lightning bolt2" viewBox="0 0 50 120"><path d="M 50 0 L 20 60 L 45 60 L 15 120 L 50 70 L 25 70 L 50 0 Z"></path></svg>
+            <svg class="lightning bolt3" viewBox="0 0 50 120"><path d="M 50 0 L 20 60 L 45 60 L 15 120 L 50 70 L 25 70 L 50 0 Z"></path></svg>
+            <svg class="lightning bolt4" viewBox="0 0 50 120"><path d="M 50 0 L 20 60 L 45 60 L 15 120 L 50 70 L 25 70 L 50 0 Z"></path></svg>
+            <svg class="lightning bolt5" viewBox="0 0 50 120"><path d="M 50 0 L 20 60 L 45 60 L 15 120 L 50 70 L 25 70 L 50 0 Z"></path></svg>
+        </div>
+        <div class="loading-text">
+            <h1 class="logo-main">FABRECK</h1>
+            <h2 class="logo-sub">DO BRASIL</h2>
+            <p>A carregar sistema...</p>
+        </div>
+    </div>
+
+    <div class="login-overlay hidden" id="loginOverlay">
+        <div id="screensaverOverlay">
+             <div id="lightning-container">
+                <svg class="lightning bolt1" viewBox="0 0 50 120"><path d="M 50 0 L 20 60 L 45 60 L 15 120 L 50 70 L 25 70 L 50 0 Z"></path></svg>
+                <svg class="lightning bolt2" viewBox="0 0 50 120"><path d="M 50 0 L 20 60 L 45 60 L 15 120 L 50 70 L 25 70 L 50 0 Z"></path></svg>
+                <svg class="lightning bolt3" viewBox="0 0 50 120"><path d="M 50 0 L 20 60 L 45 60 L 15 120 L 50 70 L 25 70 L 50 0 Z"></path></svg>
+                <svg class="lightning bolt4" viewBox="0 0 50 120"><path d="M 50 0 L 20 60 L 45 60 L 15 120 L 50 70 L 25 70 L 50 0 Z"></path></svg>
+                <svg class="lightning bolt5" viewBox="0 0 50 120"><path d="M 50 0 L 20 60 L 45 60 L 15 120 L 50 70 L 25 70 L 50 0 Z"></path></svg>
+            </div>
+            <div class="loading-text">
+                <h1 class="logo-main">FABRECK</h1>
+                <h2 class="logo-sub">DO BRASIL</h2>
+                <p>Toque para voltar</p>
+            </div>
+        </div>
+
         <div class="login-card">
             <div class="logo-text-container">
                 <h1 class="logo-main">FABRECK</h1>
@@ -1443,7 +1606,11 @@
                         </div>
                     </div>
                      <div class="header-controls">
+                        <div id="connectionStatus" style="font-size: 12px; font-weight: 600; color: white; opacity: 0.8;">A Ligar...</div>
                         <div class="header-buttons" style="display: flex; gap: 10px; margin-left: auto;">
+                            <button id="fullscreenBtn" class="btn btn-info" style="width: auto; margin-top:0;" title="Tela Cheia">
+                                <i class="fas fa-expand"></i>
+                            </button>
                             <button id="toggleDarkModeBtn" class="btn btn-info" style="width: auto; margin-top:0;">
                                 <i class="fas fa-moon"></i> <span id="darkModeText">Modo Escuro</span>
                             </button>
@@ -1677,9 +1844,6 @@
                                 <label for="analysisClientFilter">Agrupar por Cliente:</label>
                                 <select id="analysisClientFilter" class="form-control"></select>
                             </div>
-                            <button id="whatsappAnalysisBtn" class="btn btn-success viewer-hidden" style="margin-top: 0;" disabled>
-                                <i class="fab fa-whatsapp"></i> Notificar
-                            </button>
                             <button id="batchAnalyzeBtn" class="btn btn-success viewer-hidden" disabled>
                                 <i class="fas fa-layer-group"></i> Analisar Selecionados
                             </button>
@@ -1756,7 +1920,7 @@
                             <div class="card-icon"><i class="fas fa-chart-bar"></i></div>
                         </div>
                         <div class="info-section">
-                            <p>Esta é a lista completa de <strong>todas</strong> as garantias registadas. Use os filtros abaixo para visualizar grupos específicos.</p>
+                            <p>Esta é a lista completa de <strong>todas</strong> as garantias registadas. Use a pesquisa e os filtros para encontrar o que precisa.</p>
                         </div>
                         <div class="stat-cards">
                             <div class="stat-card">
@@ -1774,74 +1938,29 @@
                         </div>
                         
                         <div class="report-filters">
-                            <div class="filter-row">
-                                <div class="filter-group">
-                                    <label for="clientFilter">Filtrar por Cliente:</label>
-                                    <select id="clientFilter" class="form-control">
-                                        <option value="">Todos os Clientes</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="salesmanFilter">Filtrar por Vendedor:</label>
-                                    <select id="salesmanFilter" class="form-control">
-                                        <option value="">Todos os Vendedores</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="statusFilter">Status da Garantia (Prazo):</label>
-                                    <select id="statusFilter" class="form-control">
-                                        <option value="">Todos</option>
-                                        <option value="warranty">Em Garantia</option>
-                                        <option value="expired">Fora do Prazo</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="workflowStatusFilter">Status do Processo:</label>
-                                    <select id="workflowStatusFilter" class="form-control">
-                                        <option value="">Todos</option>
-                                        <option value="in_analysis">Em Análise</option>
-                                        <option value="finalized">Finalizado</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="finalActionFilter">Filtrar por Ação Final:</label>
-                                    <select id="finalActionFilter" class="form-control">
-                                        <option value="">Todas as Ações</option>
-                                        <option value="APROVADA (TROCA DE FÁBRICA)">APROVADA (TROCA DE FÁBRICA)</option>
-                                        <option value="GARANTIA CORTESIA (ENVIAR NOVA)">GARANTIA CORTESIA (ENVIAR NOVA)</option>
-                                        <option value="REPROVADA (DEVOLVER AO CLIENTE)">REPROVADA (DEVOLVER AO CLIENTE)</option>
-                                        <option value="REPROVADA (MAU USO / SUCATEAR)">REPROVADA (MAU USO / SUCATEAR)</option>
-                                        <option value="REPROVADA - FORA DO PRAZO">REPROVADA - FORA DO PRAZO</option>
-                                    </select>
-                                </div>
-                                <div class="filter-group">
-                                    <label for="modelFilter">Filtrar por Modelo:</label>
-                                    <select id="modelFilter" class="form-control">
-                                        <option value="">Todos os Modelos</option>
-                                    </select>
-                                </div>
+                            <div class="form-group" style="margin-bottom: 10px;">
+                                <label for="mainSearchInput">Pesquisa Rápida</label>
+                                <input type="search" id="mainSearchInput" class="form-control" placeholder="Pesquisar por cliente, vendedor, código, modelo...">
+                            </div>
+
+                            <div id="statusTabFilter" class="status-tabs">
+                                <button class="status-tab active" data-status="">Todos</button>
+                                <button class="status-tab" data-status="in_analysis">Em Análise</button>
+                                <button class="status-tab" data-status="finalized">Finalizados</button>
                             </div>
                             
-                            <div class="filter-row">
+                            <div class="filter-row" style="margin-top: 15px;">
                                 <div class="filter-group">
-                                    <label for="codeFilter">Filtrar por Código:</label>
-                                    <input type="text" id="codeFilter" class="form-control" placeholder="Código de série">
-                                </div>
-                                <div class="filter-group">
-                                    <label for="startDate">Data Inicial (Registo):</label>
+                                    <label for="startDate">Data Inicial:</label>
                                     <input type="date" id="startDate" class="form-control">
                                 </div>
                                 <div class="filter-group">
-                                    <label for="endDate">Data Final (Registo):</label>
+                                    <label for="endDate">Data Final:</label>
                                     <input type="date" id="endDate" class="form-control">
                                 </div>
                             </div>
 
-                             <div class="filter-buttons" style="grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
-                                <button id="filterTodayBtn" class="btn btn-info">Hoje</button>
-                                <button id="filterWeekBtn" class="btn btn-info">Últimos 7 Dias</button>
-                                <button id="filterMonthBtn" class="btn btn-info">Este Mês</button>
-                                <button id="applyFilter" class="btn btn-primary">Aplicar Filtros</button>
+                             <div class="filter-buttons" style="grid-template-columns: 1fr; margin-top: 10px;">
                                 <button id="clearFilter" class="btn btn-danger">Limpar Filtros</button>
                             </div>
                         </div>
@@ -1871,7 +1990,7 @@
 
                         <div class="card" id="modelStatusSummaryCard" style="display:none; margin-top: 20px;">
                             <div class="card-header">
-                                <h2 class="card-title">Resumo de Ações por Modelo (com base no filtro)</h2>
+                                <h2 class="card-title">Resumo de Ações por Modelo</h2>
                                 <div class="card-icon"><i class="fas fa-tasks"></i></div>
                             </div>
                             <div id="modelStatusSummaryBody" class="info-section" style="margin-top:0;">
@@ -2134,6 +2253,35 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal de Opções do WhatsApp -->
+    <div class="modal" id="whatsappOptionsMenuModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeWhatsappOptionsMenuModal">&times;</span>
+            <h3 class="modal-title">Escolha o Relatório para Enviar</h3>
+            <div class="info-section" style="margin-top:0; margin-bottom: 20px;">
+                <p>Selecione uma das opções abaixo para gerar e enviar um relatório via WhatsApp.</p>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 10px;">
+                 <button id="sendFilteredReportBtn" class="btn btn-primary"><i class="fas fa-filter"></i> Relatório Detalhado do Filtro</button>
+                 <button id="sendTodaySummaryBtn" class="btn btn-info"><i class="fas fa-calendar-day"></i> Resumo de Registos de Hoje</button>
+                 <button id="sendPendingAnalysisBtn" class="btn btn-warning"><i class="fas fa-hourglass-half"></i> Notificar Pendentes de Análise</button>
+                 <button id="sendGeneralSummaryBtn" class="btn btn-success"><i class="fas fa-globe-americas"></i> Resumo Geral de Finalizadas</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Notificação de Baterias Finalizadas -->
+    <div class="modal" id="finalizedNotificationModal">
+        <div class="modal-content">
+            <span class="modal-close" id="closeFinalizedNotificationModal">&times;</span>
+            <h3 class="modal-title"><i class="fas fa-bell" style="color: var(--fabreck-warning);"></i> Novas Baterias Finalizadas!</h3>
+            <div id="finalizedNotificationList" class="info-section" style="margin-top:0; text-align: left; max-height: 40vh; overflow-y: auto;">
+                <!-- O conteúdo será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
 
     <div class="modal" id="passwordModal">
         <div class="modal-content">
@@ -2189,25 +2337,21 @@
             const reportBody = document.getElementById('reportBody');
             const totalCount = document.getElementById('totalCount');
             const lastUpdate = document.getElementById('lastUpdate');
-            const clientFilter = document.getElementById('clientFilter');
-            const salesmanFilter = document.getElementById('salesmanFilter');
-            const finalActionFilter = document.getElementById('finalActionFilter');
-            const modelFilter = document.getElementById('modelFilter');
-            const statusFilter = document.getElementById('statusFilter'); 
-            const workflowStatusFilter = document.getElementById('workflowStatusFilter');
-            const applyFilterBtn = document.getElementById('applyFilter');
+            
+            const mainSearchInput = document.getElementById('mainSearchInput');
+            const statusTabFilter = document.getElementById('statusTabFilter');
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
             const clearFilterBtn = document.getElementById('clearFilter');
-            const filterTodayBtn = document.getElementById('filterTodayBtn');
-            const filterWeekBtn = document.getElementById('filterWeekBtn');
-            const filterMonthBtn = document.getElementById('filterMonthBtn');
+
+
             const navBtns = document.querySelectorAll('.nav-btn');
             const sidebarBtns = document.querySelectorAll('.sidebar-btn');
             const pages = document.querySelectorAll('.page');
             const codePreview = document.getElementById('codePreview');
             const activityLog = document.getElementById('activityLog');
             const currentSalesman = document.getElementById('currentSalesman');
-            const startDateInput = document.getElementById('startDate');
-            const endDateInput = document.getElementById('endDate');
+            
             const excelBtn = document.getElementById('excelBtn');
             const helpBtn = document.getElementById('helpBtn');
             const rulesModal = document.getElementById('rulesModal');
@@ -2217,7 +2361,7 @@
             const analyzedRadio = document.getElementById('analyzedRadio');
             const factoryOption = document.getElementById('factoryOption');
             const analyzedOption = document.getElementById('analyzedOption');
-            const codeFilter = document.getElementById('codeFilter');
+            
             const recommendationInput = document.getElementById('recommendation');
             const totalsContainer = document.getElementById('totalsContainer');
             const warrantyDebugInfo = document.getElementById('warrantyDebugInfo');
@@ -2300,7 +2444,18 @@
             const sendWhatsappBtn = document.getElementById('sendWhatsappBtn');
             const cancelWhatsappBtn = document.getElementById('cancelWhatsappBtn');
 
-            const whatsappAnalysisBtn = document.getElementById('whatsappAnalysisBtn');
+            const whatsappOptionsMenuModal = document.getElementById('whatsappOptionsMenuModal');
+            const closeWhatsappOptionsMenuModal = document.getElementById('closeWhatsappOptionsMenuModal');
+            const sendFilteredReportBtn = document.getElementById('sendFilteredReportBtn');
+            const sendTodaySummaryBtn = document.getElementById('sendTodaySummaryBtn');
+            const sendPendingAnalysisBtn = document.getElementById('sendPendingAnalysisBtn');
+            const sendGeneralSummaryBtn = document.getElementById('sendGeneralSummaryBtn');
+            
+            const finalizedNotificationModal = document.getElementById('finalizedNotificationModal');
+            const closeFinalizedNotificationModal = document.getElementById('closeFinalizedNotificationModal');
+            const connectionStatus = document.getElementById('connectionStatus');
+            const fullscreenBtn = document.getElementById('fullscreenBtn');
+            
 
             const passwordConfirmModal = document.getElementById('passwordConfirmModal');
             const closePasswordConfirmModal = document.getElementById('closePasswordConfirmModal');
@@ -2323,10 +2478,13 @@
             const ADMIN_USERS_KEY = 'fabreck_admin_users_local';
             
             let batteryData = [];
+            let previousBatteryData = []; // Para detetar mudanças
             let activityData = [];
             let currentFilters = {
-                client: '', salesman: '', status: '', workflowStatus: '',
-                finalAction: '', model: '', startDate: '', endDate: '', code: ''
+                searchTerm: '',
+                workflowStatus: '',
+                startDate: '',
+                endDate: ''
             };
             let warrantyInstructions = {};
             let rulesShown = localStorage.getItem('rulesShown') === 'true';
@@ -2341,6 +2499,7 @@
             let filterDebounceTimer = null;
             let laudoImages = [];
             let whatsappUrl = '';
+            let idleTimer = null;
 
             let db;
             let auth;
@@ -2354,16 +2513,30 @@
             };
             // #endregion
             
-            // #region Inicialização, Login e Firebase
+            // #region Inicialização
+            
             async function init() {
-                console.log("Inicializando sistema...");
+                console.log("A preparar a aplica\u00e7\u00e3o...");
                 setupEventListeners();
-                await initializeCredentials();
+                
+                const firebasePromise = initializeCredentials().then(() => initFirebase());
+                const timerPromise = new Promise(resolve => setTimeout(resolve, 3000)); // Tempo para animação
+                
+                await Promise.all([firebasePromise, timerPromise]);
+
+                const loadingOverlay = document.getElementById('loadingOverlay');
+                if(loadingOverlay) {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                       loadingOverlay.style.display = 'none';
+                       document.body.classList.add('loaded');
+                    }, 500);
+                }
+                
                 checkAuth();
             }
 
             async function initializeAppData() {
-                await initFirebase();
                 loadLastUsedData();
                 applyDarkMode();
                 
@@ -2378,15 +2551,55 @@
                 updateActivityLog();
             }
 
+            // #endregion
+
+            // #region Login e Firebase
+            function resetIdleTimer() {
+                clearTimeout(idleTimer);
+                // Só ativa o timer se o utilizador não estiver autenticado
+                if (sessionStorage.getItem('isAuthenticated') !== 'true') {
+                    idleTimer = setTimeout(showScreensaver, 60000); // 1 minuto
+                }
+            }
+
+            function showScreensaver() {
+                const screensaver = document.getElementById('screensaverOverlay');
+                const loginCard = document.querySelector('.login-card');
+                if (screensaver && loginCard) {
+                    screensaver.style.opacity = '1';
+                    screensaver.style.pointerEvents = 'auto';
+                    loginCard.style.opacity = '0';
+                    loginCard.style.pointerEvents = 'none';
+                    clearTimeout(idleTimer);
+                }
+            }
+
+            function hideScreensaver(reset = true) {
+                const screensaver = document.getElementById('screensaverOverlay');
+                const loginCard = document.querySelector('.login-card');
+                if (screensaver && loginCard) {
+                    screensaver.style.opacity = '0';
+                    screensaver.style.pointerEvents = 'none';
+                    loginCard.style.opacity = '1';
+                    loginCard.style.pointerEvents = 'auto';
+                }
+                if (reset) {
+                    resetIdleTimer();
+                }
+            }
+
             function checkAuth() {
                 if (sessionStorage.getItem('isAuthenticated') === 'true') {
+                    clearTimeout(idleTimer);
                     loginOverlay.classList.add('hidden');
                     layoutContainer.style.visibility = 'visible';
                     applyUIRestrictions();
-                    initializeAppData();
+                    if (!db) initializeAppData(); // Evita reinicializar se já estiver logado
                 } else {
                     loginOverlay.classList.remove('hidden');
+                    hideScreensaver(false); // Garante que o formulário está visível
                     layoutContainer.style.visibility = 'hidden';
+                    resetIdleTimer();
                 }
             }
             
@@ -2428,7 +2641,6 @@
             }
 
             async function initFirebase() {
-                // Configuração padrão do Firebase. Substitua se tiver as suas próprias credenciais.
                 let firebaseConfig = {
                     apiKey: "AIzaSyAI2t_u1T2f737QkyJ6940Hup-ZY-eYd9E",
                     authDomain: "studio-8037364926-f4af4.firebaseapp.com",
@@ -2442,48 +2654,72 @@
                     const app = initializeApp(firebaseConfig);
                     db = getFirestore(app);
                     auth = getAuth(app);
-                    
-                    // Lógica robusta de autenticação:
-                    // 1. Tenta autenticar anonimamente
-                    // 2. O onAuthStateChanged só ativa o listener do Firestore DEPOIS que a autenticação (user) for confirmada.
-                    onAuthStateChanged(auth, (user) => {
-                        if (user) {
-                            console.log("Autenticação anónima bem-sucedida:", user.uid);
-                            // Só cria o listener se ainda não existir
-                            if (!unsubscribeFromFirestore) {
-                                batteriesCollection = collection(db, "batteries");
-                                setupFirestoreListener();
+
+                    await new Promise((resolve, reject) => {
+                        const unsubscribe = onAuthStateChanged(auth, (user) => {
+                            unsubscribe();
+                            if (user) {
+                                resolve(user);
+                            } else {
+                                signInAnonymously(auth).then(resolve).catch(reject);
                             }
-                        } else {
-                             // Se o utilizador não estiver autenticado (p. ex. depois de um logout forçado), tenta autenticar de novo.
-                             console.log("Nenhum utilizador autenticado. A tentar autenticação anónima...");
-                             signInAnonymously(auth).catch(error => {
-                                console.error("Falha na autenticação anónima:", error);
-                                showNotification("Erro crítico de autenticação com a nuvem.", "error");
-                            });
-                        }
+                        }, reject);
                     });
+                    
+                    console.log("Firebase e Autentica\u00e7\u00e3o An\u00f3nima prontos. Utilizador:", auth.currentUser.uid);
+                    setConnectionStatus('Online', '#2ECC71');
+
+                    batteriesCollection = collection(db, "batteries");
+                    setupFirestoreListener();
 
                 } catch (error) {
-                    console.error("Erro ao inicializar o Firebase:", error);
-                    showNotification("Não foi possível ligar à base de dados na nuvem.", "error");
-                    lastUpdate.textContent = 'ERRO DE LIGAÇÃO';
+                    console.error("Erro cr\u00edtic na inicializa\u00e7\u00e3o do Firebase:", error);
+                    showNotification("N\u00e3o foi poss\u00edvel ligar \u00e0 base de dados na nuvem.", "error");
+                    setConnectionStatus('Offline', '#E74C3C');
+                }
+            }
+
+            function setConnectionStatus(text, color) {
+                if (connectionStatus) {
+                    connectionStatus.textContent = text;
+                    connectionStatus.style.color = color;
                 }
             }
 
             function setupFirestoreListener() {
                 if (unsubscribeFromFirestore) unsubscribeFromFirestore(); 
-                if (!auth.currentUser) return console.log("A aguardar autenticação para iniciar o listener...");
+                if (!auth.currentUser) return console.log("A aguardar autentica\u00e7\u00e3o para iniciar o listener...");
 
-                unsubscribeFromFirestore = onSnapshot(batteriesCollection, (snapshot) => {
-                    batteryData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                setConnectionStatus('A Sincronizar...', '#F39C12');
+
+                unsubscribeFromFirestore = onSnapshot(query(batteriesCollection), (snapshot) => {
+                    const serverData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                    
+                    if (previousBatteryData.length > 0) {
+                        const recentlyFinalized = [];
+                        serverData.forEach(currentBattery => {
+                            const previousVersion = previousBatteryData.find(b => b.id === currentBattery.id);
+                            if (previousVersion && previousVersion.status === 'in_analysis' && currentBattery.status === 'finalized') {
+                                recentlyFinalized.push(currentBattery);
+                            }
+                        });
+
+                        if (recentlyFinalized.length > 0) {
+                            showFinalizedNotification(recentlyFinalized);
+                        }
+                    }
+                    
+                    batteryData = serverData; 
+                    previousBatteryData = JSON.parse(JSON.stringify(serverData));
+
                     updateUI(); 
                     updateLastUpdate(); 
                     console.log(`Dados sincronizados: ${batteryData.length} registos carregados.`);
+                    setConnectionStatus('Online', '#2ECC71');
                 }, (error) => {
                     console.error("Erro ao receber dados da nuvem: ", error);
-                    showNotification("Falha ao sincronizar. Verifique a sua ligação e as regras de segurança.", "error");
-                    lastUpdate.textContent = 'FALHA NA LIGAÇÃO';
+                    showNotification("Falha ao sincronizar. Verifique a sua liga\u00e7\u00e3o e as regras de seguran\u00e7a.", "error");
+                    setConnectionStatus('Offline', '#E74C3C');
                 });
             }
 
@@ -2502,7 +2738,6 @@
             }
             
             function setupEventListeners() {
-                // A centralização dos event listeners permanece a mesma
                 loginForm?.addEventListener('submit', handleLogin);
                 viewerLoginBtn?.addEventListener('click', handleViewerLogin);
                 logoutBtn?.addEventListener('click', handleLogout);
@@ -2527,29 +2762,46 @@
                 addBtn?.addEventListener('click', addBattery);
                 factoryOption?.addEventListener('click', () => selectWarrantyType('factory'));
                 analyzedOption?.addEventListener('click', () => selectWarrantyType('analyzed'));
-                applyFilterBtn?.addEventListener('click', applyFilters);
-                clearFilterBtn?.addEventListener('click', clearFilters);
-                filterTodayBtn?.addEventListener('click', setDateFilterToday);
-                filterWeekBtn?.addEventListener('click', setDateFilterWeek);
-                filterMonthBtn?.addEventListener('click', setDateFilterMonth);
+                
+                mainSearchInput.addEventListener('input', () => { clearTimeout(filterDebounceTimer); filterDebounceTimer = setTimeout(applyFilters, 300); });
+                statusTabFilter.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('status-tab')) {
+                        statusTabFilter.querySelector('.active').classList.remove('active');
+                        e.target.classList.add('active');
+                        applyFilters();
+                    }
+                });
+                startDateInput.addEventListener('change', applyFilters);
+                endDateInput.addEventListener('change', applyFilters);
+                clearFilterBtn.addEventListener('click', clearFilters);
+
                 previewPdfBtn?.addEventListener('click', previewPDF);
                 pdfBtn?.addEventListener('click', downloadPDF);
                 batchPdfBtn?.addEventListener('click', generateBatchPDFs);
                 excelBtn?.addEventListener('click', exportToFormattedExcel);
                 clearBtn?.addEventListener('click', promptClearData);
-                whatsappBtn?.addEventListener('click', () => openWhatsAppModal('filtered'));
-                whatsappAnalysisBtn?.addEventListener('click', () => openWhatsAppModal('analysis'));
+                
+                whatsappBtn?.addEventListener('click', () => whatsappOptionsMenuModal.classList.add('active'));
+                closeWhatsappOptionsMenuModal?.addEventListener('click', () => whatsappOptionsMenuModal.classList.remove('active'));
+
+                sendFilteredReportBtn?.addEventListener('click', generateDetailedFilteredReport);
+                sendTodaySummaryBtn?.addEventListener('click', generateTodaySummaryReport);
+                sendPendingAnalysisBtn?.addEventListener('click', generatePendingAnalysisReport);
+                sendGeneralSummaryBtn?.addEventListener('click', generateGeneralSummaryReport);
+
+                closeFinalizedNotificationModal?.addEventListener('click', () => finalizedNotificationModal.classList.remove('active'));
+                
                 closeWhatsappPreviewModal?.addEventListener('click', () => whatsappPreviewModal.classList.remove('active'));
                 cancelWhatsappBtn?.addEventListener('click', () => whatsappPreviewModal.classList.remove('active'));
                 sendWhatsappBtn?.addEventListener('click', () => { window.open(whatsappUrl, '_blank'); whatsappPreviewModal.classList.remove('active'); });
-                codeFilter?.addEventListener('input', () => { clearTimeout(filterDebounceTimer); filterDebounceTimer = setTimeout(applyFilters, 500); });
+                
                 backupBtn?.addEventListener('click', exportData);
                 restoreBtn?.addEventListener('click', () => restoreFileInput.click());
                 restoreFileInput?.addEventListener('change', (e) => {
                     if (e.target.files.length > 0) {
                         showConfirmModal(
-                            'Confirmar Restauração para a Nuvem', 
-                            `Atenção! Esta ação substituirá TODOS os dados da nuvem pelos dados do ficheiro.`,
+                            'Confirmar Restaura\u00e7\u00e3o para a Nuvem', 
+                            `Aten\u00e7\u00e3o! Esta a\u00e7\u00e3o substituir\u00e1 TODOS os dados da nuvem pelos dados do ficheiro.`,
                             () => handleRestoreFile(e.target.files[0]),
                             () => e.target.value = ''
                         );
@@ -2560,7 +2812,7 @@
                 confirmRules?.addEventListener('click', () => rulesModal.classList.remove('active'));
                 closeAnalysisModal?.addEventListener('click', () => analysisModal.classList.remove('active'));
                 saveAnalysisBtn?.addEventListener('click', saveAnalysis);
-                analysisClientFilter?.addEventListener('change', () => { updateAnalysisTable(); updateAnalysisWhatsAppButtonState(); });
+                analysisClientFilter?.addEventListener('change', () => { updateAnalysisTable(); });
                 selectAllCheckbox?.addEventListener('change', handleSelectAll);
                 batchAnalyzeBtn?.addEventListener('click', openBatchAnalysisModal);
                 analysisApprovedRadioContainer?.addEventListener('click', () => handleDiagnosisChange('approved'));
@@ -2574,7 +2826,7 @@
                 capacidadeBaixaBtn?.addEventListener('click', () => { if(recommendationInput) recommendationInput.value = 'PROCEDENTE - CAPACIDADE BAIXA'; procedenteModal?.classList.remove('active'); });
                 ccaBaixoBtn?.addEventListener('click', () => { if(recommendationInput) recommendationInput.value = 'PROCEDENTE - CCA BAIXO'; procedenteModal?.classList.remove('active'); });
                 descarregadaBtn?.addEventListener('click', () => { if(recommendationInput) recommendationInput.value = 'RECARREGAR A BATERIA POR 6H EM CARGA LENTA E REFAZER O TESTE'; });
-                addObservationBtn?.addEventListener('click', () => openObservationModal(tempObservation, (obs) => { tempObservation = obs; observationModal?.classList.remove('active'); showNotification('Observação salva temporariamente.', 'info'); }));
+                addObservationBtn?.addEventListener('click', () => openObservationModal(tempObservation, (obs) => { tempObservation = obs; observationModal?.classList.remove('active'); showNotification('Observa\u00e7\u00e3o salva temporariamente.', 'info'); }));
                 analysisAddObservationBtn?.addEventListener('click', async () => {
                     const battery = batteryData.find(b => b.id === analyzingBatteryId);
                     if(battery) openObservationModal(battery.observations, async (obs) => {
@@ -2582,8 +2834,8 @@
                             const docRef = doc(db, "batteries", analyzingBatteryId);
                             await updateDoc(docRef, { observations: obs });
                             observationModal?.classList.remove('active');
-                            showNotification('Observação atualizada.', 'info');
-                        } catch (error) { console.error("Erro ao atualizar observação:", error); showNotification("Erro ao salvar observação.", "error"); }
+                            showNotification('Observa\u00e7\u00e3o atualizada.', 'info');
+                        } catch (error) { console.error("Erro ao atualizar observa\u00e7\u00e3o:", error); showNotification("Erro ao salvar observa\u00e7\u00e3o.", "error"); }
                     });
                 });
                 toggleDarkModeBtn?.addEventListener('click', toggleDarkMode);
@@ -2597,6 +2849,11 @@
                 passwordChangeForm?.addEventListener('submit', saveNewPassword);
                 passwordConfirmForm?.addEventListener('submit', handleClearDataConfirmation);
                 cancelPasswordConfirmBtn?.addEventListener('click', () => passwordConfirmModal.classList.remove('active'));
+
+                // Listeners da proteção de ecrã
+                const screensaverOverlay = document.getElementById('screensaverOverlay');
+                screensaverOverlay?.addEventListener('click', () => hideScreensaver());
+                ['click', 'mousemove', 'keypress', 'touchstart'].forEach(evt => document.addEventListener(evt, resetIdleTimer, false));
             }
             // #endregion
 
@@ -2617,7 +2874,7 @@
 
                 if (isViewer) {
                     document.querySelectorAll(elementsToDisable).forEach(el => {
-                        if (!el.closest('.report-filters') && !el.closest('.nav-btn') && !el.closest('.sidebar-btn') && !el.closest('header .header-controls')) {
+                        if (!el.closest('.report-filters') && !el.closest('.nav-btn') && !el.closest('.sidebar-btn') && !el.closest('header .header-controls') && !el.closest('.status-tabs')) {
                             el.disabled = true;
                         }
                     });
@@ -2637,8 +2894,6 @@
                 }
             }
             
-            // Gerencia as credenciais dos administradores no armazenamento local.
-            // NOTA: Para um ambiente de produção com dados sensíveis, utilize um sistema de autenticação do Firebase (Email/Senha, Google etc.).
             async function initializeCredentials() {
                 const adminUsers = localStorage.getItem(ADMIN_USERS_KEY);
                 if (!adminUsers) {
@@ -2658,14 +2913,14 @@
                 const confirmNewPassword = document.getElementById('confirmNewPassword').value;
 
                 const loggedInUser = sessionStorage.getItem('currentUser');
-                if (!loggedInUser) return showNotification('Erro: Utilizador não identificado.', 'error');
+                if (!loggedInUser) return showNotification('Erro: Utilizador n\u00e3o identificado.', 'error');
 
                 let adminUsers = JSON.parse(localStorage.getItem(ADMIN_USERS_KEY));
                 const userToUpdate = adminUsers.find(admin => admin.user === loggedInUser);
 
-                if (!userToUpdate || currentPassword !== userToUpdate.pass) return showNotification('A palavra-passe atual está incorreta.', 'error');
+                if (!userToUpdate || currentPassword !== userToUpdate.pass) return showNotification('A palavra-passe atual est\u00e1 incorreta.', 'error');
                 if (newPassword.length < 6) return showNotification('A nova palavra-passe deve ter pelo menos 6 caracteres.', 'error');
-                if (newPassword !== confirmNewPassword) return showNotification('As novas palavras-passe não coincidem.', 'error');
+                if (newPassword !== confirmNewPassword) return showNotification('As novas palavras-passe n\u00e3o coincidem.', 'error');
 
                 userToUpdate.pass = newPassword;
                 localStorage.setItem(ADMIN_USERS_KEY, JSON.stringify(adminUsers));
@@ -2679,7 +2934,7 @@
                     return showNotification('Apenas administradores podem limpar os dados.', 'error');
                 }
                 if(exportData()){
-                    showNotification('Backup de segurança gerado antes da limpeza.', 'info');
+                    showNotification('Backup de seguran\u00e7a gerado antes da limpeza.', 'info');
                     passwordConfirmModal.classList.add('active');
                     adminPasswordConfirmInput.value = '';
                     adminPasswordConfirmInput.focus();
@@ -2692,7 +2947,7 @@
                 const loggedInUser = sessionStorage.getItem('currentUser');
 
                 if (!loggedInUser) {
-                    showNotification('Erro: Utilizador não identificado.', 'error');
+                    showNotification('Erro: Utilizador n\u00e3o identificado.', 'error');
                     passwordConfirmModal.classList.remove('active');
                     return;
                 }
@@ -2759,6 +3014,74 @@
                     cancelConfirmBtn.removeEventListener('click', cancelHandler);
                 };
                 cancelConfirmBtn.addEventListener('click', cancelHandler, { once: true });
+            }
+
+            function toggleFullScreen() {
+                if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+                    const element = document.documentElement;
+                    if (element.requestFullscreen) {
+                        element.requestFullscreen();
+                    } else if (element.mozRequestFullScreen) { // Firefox
+                        element.mozRequestFullScreen();
+                    } else if (element.webkitRequestFullscreen) { // Chrome, Safari and Opera
+                        element.webkitRequestFullscreen();
+                    } else if (element.msRequestFullscreen) { // IE/Edge
+                        element.msRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.mozCancelFullScreen) { // Firefox
+                        document.mozCancelFullScreen();
+                    } else if (document.webkitExitFullscreen) { // Chrome, Safari and Opera
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) { // IE/Edge
+                        document.msExitFullscreen();
+                    }
+                }
+            }
+
+            function updateFullscreenIcon() {
+                const icon = fullscreenBtn.querySelector('i');
+                if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+                    icon.classList.remove('fa-expand');
+                    icon.classList.add('fa-compress');
+                    fullscreenBtn.title = 'Sair da Tela Cheia';
+                } else {
+                    icon.classList.remove('fa-compress');
+                    icon.classList.add('fa-expand');
+                    fullscreenBtn.title = 'Tela Cheia';
+                }
+            }
+
+            // Mostra o pop-up de notificação de baterias finalizadas
+            function showFinalizedNotification(batteries) {
+                const listElement = document.getElementById('finalizedNotificationList');
+                
+                listElement.innerHTML = '<p>As seguintes baterias tiveram seu status alterado para "Finalizado":</p><ul>' +
+                    batteries.map(b => `<li><strong>${b.code}</strong> (${b.batteryModel}) - Cliente: ${b.client}</li>`).join('') +
+                    '</ul>';
+                
+                finalizedNotificationModal.classList.add('active');
+                playBeep();
+            }
+
+            // Gera um som de "beep" para a notificação
+            function playBeep() {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                } catch (e) {
+                    console.error("N\u00e3o foi poss\u00edvel reproduzir o som de notifica\u00e7\u00e3o.", e);
+                }
             }
             // #endregion
 
@@ -2973,10 +3296,6 @@
 
             // #region Renderização e Atualização da UI
             function updateUI() {
-                updateClientFilter();
-                updateSalesmanFilter();
-                updateModelFilter();
-                updateReportTable();
                 updateAnalysisClientFilter();
                 updateAnalysisTable();
                 updateFinalizadoTable();
@@ -2984,6 +3303,7 @@
                 updateWarrantyInstructionsUI();
                 updateRecentRegistrationsLog();
                 updateActivityLog();
+                applyFilters(); // Aplica filtros na tabela principal
             }
             
             function updateStats() {
@@ -3119,7 +3439,7 @@
                 analysisBody.querySelectorAll('.analyze-btn').forEach(btn => btn.addEventListener('click', function() { openSingleAnalysisModal(this.dataset.id); }));
                 analysisBody.querySelectorAll('.analysis-checkbox').forEach(box => box.addEventListener('change', updateBatchAnalyzeButtonState));
                 updateBatchAnalyzeButtonState();
-                updateAnalysisWhatsAppButtonState();
+                
             }
 
             function updateFinalizadoTable() {
@@ -3131,24 +3451,6 @@
                 } else {
                     finalizadoBody.innerHTML = dataFinalizada.map(renderFinalizadoTableRow).join('');
                 }
-            }
-
-            function updateClientFilter() {
-                const uniqueClients = [...new Set(batteryData.map(b => b.client))].sort();
-                const clientOptions = uniqueClients.map(client => `<option value="${client}">${client}</option>`).join('');
-                clientFilter.innerHTML = '<option value="">Todos os Clientes</option>' + clientOptions;
-            }
-
-            function updateSalesmanFilter() {
-                const uniqueSalesmen = [...new Set(batteryData.map(b => b.salesman))].sort();
-                const salesmanOptions = uniqueSalesmen.map(salesman => `<option value="${salesman}">${salesman}</option>`).join('');
-                salesmanFilter.innerHTML = '<option value="">Todos os Vendedores</option>' + salesmanOptions;
-            }
-
-            function updateModelFilter() {
-                const uniqueModels = [...new Set(batteryData.map(b => b.batteryModel))].sort();
-                const modelOptions = uniqueModels.map(model => `<option value="${model}">${model}</option>`).join('');
-                modelFilter.innerHTML = '<option value="">Todos os Modelos</option>' + modelOptions;
             }
 
             function updateAnalysisClientFilter() {
@@ -3337,7 +3639,7 @@
                         showConfirmModal(
                             'Notificar Cliente?',
                             `A análise foi finalizada. Deseja enviar uma notificação para o cliente ${batteriesToNotify[0].client} via WhatsApp agora?`,
-                            () => sendAnalysisResultViaWhatsApp(batteriesToNotify)
+                            () => openWhatsAppModal('analysisResult', batteriesToNotify)
                         );
                     }
                 } catch (error) {
@@ -3349,18 +3651,12 @@
             function handleSelectAll() {
                 document.querySelectorAll('.analysis-checkbox').forEach(cb => cb.checked = selectAllCheckbox.checked);
                 updateBatchAnalyzeButtonState();
-                updateAnalysisWhatsAppButtonState();
             }
 
             function updateBatchAnalyzeButtonState() {
                 const selectedCount = document.querySelectorAll('.analysis-checkbox:checked').length;
                 batchAnalyzeBtn.disabled = selectedCount === 0;
                 batchAnalyzeBtn.innerHTML = selectedCount > 0 ? `<i class="fas fa-layer-group"></i> Analisar ${selectedCount} Selecionados` : '<i class="fas fa-layer-group"></i> Analisar Selecionados';
-            }
-
-            function updateAnalysisWhatsAppButtonState() {
-                const selectedClient = analysisClientFilter.value;
-                whatsappAnalysisBtn.disabled = !selectedClient;
             }
 
             function openClientEditModal(id) {
@@ -3454,35 +3750,29 @@
             // #region Filtros e PDF/Excel
             function applyFilters() {
                 currentFilters = {
-                    client: clientFilter.value,
-                    salesman: salesmanFilter.value,
-                    status: statusFilter.value,
-                    workflowStatus: workflowStatusFilter.value,
-                    finalAction: finalActionFilter.value,
-                    model: modelFilter.value,
+                    searchTerm: mainSearchInput.value.trim().toLowerCase(),
+                    workflowStatus: statusTabFilter.querySelector('.active').dataset.status,
                     startDate: startDateInput.value,
-                    endDate: endDateInput.value,
-                    code: codeFilter.value
+                    endDate: endDateInput.value
                 };
                 updateReportTable();
             }
             
             function clearFilters() {
-                clientFilter.value = ''; salesmanFilter.value = ''; statusFilter.value = ''; workflowStatusFilter.value = ''; finalActionFilter.value = ''; modelFilter.value = '';
-                startDateInput.value = ''; endDateInput.value = ''; codeFilter.value = '';
+                mainSearchInput.value = '';
+                statusTabFilter.querySelector('.active').classList.remove('active');
+                statusTabFilter.querySelector('[data-status=""]').classList.add('active');
+                startDateInput.value = '';
+                endDateInput.value = '';
                 applyFilters();
                 showNotification('Filtros limpos!', 'success');
             }
 
             function getFilteredData() {
+                const searchTerms = currentFilters.searchTerm.split(' ').filter(t => t);
+
                 return batteryData.filter(b => {
-                    const clientMatch = !currentFilters.client || b.client === currentFilters.client;
-                    const salesmanMatch = !currentFilters.salesman || b.salesman === currentFilters.salesman;
-                    const statusMatch = !currentFilters.status || b.warranty_period_status === currentFilters.status;
                     const workflowMatch = !currentFilters.workflowStatus || b.status === currentFilters.workflowStatus;
-                    const finalActionMatch = !currentFilters.finalAction || b.finalAction === currentFilters.finalAction;
-                    const modelMatch = !currentFilters.model || b.batteryModel === currentFilters.model;
-                    const codeMatch = !currentFilters.code || b.code.toLowerCase().includes(currentFilters.code.toLowerCase());
                     
                     let dateMatch = true;
                     if (currentFilters.startDate && currentFilters.endDate) {
@@ -3491,33 +3781,17 @@
                         const endDate = new Date(currentFilters.endDate + 'T23:59:59');
                         dateMatch = batteryDate >= startDate && batteryDate <= endDate;
                     }
-                    return clientMatch && salesmanMatch && statusMatch && workflowMatch && finalActionMatch && modelMatch && codeMatch && dateMatch;
+
+                    if (!workflowMatch || !dateMatch) return false;
+
+                    if (searchTerms.length === 0) return true;
+
+                    const batteryString = `${b.client} ${b.salesman} ${b.code} ${b.batteryModel}`.toLowerCase();
+                    return searchTerms.every(term => batteryString.includes(term));
                 });
             }
             
-            function setDateFilter(start, end) {
-                startDateInput.value = start.toISOString().split('T')[0];
-                endDateInput.value = end.toISOString().split('T')[0];
-                applyFilters();
-            }
-
-            function setDateFilterToday() {
-                const today = new Date();
-                setDateFilter(today, today);
-            }
-
-            function setDateFilterWeek() {
-                const today = new Date();
-                const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
-                setDateFilter(lastWeek, today);
-            }
-
-            function setDateFilterMonth() {
-                const today = new Date();
-                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-                setDateFilter(firstDay, today);
-            }
-
+            
             function drawPdfHeader(doc, clientName, salesmanName) {
                 doc.setFontSize(22).setFont(undefined, 'bold').setTextColor('#0047AB').text('FABRECK', 15, 20);
                 doc.setTextColor(0,0,0);
@@ -3538,12 +3812,15 @@
 
             function drawPdfFooter(doc) {
                 const pageCount = doc.internal.getNumberOfPages();
-                doc.setFontSize(8);
+                const pageWidth = doc.internal.pageSize.getWidth();
                 for (let i = 1; i <= pageCount; i++) {
                     doc.setPage(i);
-                    doc.setLineWidth(0.2).line(15, 285, 195, 285);
-                    doc.text(`Relatório gerado em ${new Date().toLocaleString('pt-BR')}`, 15, 290);
-                    doc.text(`Página ${i} de ${pageCount}`, 195, 290, { align: 'right' });
+                    const pageHeight = doc.internal.pageSize.getHeight();
+                    doc.setDrawColor(224, 224, 224);
+                    doc.line(15, pageHeight - 15, pageWidth - 15, pageHeight - 15);
+                    doc.setFontSize(8).setTextColor(128, 128, 128);
+                    doc.text(`Relatório gerado pelo Sistema de Garantia Fabreck © ${new Date().getFullYear()}`, pageWidth / 2, pageHeight - 10, { align: 'center' });
+                    doc.text(`Página ${i} de ${pageCount}`, pageWidth - 15, pageHeight - 10, { align: 'right' });
                 }
             }
 
@@ -3553,12 +3830,12 @@
 
                 doc.setFontSize(12).setFont(undefined, 'bold').setFillColor('#0047AB');
                 doc.rect(15, currentY - 5, 180, 7, 'F');
-                doc.setTextColor('#FFFFFF').text('Resumo para Separação', 20, currentY);
+                doc.setTextColor('#FFFFFF').text('Resumo para Separação (Baterias Finalizadas)', 20, currentY);
                 doc.setTextColor(0,0,0);
                 currentY += 10;
 
                 if (finalizedData.length === 0) {
-                    doc.setFontSize(10).setFont(undefined, 'normal').text('Nenhuma bateria finalizada para este cliente no período.', 15, currentY);
+                    doc.setFontSize(10).setFont(undefined, 'normal').text('Nenhuma bateria finalizada para este cliente no período do filtro.', 15, currentY);
                     currentY += 10;
                 } else {
                     const summary = finalizedData.reduce((acc, battery) => {
@@ -3593,9 +3870,9 @@
                 }
                 
                 if (currentY > 250) { doc.addPage(); currentY = 20; }
-                doc.setFontSize(12).setFont(undefined, 'bold').setFillColor('#0047AB');
+                doc.setFontSize(12).setFont(undefined, 'bold').setFillColor('#16a085');
                 doc.rect(15, currentY - 5, 180, 7, 'F');
-                doc.setTextColor('#FFFFFF').text('Detalhamento de Todas as Baterias Registadas', 20, currentY);
+                doc.setTextColor('#FFFFFF').text('Detalhamento de Todas as Baterias', 20, currentY);
                 doc.setTextColor(0,0,0);
                 currentY += 10;
 
@@ -3603,7 +3880,16 @@
                     startY: currentY,
                     head: [['Código', 'Modelo', 'Data Envio', 'Ação Final', 'Parecer Técnico']],
                     body: clientBatteries.map(b => [b.code || '-', b.batteryModel || '-', b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : '-', b.finalAction || (b.status === 'in_analysis' ? 'Em Análise' : '-'), b.recommendation || '-']),
-                    theme: 'striped', headStyles: { fillColor: [22, 49, 72] }, bodyStyles: { fontSize: 8 }, columnStyles: { 4: { cellWidth: 60 } }
+                    theme: 'striped', 
+                    headStyles: { 
+                        fillColor: [22, 49, 72] 
+                    }, 
+                    bodyStyles: { 
+                        fontSize: 8 
+                    }, 
+                    columnStyles: { 
+                        4: { cellWidth: 60 } 
+                    }
                 });
                 currentY = doc.lastAutoTable.finalY + 15;
 
@@ -3638,12 +3924,29 @@
                     return doc;
                 } catch (error) {
                     showNotification(`Erro ao gerar PDF: ${error.message}`, 'error');
+                    console.error("Erro PDF:", error);
                     return null;
                 }
             }
             
-            function previewPDF() { generatePDF(getFilteredData())?.output('dataurlnewwindow'); }
-            function downloadPDF() { generatePDF(getFilteredData())?.save(`relatorio_consolidado_${new Date().toISOString().slice(0,10)}.pdf`); }
+            function previewPDF() { 
+                const data = getFilteredData();
+                if (data.length > 0) {
+                    const doc = generatePDF(data);
+                    if (doc) doc.output('dataurlnewwindow');
+                } else {
+                    showNotification('Não há dados no filtro para gerar o PDF.', 'info');
+                }
+            }
+            function downloadPDF() { 
+                const data = getFilteredData();
+                if (data.length > 0) {
+                    const doc = generatePDF(data);
+                    if (doc) doc.save(`relatorio_consolidado_${new Date().toISOString().slice(0,10)}.pdf`);
+                } else {
+                    showNotification('Não há dados no filtro para gerar o PDF.', 'info');
+                }
+            }
             
             function generateBatchPDFs() {
                 try {
@@ -3821,35 +4124,21 @@
             function openWhatsAppModal(type, data = null) {
                 let message = '';
                 let targetPhone = '';
+                
+                whatsappOptionsMenuModal.classList.remove('active');
 
-                if (type === 'analysis') {
-                    const selectedClient = analysisClientFilter.value;
-                    if (!selectedClient) return showNotification('Selecione um cliente para notificar.', 'error');
-                    const batteriesInAnalysis = batteryData.filter(b => b.client === selectedClient && b.status === 'in_analysis');
-                    if (batteriesInAnalysis.length === 0) return showNotification('Este cliente não tem baterias em análise.', 'info');
-                    
-                    targetPhone = batteriesInAnalysis[0]?.clientPhone;
-                    message = generateWhatsAppAnalysisMessage(batteriesInAnalysis);
-
-                } else if (type === 'analysisResult') {
+                if (type === 'analysisResult') {
                     targetPhone = data[0]?.clientPhone;
                     message = generateWhatsAppAnalysisResultMessage(data);
-
                 } else if (type === 'custom') {
                     message = data.message;
+                    if(data.phone) targetPhone = data.phone;
+                } 
 
-                } else { // 'filtered'
-                    const filteredData = getFilteredData();
-                    if (filteredData.length === 0) return showNotification('Não há dados no filtro atual para enviar.', 'error');
-                    
-                    const uniqueClients = [...new Set(filteredData.map(b => b.client))];
-                    if (uniqueClients.length === 1 && filteredData[0].clientPhone) {
-                        targetPhone = filteredData[0].clientPhone;
-                    }
-                    message = generateWhatsAppClientSectionBody(filteredData);
+                if (!message) {
+                    showNotification('Não foi possível gerar a mensagem.', 'error');
+                    return;
                 }
-
-                if (!message) return;
 
                 whatsappMessagePreview.textContent = message;
                 
@@ -3861,32 +4150,162 @@
                 whatsappPreviewModal.classList.add('active');
             }
 
-            function generateWhatsAppAnalysisMessage(batteries) {
-                const clientName = batteries[0]?.client || 'Cliente';
-                const salesmanName = batteries[0]?.salesman || 'nosso vendedor';
-                const submissionDate = new Date(batteries[0]?.submissionDate).toLocaleDateString('pt-BR');
+            function generateDetailedFilteredReport(){
+                const data = getFilteredData();
+                if(data.length === 0) return showNotification('Nenhum dado no filtro para gerar o relatório.', 'error');
 
-                let message = `*INFORME DE GARANTIA FABRECK BATERIAS*\n\n`;
-                message += `Prezado(a) cliente *${clientName}*,\n\n`;
-                message += `Confirmamos o recebimento dos seus produtos para análise de garantia, intermediado pelo vendedor *${salesmanName}*.\n\n`;
-                message += `*Data de Envio para Análise:* ${submissionDate}\n\n`;
-                message += `*Produtos Recebidos:*\n`;
+                let message = `*Relatório Detalhado de Garantia*\n`;
+                message += `*Data:* ${new Date().toLocaleDateString('pt-BR')}\n`;
+                message += `====================================\n\n`;
 
-                const groupedByModel = batteries.reduce((acc, battery) => {
-                    const model = battery.batteryModel || 'N/A';
-                    if (!acc[model]) acc[model] = [];
-                    acc[model].push(battery.code);
+                const groupedBySalesman = data.reduce((acc, battery) => {
+                    (acc[battery.salesman] = acc[battery.salesman] || []).push(battery);
                     return acc;
                 }, {});
 
-                Object.keys(groupedByModel).sort().forEach(model => {
-                    const codes = groupedByModel[model];
-                    message += ` • *${model} (${codes.length} unid.):* ${codes.join(', ')}\n`;
+                for(const salesman in groupedBySalesman){
+                    message += `*VENDEDOR:* ${salesman}\n`;
+                    message += `------------------------------------\n`;
+                    const clientData = groupedBySalesman[salesman];
+                    const groupedByClient = clientData.reduce((acc, battery) => {
+                        (acc[battery.client] = acc[battery.client] || []).push(battery);
+                        return acc;
+                    }, {});
+
+                    for(const client in groupedByClient){
+                        message += `  *CLIENTE:* ${client}\n`;
+                        const batteryData = groupedByClient[client];
+                        const groupedByModel = batteryData.reduce((acc, battery) => {
+                           (acc[battery.batteryModel] = acc[battery.batteryModel] || []).push(battery.code);
+                           return acc;
+                        }, {});
+
+                        for(const model in groupedByModel){
+                            const codes = groupedByModel[model];
+                            message += `    *- Modelo:* ${model} (${codes.length} unid.)\n`;
+                            message += `      *Séries:* ${codes.join(', ')}\n`;
+                        }
+                        message += `\n`;
+                    }
+                }
+                openWhatsAppModal('custom', { message });
+            }
+
+            function generateTodaySummaryReport(){
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+
+                const todaysEntries = batteryData.filter(b => {
+                    const entryDate = new Date(b.timestamp);
+                    return entryDate >= today;
                 });
 
-                message += `\nO prazo para conclusão da análise é de *até 10 dias úteis* a partir da data de envio. Entraremos em contato com o parecer final.\n\n`;
-                message += `Atenciosamente,\n*Equipe de Garantia FABRECK BATERIAS*`;
-                return message;
+                if (todaysEntries.length === 0) {
+                    return showNotification('Nenhum registo de garantia feito hoje.', 'info');
+                }
+
+                let message = `*Resumo de Registos de Garantia - ${new Date().toLocaleDateString('pt-BR')}*\n\n`;
+
+                const groupedBySalesman = todaysEntries.reduce((acc, battery) => {
+                    (acc[battery.salesman] = acc[battery.salesman] || []).push(battery);
+                    return acc;
+                }, {});
+
+                let totalToday = 0;
+                Object.keys(groupedBySalesman).sort().forEach(salesman => {
+                    const entries = groupedBySalesman[salesman];
+                    const count = entries.length;
+                    totalToday += count;
+                    message += `*Vendedor: ${salesman}*\n`;
+                    message += `Total de Baterias Registadas: ${count}\n`;
+                    
+                    const clients = [...new Set(entries.map(e => e.client))].join(', ');
+                    message += `Clientes Atendidos: ${clients}\n\n`;
+                });
+
+                message += `*Total Geral do Dia: ${totalToday} baterias*\n\n`;
+                message += `_Relatório gerado pelo Sistema de Garantia Fabreck._`;
+                
+                openWhatsAppModal('custom', { message: message });
+            }
+
+            function generatePendingAnalysisReport(){
+                const pendingData = batteryData.filter(b => b.status === 'in_analysis');
+                if (pendingData.length === 0) {
+                    return showNotification('Nenhuma bateria pendente de análise.', 'info');
+                }
+
+                const groupedByClient = pendingData.reduce((acc, battery) => {
+                    (acc[battery.client] = acc[battery.client] || []).push(battery);
+                    return acc;
+                }, {});
+
+                // Tenta filtrar pelo cliente atualmente selecionado na pesquisa, se houver apenas um
+                const filteredData = getFilteredData();
+                const uniqueClientsInFilter = [...new Set(filteredData.map(b => b.client))];
+
+                if(uniqueClientsInFilter.length === 1 && groupedByClient[uniqueClientsInFilter[0]]){
+                    const clientName = uniqueClientsInFilter[0];
+                    // Envia notificação para um cliente específico
+                    const clientBatteries = groupedByClient[clientName];
+                    const targetPhone = clientBatteries[0]?.clientPhone;
+                    let message = `*INFORME DE GARANTIA FABRECK BATERIAS*\n\n`;
+                    message += `Prezado(a) cliente *${clientName}*,\n\n`;
+                    message += `Informamos que os seguintes produtos ainda estão em processo de análise de garantia:\n\n`;
+                    clientBatteries.forEach(b => {
+                        message += ` • *${b.batteryModel}* (Série: ${b.code})\n`;
+                    });
+                    message += `\nAssim que a análise for concluída, entraremos em contato com o parecer final.\n\n`;
+                    message += `Atenciosamente,\n*Equipe de Garantia FABRECK BATERIAS*`;
+
+                    openWhatsAppModal('custom', { message, phone: targetPhone });
+
+                } else {
+                    // Gera um resumo geral de pendentes
+                    let message = `*Resumo de Baterias Pendentes de Análise*\n`;
+                    message += `*Data:* ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+                    for(const client in groupedByClient){
+                        const batteries = groupedByClient[client];
+                        message += `*CLIENTE: ${client}* (${batteries.length} unid.)\n`;
+                        batteries.forEach(b => {
+                             message += ` • ${b.batteryModel} (${b.code})\n`;
+                        });
+                        message += '\n';
+                    }
+                    openWhatsAppModal('custom', { message });
+                }
+            }
+
+            function generateGeneralSummaryReport(){
+                 const finalizedData = batteryData.filter(b => b.status === 'finalized');
+                 if(finalizedData.length === 0) return showNotification('Nenhuma garantia finalizada para gerar resumo.', 'info');
+
+                let message = `*Resumo Geral de Garantias Finalizadas*\n`;
+                message += `*Data:* ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+
+                const groupedBySalesman = finalizedData.reduce((acc, battery) => {
+                    (acc[battery.salesman] = acc[battery.salesman] || []).push(battery);
+                    return acc;
+                }, {});
+
+                 for(const salesman in groupedBySalesman){
+                    message += `*VENDEDOR:* ${salesman}\n`;
+                    const clientData = groupedBySalesman[salesman];
+                    const summary = clientData.reduce((acc, b) => {
+                        let category = 'Reprovadas';
+                        if (b.finalAction.includes('APROVADA')) category = 'Aprovadas';
+                        else if (b.finalAction.includes('CORTESIA')) category = 'Cortesias';
+                        
+                        acc[category] = (acc[category] || 0) + 1;
+                        return acc;
+                    }, {Aprovadas: 0, Cortesias: 0, Reprovadas: 0});
+                    
+                    message += `  - Aprovadas: ${summary.Aprovadas}\n`;
+                    message += `  - Cortesias: ${summary.Cortesias}\n`;
+                    message += `  - Reprovadas: ${summary.Reprovadas}\n\n`;
+                }
+
+                openWhatsAppModal('custom', { message });
             }
 
             function generateWhatsAppAnalysisResultMessage(batteries) {
@@ -3913,75 +4332,6 @@
                 return message;
             }
             
-            function sendAnalysisResultViaWhatsApp(batteries) {
-                openWhatsAppModal('analysisResult', batteries);
-            }
-
-            function generateWhatsAppClientSectionBody(data) {
-                const clientName = data[0]?.client || 'N/A';
-                const salesmanName = data[0]?.salesman || 'N/A';
-                let message = `*Cliente:* ${clientName}\n`;
-                message += `*Vendedor:* ${salesmanName}\n\n`;
-
-                const finalizedData = data.filter(b => b.status === 'finalized');
-                message += `*STATUS DE BATERIAS FINALIZADAS*\n`;
-                message += `--------------------------------------\n`;
-
-                if (finalizedData.length === 0) {
-                    message += "Nenhuma bateria com análise concluída.\n\n";
-                } else {
-                    const summary = {};
-                    finalizedData.forEach(battery => {
-                        let category = 'Reprovadas';
-                        if (battery.finalAction.includes('APROVADA')) category = 'Aprovadas (Troca de Fábrica)';
-                        else if (battery.finalAction.includes('CORTESIA')) category = 'Trocadas (Garantia Cortesia)';
-                        else if (battery.finalAction.includes('FORA DO PRAZO')) category = 'Reprovadas (Fora do Prazo)';
-                        else if (battery.recommendation?.toUpperCase().includes('RECARREGAR')) category = 'Para Recarregar';
-                        
-                        if (!summary[category]) summary[category] = [];
-                        summary[category].push(battery);
-                    });
-
-
-                    const order = ['Aprovadas (Troca de Fábrica)', 'Trocadas (Garantia Cortesia)', 'Para Recarregar', 'Reprovadas', 'Reprovadas (Fora do Prazo)'];
-                    let hasContent = false;
-                    
-                    order.forEach(category => {
-                        if (summary[category]) {
-                            hasContent = true;
-                            const batteriesInCategory = summary[category];
-                            message += `\n*${category.toUpperCase()} - TOTAL: ${batteriesInCategory.length}*\n`;
-                            
-                            batteriesInCategory.forEach(b => {
-                               const analysisDate = b.technicalOpinionDate ? new Date(b.technicalOpinionDate).toLocaleDateString('pt-BR') : 'N/A';
-                               message += ` • *${b.batteryModel} (${b.code})* - Análise: ${analysisDate}\n`;
-                            });
-                        }
-                    });
-
-                    if (!hasContent) {
-                        message += "Nenhuma bateria com parecer finalizado.\n";
-                    }
-                    message += `\n`;
-                }
-
-                const inAnalysisData = data.filter(b => b.status === 'in_analysis');
-                message += `*BATERIAS PENDENTES DE ANÁLISE*\n`;
-                message += `--------------------------------------\n`;
-
-                if (inAnalysisData.length > 0) {
-                    message += `Total de ${inAnalysisData.length} bateria(s) aguardando parecer:\n`;
-                    inAnalysisData.forEach(b => {
-                        const submissionDate = b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : 'N/A';
-                        message += ` • *${b.batteryModel} (${b.code})* - Enviada em: ${submissionDate}\n`;
-                    });
-                    message += `\n`;
-                } else {
-                    message += "Nenhuma bateria pendente de análise no momento.\n\n";
-                }
-                
-                return message;
-            }
             // #endregion
 
             // Iniciar a aplicação
