@@ -16,7 +16,7 @@ header{background:linear-gradient(135deg,var(--fabreck-blue),var(--fabreck-dark)
 <div id="testCredentialsInfo" style="margin-top: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 12px; background: #f0f0f0; text-align: left;">
     <p style="font-weight: bold; color: var(--fabreck-red);">Credenciais Padrão (Ambiente de Teste):</p>
     <p><strong>JENILTON:</strong> 32582190</p>
-    <p><strong>ALINE:</strong> 123</p>
+    <p><strong>ALINE BURQUE:</strong> 123</p>
     <p><strong>REGINALDO:</strong> 123456</p>
     <p style="margin-top: 5px; color: var(--fabreck-gray);">*As credenciais são locais e só funcionam se não foram alteradas nos Ajustes.</p>
 </div>
@@ -209,7 +209,7 @@ header{background:linear-gradient(135deg,var(--fabreck-blue),var(--fabreck-dark)
         let unsubscribeFromFirestore=null;
         let unsubscribeGlobalStatus = null;
         const batteryModelMap={'A':'FA6AD','B':'FA4D','C':'FA5AD','D':'FA5D','E':'FA5,5D','F':'FA6D','G':'FA7E','H':'FA8AE','I':'FA8E','J':'FA7AE','K':'FA7D'};
-        const userFullNameMap={'JENILTON':'Jenilton Cruz','ALINE':'Aline','REGINALDO':'Reginaldo','VIEWER':'Visitante','VIDEO_ANALYSIS':'Análise por Vídeo'};
+        const userFullNameMap={'JENILTON':'Jenilton Cruz','ALINE BURQUE':'Aline Burque','REGINALDO':'Reginaldo','VIEWER':'Visitante','VIDEO_ANALYSIS':'Análise por Vídeo'};
         const currentClientDisplay=document.getElementById('currentClient');
         const currentSalesmanDisplay=document.getElementById('currentSalesman');
         const receiptLockMessage=document.getElementById('receiptLockMessage');
@@ -228,11 +228,15 @@ header{background:linear-gradient(135deg,var(--fabreck-blue),var(--fabreck-dark)
         function clearCode(){serialCodeInput.value='';codePreview.textContent='';warrantyDebugInfo.style.display='none';serialCodeInput.focus()}
         
         async function initializeCredentials(){
-            const adminUsers=localStorage.getItem(ADMIN_USERS_KEY);
-            if(!adminUsers){
-                const initialAdmins=[{user:'JENILTON',pass:'32582190'},{user:'REGINALDO',pass:'123456'},{user:'ALINE',pass:'123'}];
-                localStorage.setItem(ADMIN_USERS_KEY,JSON.stringify(initialAdmins));
-                console.log('Credenciais de administrador locais definidas.')
+            const initialAdmins=[{user:'JENILTON',pass:'32582190'},{user:'REGINALDO',pass:'123456'},{user:'ALINE BURQUE',pass:'123'}];
+            let currentAdmins=JSON.parse(localStorage.getItem(ADMIN_USERS_KEY)||'[]');
+            let updated=!1;
+            initialAdmins.forEach(defaultUser=>{if(!currentAdmins.some(admin=>admin.user===defaultUser.user)){currentAdmins.push(defaultUser);updated=!0}});
+            if(updated){
+                localStorage.setItem(ADMIN_USERS_KEY,JSON.stringify(currentAdmins));
+                console.log('Lista de administradores locais atualizada com utilizadores padrão em falta.')
+            } else {
+                console.log('Credenciais de administrador locais já existem e estão completas.')
             }
         }
         // FIM DAS FUNÇÕES AUXILIARES MOVIDAS ---
@@ -829,3 +833,5 @@ header{background:linear-gradient(135deg,var(--fabreck-blue),var(--fabreck-dark)
         init();
     });
 </script></body></html>
+
+
