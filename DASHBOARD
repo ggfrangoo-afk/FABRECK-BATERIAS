@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Analise de Garantias por Lotes</title>
+    <!-- Firebase SDKs for standalone access -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+        window.firebase = { initializeApp, getFirestore, collection, query, where, onSnapshot, getAuth, signInAnonymously, onAuthStateChanged };
+    </script>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        // Configuração do modo escuro com base no localStorage
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark')
+        } else {
+          document.documentElement.classList.remove('dark')
+        }
+        // Configuração customizada do Tailwind para o modo escuro
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            transition: background-color 0.3s ease;
+        }
+        /* Estilos para o modo escuro */
+        .dark body {
+            background-color: #111827;
+        }
+        .kpi-card, .chart-card, .table-card {
+            transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+        }
+        .dark .kpi-card:hover {
+             box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.2);
+        }
+        /* Animação do Spinner */
+        .spinner {
+            border-top-color: #3b82f6; /* Tailwind blue-500 */
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        /* Estilos do Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 240px;
+            background-color: #1f2937;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 10;
+            bottom: 140%;
+            left: 50%;
+            margin-left: -120px; /* Metade da largura */
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.4;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Estilos de Impressão */
+        #print-container {
+            display: none;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #print-container, #print-container * {
+                visibility: visible;
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            #print-container {
+                display: block;
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                font-family: 'Inter', sans-serif;
+            }
+            @page {
+                size: A4;
+                margin: 2cm;
+            }
+            .print-page-break {
+                page-break-after: always;
+            }
+            h1, h2, h3, h4, h5, h6 { color: black !important; }
+            div, p, span, th, td {
+                color: black !important;
+                background-color: white !important;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 1rem;
+            }
+            th, td {
+                border: 1px solid #ccc;
+                padding: 8px;
+                text-align: left;
+            }
+            thead {
+                background-color: #f2f2f2 !important;
+            }
+            img.chart-image {
+                max-width: 100%;
+                border: 1px solid #eee;
+                padding: 5px;
+                margin-top: 1rem;
+                border-radius: 8px;
+            }
+        }
+    </style>
+</head>
+<body class="dark:bg-gray-900 text-gray-800 dark:text-gray-200 antialiased">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- Cabeçalho com Título e Toggle de Modo Escuro -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">Dashboard Analise de Garantias por Lotes</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Dados em tempo real do Firestore.</p>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="print-btn" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors" title="Imprimir Relatório">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                </button>
+                <button id="theme-toggle" class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors">
+                    <!-- Ícone de Sol -->
+                    <svg id="theme-toggle-light-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.707.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11h-1a1 1 0 110-2h1a1 1 0 110 2zm-2 4a1 1 0 011.414 0l.707.707a1 1 0 11-1.414 1.414l-.707-.707a1 1 0 010-1.414zM4 11H3a1 1 0 110-2h1a1 1 0 110 2zm1.464 4.95a1 1 0 01-1.414 0l-.707-.707a1 1 0 111.414-1.414l.707.707a1 1 0 010 1.414zM8 4a1 1 0 01-1.414 0L5.879 3.293a1 1 0 111.414-1.414L8 2.586z"></path></svg>
+                    <!-- Ícone de Lua -->
+                    <svg id="theme-toggle-dark-icon" class="w-6 h-6 hidden" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Logo Display -->
+        <div id="logo-display" class="text-center my-8">
+            <h2 class="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-5xl">
+                <span class="block">FABRECK</span>
+                <span class="block text-blue-600 dark:text-blue-400 text-3xl sm:text-4xl">BATERIAS</span>
+            </h2>
+        </div>
+
+        <!-- Seção de Loading/Error -->
+        <div id="upload-section" class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 mb-10">
+             <div id="processing-box" class="flex flex-col items-center justify-center h-40">
+                <div class="spinner w-12 h-12 rounded-full border-4 border-gray-300 dark:border-gray-600"></div>
+                <p class="mt-4 text-gray-600 dark:text-gray-300">A ligar ao Firestore e carregar dados...</p>
+                <p id="file-name" class="text-center text-sm text-gray-500 dark:text-gray-400 mt-2">Aguarde a sincronização das garantias finalizadas.</p>
+            </div>
+        </div>
+        
+        <!-- Mensagem de Erro -->
+        <div id="error-message" class="hidden max-w-3xl mx-auto bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-500/50 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg relative my-8" role="alert">
+            <strong class="font-bold">Ocorreu um Erro!</strong>
+            <span class="block sm:inline ml-2" id="error-text"></span>
+        </div>
+
+        <!-- Seção de Resultados (inicialmente oculta) -->
+        <div id="dashboard-results" class="hidden">
+            <!-- Controles Globais: Seletor de View e Seletor de Lote -->
+            <div class="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-8 mb-8">
+                <!-- Seletor de Visualização -->
+                <div class="flex flex-wrap justify-center gap-1 bg-gray-200 dark:bg-gray-700 p-1 rounded-lg">
+                    <button id="view-lote-btn" class="px-4 py-2 text-sm font-semibold rounded-md bg-white dark:bg-gray-900 shadow">Por Lote</button>
+                    <button id="view-analise-btn" class="px-4 py-2 text-sm font-semibold rounded-md">Por Análise</button>
+                    <button id="view-lote-analise-btn" class="px-4 py-2 text-sm font-semibold rounded-md">Lote x Análise</button>
+                    <button id="view-temporal-btn" class="px-4 py-2 text-sm font-semibold rounded-md">Tendências</button>
+                </div>
+                <!-- Seletor de Lote Global -->
+                <div id="global-lote-selector-container" class="w-full md:w-auto md:max-w-xs">
+                    <select id="lote-selector" class="w-full px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm"></select>
+                </div>
+            </div>
+
+
+            <!-- VIEW: Análise por Lote -->
+            <div id="lote-view">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Total de Baterias
+                            <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">Número total de baterias encontradas no arquivo carregado.</span>
+                            </div>
+                        </div><p id="lote-total-items" class="text-2xl font-bold text-gray-900 dark:text-white">0</p></div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Lotes Únicos
+                           <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">Contagem de lotes diferentes, com base nos 4 primeiros dígitos do 'Código SERIE'.</span>
+                            </div>
+                        </div><p id="lote-unique-lotes" class="text-2xl font-bold text-gray-900 dark:text-white">0</p></div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Média por Lote
+                            <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">Total de baterias dividido pela quantidade de lotes. Indica o tamanho médio de cada lote.</span>
+                            </div>
+                        </div><p id="lote-average-items" class="text-2xl font-bold text-gray-900 dark:text-white">0</p></div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Lote com Maior Volume
+                            <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">O código do lote que possui a maior quantidade de baterias no arquivo.</span>
+                            </div>
+                        </div><p id="lote-top-lote" class="text-2xl font-bold text-gray-900 dark:text-white">-</p></div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                    <div class="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 chart-card">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Distribuição por Lote</h3>
+                            <div class="flex gap-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg chart-type-toggle">
+                                <button data-view="lote" data-type="bar" class="px-3 py-1 text-sm rounded-md bg-white dark:bg-gray-900 shadow">Barras</button>
+                                <button data-view="lote" data-type="doughnut" class="px-3 py-1 text-sm rounded-md">Pizza</button>
+                            </div>
+                        </div>
+                        <div class="h-96"><canvas id="lote-chart"></canvas></div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 table-card">
+                        <h3 class="text-lg font-semibold mb-4">Top 10 Lotes</h3>
+                        <ul id="lote-top-list" class="space-y-3"></ul>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 table-card">
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+                        <h3 class="text-lg font-semibold">Detalhes de Todos os Lotes</h3>
+                        <div class="w-full sm:w-auto flex gap-2">
+                            <input type="text" id="lote-table-search" placeholder="Filtrar por lote..." class="w-full sm:w-48 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <button class="export-csv-btn px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg" data-view="lote">Exportar CSV</button>
+                        </div>
+                    </div>
+                    <div class="overflow-y-auto max-h-96">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"><thead class="bg-gray-50 dark:bg-gray-700 sticky top-0"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Lote</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantidade</th></tr></thead><tbody id="lote-summary-table" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody></table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: Análise por Ação Final -->
+            <div id="analise-view" class="hidden">
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Total de Baterias
+                           <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">Número total de baterias encontradas no arquivo carregado.</span>
+                            </div>
+                        </div><p id="analise-total-items" class="text-2xl font-bold text-gray-900 dark:text-white">0</p></div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                         <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Ações Únicas
+                            <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">Contagem de quantos tipos de 'Ação Final' diferentes (ex: Procedente) existem no arquivo.</span>
+                            </div>
+                        </div><p id="analise-unique-acoes" class="text-2xl font-bold text-gray-900 dark:text-white">0</p></div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Média por Ação
+                             <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">Total de baterias dividido pela quantidade de ações. Mostra a média de baterias por resultado.</span>
+                            </div>
+                        </div><p id="analise-average-items" class="text-2xl font-bold text-gray-900 dark:text-white">0</p></div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                         <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Ação Mais Frequente
+                            <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">O resultado de análise ('Ação Final') que mais se repetiu em todo o arquivo.</span>
+                            </div>
+                        </div><p id="analise-top-acao" class="text-2xl font-bold text-gray-900 dark:text-white">-</p></div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+                    <div class="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 chart-card">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-semibold">Distribuição por Ação Final</h3>
+                            <div class="flex gap-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg chart-type-toggle">
+                                <button data-view="analise" data-type="bar" class="px-3 py-1 text-sm rounded-md bg-white dark:bg-gray-900 shadow">Barras</button>
+                                <button data-view="analise" data-type="doughnut" class="px-3 py-1 text-sm rounded-md">Pizza</button>
+                            </div>
+                        </div>
+                        <div class="h-96"><canvas id="analise-chart"></canvas></div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 table-card">
+                        <h3 class="text-lg font-semibold mb-4">Top 10 Ações Finais</h3>
+                        <ul id="analise-top-list" class="space-y-3"></ul>
+                    </div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 table-card">
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+                        <h3 class="text-lg font-semibold">Detalhes de Todas as Ações</h3>
+                        <div class="w-full sm:w-auto flex gap-2">
+                            <input type="text" id="analise-table-search" placeholder="Filtrar por ação..." class="w-full sm:w-48 px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <button class="export-csv-btn px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg" data-view="analise">Exportar CSV</button>
+                        </div>
+                    </div>
+                    <div class="overflow-y-auto max-h-96">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700"><thead class="bg-gray-50 dark:bg-gray-700 sticky top-0"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ação Final</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantidade</th></tr></thead><tbody id="analise-summary-table" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody></table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- VIEW: Análise Temporal -->
+            <div id="temporal-view" class="hidden">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Total de Procedentes
+                            <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">Número total de garantias com status 'PROCEDENTE (ENVIAR NOVA)' no arquivo.</span>
+                            </div>
+                        </div><p id="temporal-total-procedentes" class="text-2xl font-bold text-gray-900 dark:text-white">0</p></div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Mês com Pico de Problemas
+                           <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">O mês/ano de fabricação que teve o maior número de garantias procedentes.</span>
+                            </div>
+                        </div><p id="temporal-pico-mes" class="text-2xl font-bold text-gray-900 dark:text-white">-</p></div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Média Mensal de Procedentes
+                            <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">A média de garantias procedentes por mês, considerando os meses com ocorrências.</span>
+                            </div>
+                        </div><p id="temporal-media-mensal" class="text-2xl font-bold text-gray-900 dark:text-white">0.0</p></div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 chart-card">
+                    <h3 class="text-lg font-semibold mb-4">Evolução de Garantias Procedentes (por Data de Fabricação)</h3>
+                    <div class="h-96"><canvas id="temporal-chart"></canvas></div>
+                </div>
+            </div>
+
+            <!-- VIEW: Análise Lote x Análise -->
+            <div id="lote-analise-view" class="hidden">
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Total no Lote
+                            <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">Número total de baterias pertencentes ao lote que você selecionou.</span>
+                            </div>
+                        </div><p id="la-total-items" class="text-2xl font-bold text-gray-900 dark:text-white">0</p></div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Ações no Lote
+                            <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">Quantos tipos de 'Ação Final' diferentes ocorreram dentro do lote selecionado.</span>
+                            </div>
+                        </div><p id="la-unique-acoes" class="text-2xl font-bold text-gray-900 dark:text-white">0</p></div>
+                    <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">Ação Mais Comum
+                           <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">A 'Ação Final' mais frequente apenas para as baterias do lote selecionado.</span>
+                            </div>
+                        </div><p id="la-top-acao" class="text-2xl font-bold text-gray-900 dark:text-white">-</p></div>
+                     <div class="bg-white dark:bg-gray-800 p-5 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 kpi-card">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">% Procedente no Lote
+                            <div class="tooltip ml-1.5">
+                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.546-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <span class="tooltiptext">Porcentagem de baterias 'Procedentes' neste lote. Um indicador chave de qualidade.</span>
+                            </div>
+                        </div><p id="la-procedente-perc" class="text-2xl font-bold text-red-500">0%</p></div>
+                </div>
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-md border border-gray-200 dark:border-gray-700 table-card">
+                     <div class="flex justify-between items-center mb-4">
+                        <h3 id="la-chart-title" class="text-lg font-semibold">Distribuição de Análises no Lote</h3>
+                        <div class="flex gap-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg chart-type-toggle">
+                            <button data-view="lote-analise" data-type="bar" class="px-3 py-1 text-sm rounded-md bg-white dark:bg-gray-900 shadow">Barras</button>
+                            <button data-view="lote-analise" data-type="doughnut" class="px-3 py-1 text-sm rounded-md">Pizza</button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 h-96"><canvas id="lote-analise-chart"></canvas></div>
+                        <div class="overflow-y-auto max-h-96">
+                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                <thead class="bg-gray-50 dark:bg-gray-700 sticky top-0"><tr><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ação Final</th><th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Qtd</th></tr></thead>
+                                <tbody id="lote-analise-summary-table" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center mt-10">
+            <p class="text-xs text-gray-500 dark:text-gray-400">Criado por Jenilton Cruz - PCP Fabreck</p>
+        </footer>
+
+    </div>
+
+    <!-- Container para Impressão -->
+    <div id="print-container"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const { initializeApp, getFirestore, collection, query, where, onSnapshot, getAuth, signInAnonymously, onAuthStateChanged } = window.firebase;
+            
+            // --- Variáveis de estado ---
+            let charts = { lote: null, analise: null, 'lote-analise': null, temporal: null };
+            let currentView = 'lote';
+            let currentChartType = { lote: 'bar', analise: 'bar', 'lote-analise': 'bar' };
+            let fullDataset = [];
+
+            // --- Credenciais e Configuração Firebase (Deve ser igual ao index.html) ---
+            const firebaseConfig = {
+                apiKey: "AIzaSyAI2t_u1T2f737QkyJ6940Hup-ZY-eYd9E",
+                authDomain: "studio-8037364926-f4af4.firebaseapp.com",
+                projectId: "studio-8037364926-f4af4",
+                storageBucket: "studio-8037364926-f4af4.appspot.com",
+                messagingSenderId: "875276153303",
+                appId: "1:875276153303:web:8d3c060072f2523b11db92"
+            };
+            
+            let db, auth;
+            let processedLoteData = [], processedAnaliseData = [], processedLoteAnaliseData = new Map(), processedTemporalData = [];
+
+            // --- Seletores de DOM ---
+            const doc = (id) => document.getElementById(id);
+            const uploadSection = doc('upload-section');
+            const processingBox = doc('processing-box');
+            const errorMessageDiv = doc('error-message');
+            const errorTextSpan = doc('error-text');
+            const dashboardResults = doc('dashboard-results');
+            const loteSelector = doc('lote-selector');
+            const printBtn = doc('print-btn');
+
+            const views = {
+                lote: doc('lote-view'),
+                analise: doc('analise-view'),
+                temporal: doc('temporal-view'),
+                'lote-analise': doc('lote-analise-view')
+            };
+            const viewButtons = {
+                lote: doc('view-lote-btn'),
+                analise: doc('view-analise-btn'),
+                temporal: doc('view-temporal-btn'),
+                'lote-analise': doc('view-lote-analise-btn')
+            };
+            
+            // --- Funções Auxiliares ---
+            function showError(message) {
+                errorTextSpan.textContent = message;
+                errorMessageDiv.classList.remove('hidden');
+                dashboardResults.classList.add('hidden');
+                processingBox.classList.add('hidden');
+                processingBox.classList.remove('flex');
+            }
+            
+            function showLoading(message = "A ligar ao Firestore e carregar dados...") {
+                 processingBox.classList.remove('hidden');
+                 processingBox.classList.add('flex');
+                 errorMessageDiv.classList.add('hidden');
+                 dashboardResults.classList.add('hidden');
+                 processingBox.querySelector('p:nth-child(2)').textContent = message;
+            }
+
+            function showDashboard() {
+                uploadSection.classList.add('hidden');
+                dashboardResults.classList.remove('hidden');
+                processingBox.classList.add('hidden');
+                processingBox.classList.remove('flex');
+            }
+            
+             function getDateFromLot(lot) {
+                if (!lot || lot.length !== 4 || !/^\d{4}$/.test(lot)) return null;
+                const week = parseInt(lot.substring(0, 2), 10);
+                const year = 2000 + parseInt(lot.substring(2, 4), 10);
+                if (isNaN(week) || isNaN(year) || week < 1 || week > 53) return null;
+                const firstDayOfYear = new Date(year, 0, 1);
+                // Calcula a data aproximada para a semana do ano (usando o 4º dia para estabilidade)
+                return new Date(firstDayOfYear.setDate(firstDayOfYear.getDate() + (week - 1) * 7 + 3)); 
+            }
+
+            function getMonthYearFromLot(lot) {
+                const date = getDateFromLot(lot);
+                if(!date) return '';
+                const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+                return `(${monthNames[date.getMonth()]}/${date.getFullYear().toString().slice(-2)})`;
+            }
+
+
+            // --- Lógica de Inicialização Firebase ---
+            async function initFirebase() {
+                showLoading();
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    db = getFirestore(app);
+                    auth = getAuth(app);
+                    
+                    // Tenta autenticar anonimamente
+                    await new Promise((resolve, reject) => {
+                        const unsubscribe = onAuthStateChanged(auth, (user) => {
+                            unsubscribe();
+                            if (user) {
+                                resolve(user);
+                            } else {
+                                signInAnonymously(auth).then(resolve).catch(reject);
+                            }
+                        }, reject);
+                    });
+                    
+                    console.log("Firebase conectado e autenticado anonimamente.");
+                    setupFirestoreListener();
+                    
+                } catch(error) {
+                    console.error("Erro crítico na inicialização do Firebase:", error);
+                    showError("Não foi possível ligar à base de dados. Verifique a sua conexão.");
+                }
+            }
+
+            function setupFirestoreListener() {
+                const batteriesCollection = collection(db, "batteries");
+                
+                // Query: Apenas documentos com status 'finalized'
+                const finalizedQuery = query(batteriesCollection, where("status", "==", "finalized"));
+                
+                onSnapshot(finalizedQuery, (snapshot) => {
+                    const data = snapshot.docs.map(doc => doc.data());
+                    
+                    // Filtra dados para ter os campos necessários
+                    fullDataset = data.filter(row => row.code && row.finalAction).map(row => ({
+                         // Ação Final é o campo que contém o resultado do teste
+                        'AÇÃO FINAL': row.finalAction.trim().toUpperCase(), 
+                        // Código SERIE é o campo que contém o lote (Ex: 3524A2623)
+                        'CÓDIGO SERIE': row.code.trim().toUpperCase() 
+                    }));
+
+                    if (fullDataset.length === 0) {
+                        showError("Nenhuma garantia finalizada encontrada no Firestore.");
+                        return;
+                    }
+                    
+                    console.log(`Dados sincronizados: ${fullDataset.length} registos finalizados.`);
+                    recalculateAggregates(fullDataset);
+                    showDashboard();
+                    
+                }, (error) => {
+                    console.error("Erro ao receber dados da nuvem: ", error);
+                    showError("Falha ao sincronizar dados. Verifique a sua ligação.");
+                });
+            }
+            
+            // --- Lógica de Processamento e Visualização ---
+            function recalculateAggregates(data) {
+                const loteCounts = new Map();
+                const analiseCounts = new Map();
+                const temporalCounts = new Map();
+                processedLoteAnaliseData.clear();
+
+                data.forEach(row => {
+                    const serialCode = row['CÓDIGO SERIE'];
+                    const acaoFinal = row['AÇÃO FINAL'] || "Não preenchido";
+
+                    if (serialCode && serialCode.length >= 4) {
+                        const lote = serialCode.substring(0, 4);
+                        loteCounts.set(lote, (loteCounts.get(lote) || 0) + 1);
+                        analiseCounts.set(acaoFinal, (analiseCounts.get(acaoFinal) || 0) + 1);
+
+                        // Análise Temporal: Foca em 'PROCEDENTE' por Data de Fabricação (Lote)
+                        if (acaoFinal === 'PROCEDENTE (ENVIAR NOVA)' || acaoFinal.includes('CORTESIA')) {
+                            const date = getDateFromLot(lote);
+                            if(date) {
+                                const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+                                if (!temporalCounts.has(monthKey)) {
+                                    temporalCounts.set(monthKey, { count: 0, lotes: new Set(), date: date.getTime() });
+                                }
+                                const monthEntry = temporalCounts.get(monthKey);
+                                monthEntry.count++;
+                                monthEntry.lotes.add(lote);
+                            }
+                        }
+
+                        // Análise Lote x Análise
+                        if (!processedLoteAnaliseData.has(lote)) processedLoteAnaliseData.set(lote, new Map());
+                        const acoesInLote = processedLoteAnaliseData.get(lote);
+                        acoesInLote.set(acaoFinal, (acoesInLote.get(acaoFinal) || 0) + 1);
+                    }
+                });
+                
+                processedLoteData = Array.from(loteCounts.entries()).sort(([, a], [, b]) => b - a);
+                processedAnaliseData = Array.from(analiseCounts.entries()).sort(([, a], [, b]) => b - a);
+                
+                // Ordena dados temporais por data e mapeia para a estrutura final
+                processedTemporalData = Array.from(temporalCounts.entries())
+                    .sort(([, a], [, b]) => a.date - b.date)
+                    .map(([monthKey, data]) => [monthKey, data]);
+
+
+                updateAllViews();
+            }
+
+            function updateAllViews() {
+                updateViewLote();
+                updateViewAnalise();
+                updateViewTemporal();
+                populateLoteSelector();
+                updateViewLoteAnalise();
+                renderAllCharts();
+            }
+
+            function updateViewLote() {
+                const data = processedLoteData;
+                const total = data.reduce((s, [, c]) => s + c, 0);
+                doc('lote-total-items').textContent = total;
+                doc('lote-unique-lotes').textContent = data.length;
+                doc('lote-average-items').textContent = (total / data.length || 0).toFixed(2);
+                doc('lote-top-lote').textContent = data[0] ? data[0][0] : '-';
+                updateTable(doc('lote-summary-table'), data, 'lote');
+                updateTopList(doc('lote-top-list'), data, total, 'lote');
+            }
+
+            function updateViewAnalise() {
+                const data = processedAnaliseData;
+                const total = data.reduce((s, [, c]) => s + c, 0);
+                doc('analise-total-items').textContent = total;
+                doc('analise-unique-acoes').textContent = data.length;
+                doc('analise-average-items').textContent = (total / data.length || 0).toFixed(2);
+                doc('analise-top-acao').textContent = data[0] ? data[0][0] : '-';
+                updateTable(doc('analise-summary-table'), data, 'analise');
+                updateTopList(doc('analise-top-list'), data, total, 'analise');
+            }
+
+            function updateViewTemporal() {
+                const data = processedTemporalData;
+                const totalProcedentes = data.reduce((s, [, d]) => s + d.count, 0);
+                doc('temporal-total-procedentes').textContent = totalProcedentes;
+                
+                const pico = data.reduce((max, item) => item[1].count > (max[1]?.count || 0) ? item : max, ['', {count: 0}]);
+                const picoMes = pico[0] ? new Date(pico[0] + '-02').toLocaleString('pt-BR', { month: 'short', year: '2-digit' }) : '-';
+                doc('temporal-pico-mes').textContent = picoMes;
+                
+                const media = (totalProcedentes / data.length || 0);
+                doc('temporal-media-mensal').textContent = media.toFixed(1);
+            }
+
+            function populateLoteSelector() {
+                loteSelector.innerHTML = '<option value="todos">Visão Geral (Todos os Lotes)</option>';
+                processedLoteData.forEach(([lote]) => {
+                    const option = document.createElement('option');
+                    option.value = lote;
+                    const dateStr = getMonthYearFromLot(lote);
+                    option.textContent = `${lote} ${dateStr}`;
+                    loteSelector.appendChild(option);
+                });
+            }
+
+            function updateViewLoteAnalise() {
+                const selectedLote = loteSelector.value;
+                if (!selectedLote || selectedLote === 'todos') {
+                    doc('la-total-items').textContent = 0;
+                    doc('la-unique-acoes').textContent = 0;
+                    doc('la-top-acao').textContent = '-';
+                    doc('la-procedente-perc').textContent = '0%';
+                    doc('lote-analise-summary-table').innerHTML = '';
+                    if (charts['lote-analise']) charts['lote-analise'].destroy();
+                    charts['lote-analise'] = null;
+                    return;
+                }
+                const dataMap = processedLoteAnaliseData.get(selectedLote) || new Map();
+                const data = Array.from(dataMap.entries()).sort(([, a], [, b]) => b - a);
+                
+                const total = data.reduce((s, [, c]) => s + c, 0);
+                const procedenteCount = dataMap.get('PROCEDENTE (ENVIAR NOVA)') || 0;
+                
+                doc('la-total-items').textContent = total;
+                doc('la-unique-acoes').textContent = data.length;
+                doc('la-top-acao').textContent = data[0] ? data[0][0] : '-';
+                
+                const procedentePerc = (total > 0 ? (procedenteCount / total) * 100 : 0).toFixed(1);
+                doc('la-procedente-perc').textContent = `${procedentePerc}%`;
+                
+                doc('la-chart-title').textContent = `Distribuição de Análises no Lote ${selectedLote}`;
+                updateTable(doc('lote-analise-summary-table'), data, 'lote-analise');
+                renderChartForView('lote-analise');
+            }
+
+            function updateTable(tbody, data, view) {
+                 tbody.innerHTML = data.map(([item, count]) => {
+                    const dateStr = view === 'lote' ? ` <span class="text-xs font-normal text-gray-400 dark:text-gray-500">${getMonthYearFromLot(item)}</span>` : '';
+                    return `<tr><td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">${item}${dateStr}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">${count}</td></tr>`;
+                }).join('');
+            }
+            function updateTopList(ul, data, total, view) {
+                ul.innerHTML = data.slice(0, 10).map(([item, count]) => {
+                    const perc = total > 0 ? ((count / total) * 100).toFixed(1) : 0;
+                    const dateStr = view === 'lote' ? ` <span class="text-xs font-normal text-gray-400 dark:text-gray-500">${getMonthYearFromLot(item)}</span>` : '';
+                    return `<li class="flex justify-between items-center text-sm"><div><span class="font-semibold truncate" title="${item}">${item}</span>${dateStr}<span class="text-xs text-gray-500 dark:text-gray-400 ml-2">${count} baterias</span></div><span class="font-medium text-blue-600 dark:text-blue-400">${perc}%</span></li>`;
+                }).join('');
+            }
+
+            function renderAllCharts() {
+                // Destroi os gráficos existentes antes de renderizar
+                Object.values(charts).forEach(chart => {
+                    if (chart) chart.destroy();
+                });
+                
+                renderChartForView('lote');
+                renderChartForView('analise');
+                renderChartForView('temporal');
+                if(loteSelector.value !== 'todos') {
+                   renderChartForView('lote-analise');
+                } else {
+                    charts['lote-analise'] = null;
+                }
+            }
+            
+            function renderChartForView(view) {
+                const chartCanvas = doc(`${view}-chart`);
+                if(!chartCanvas) return;
+                
+                // Se já existe, destrói
+                if (charts[view]) charts[view].destroy();
+
+                let data, chartType, options, labels, chartData;
+                const isDarkMode = document.documentElement.classList.contains('dark');
+                const gridColor = isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)';
+                const textColor = isDarkMode ? '#e5e7eb' : '#374151';
+                const pieColors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#6366f1'];
+                const baseOptions = { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: textColor } }, tooltip: { backgroundColor: isDarkMode ? '#1f2937' : '#ffffff', titleColor: isDarkMode ? '#e5e7eb' : '#374151', bodyColor: isDarkMode ? '#d1d5db' : '#6b7280', borderColor: isDarkMode ? '#4b5563' : '#e5e7eb', borderWidth: 1, } } };
+                
+                if (view === 'lote' || view === 'analise' || view === 'lote-analise') {
+                    if (view === 'lote') data = processedLoteData.slice(0, 20); // Limita para melhor visualização
+                    else if (view === 'analise') data = processedAnaliseData;
+                    else {
+                        const selectedLote = loteSelector.value;
+                        if (!selectedLote || selectedLote === 'todos' || !processedLoteAnaliseData.has(selectedLote)) return;
+                        data = Array.from((processedLoteAnaliseData.get(selectedLote) || new Map()).entries());
+                    }
+                    
+                    chartType = currentChartType[view];
+                    labels = data.map(([item]) => item);
+                    chartData = data.map(([, count]) => count);
+                    
+                    options = { ...baseOptions, plugins: { ...baseOptions.plugins, legend: { ...baseOptions.plugins.legend, display: chartType !== 'bar', position: 'right' } }, scales: chartType === 'bar' ? { y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } }, x: { grid: { color: gridColor }, ticks: { color: textColor, maxRotation: 70, minRotation: 0 } } } : {} };
+                     charts[view] = new Chart(chartCanvas, {
+                        type: chartType,
+                        data: { labels, datasets: [{ label: 'Quantidade', data: chartData, backgroundColor: chartType === 'bar' ? 'rgba(59, 130, 246, 0.7)' : pieColors, borderColor: chartType === 'bar' ? 'rgba(59, 130, 246, 1)' : (isDarkMode ? '#1f2937' : '#ffffff'), borderWidth: chartType === 'bar' ? 1.5 : 3, borderRadius: 5 }] },
+                        options
+                    });
+
+                } else if (view === 'temporal') {
+                    data = processedTemporalData;
+                    chartType = 'line';
+                    
+                    labels = data.map(([monthKey]) => {
+                        const [year, month] = monthKey.split('-');
+                        return new Date(parseInt(year), parseInt(month) - 1, 1).getTime();
+                    });
+                    
+                    chartData = data.map(([, d]) => d.count);
+                    
+                    options = { 
+                        ...baseOptions, 
+                        plugins: {
+                            ...baseOptions.plugins,
+                            tooltip: {
+                                ...baseOptions.plugins.tooltip,
+                                callbacks: {
+                                    // Customiza o label para mostrar Mês/Ano
+                                    title: (tooltipItems) => {
+                                        const date = new Date(tooltipItems[0].parsed.x);
+                                        return date.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+                                    },
+                                    // Adiciona a lista de lotes ao footer
+                                    footer: (tooltipItems) => {
+                                        const index = tooltipItems[0].dataIndex;
+                                        const [, monthData] = processedTemporalData[index];
+                                        const lotes = Array.from(monthData.lotes).sort();
+                                        if (lotes.length === 0) return '';
+                                        
+                                        let lotesStr = lotes.slice(0, 5).join(', ');
+                                        if (lotes.length > 5) {
+                                            lotesStr += `, ... (${lotes.length - 5} mais)`;
+                                        }
+                                        return ['', 'Lotes:', lotesStr];
+                                    }
+                                }
+                            }
+                        },
+                        scales: { 
+                            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } }, 
+                            x: { 
+                                type: 'time', 
+                                time: { unit: 'month', tooltipFormat: 'MMM yy', displayFormats: { month: 'MMM yy' } }, 
+                                grid: { color: gridColor }, 
+                                ticks: { color: textColor } 
+                            } 
+                        } 
+                    };
+                    charts[view] = new Chart(chartCanvas, {
+                        type: chartType,
+                        data: {
+                            labels,
+                            datasets: [{
+                                label: 'Garantias Procedentes',
+                                data: data.map(([, d]) => ({ x: d.date, y: d.count })), // Usa a data formatada
+                                backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                                borderColor: 'rgba(239, 68, 68, 1)',
+                                borderWidth: 2,
+                                pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                                tension: 0.1,
+                                fill: true,
+                            }]
+                        },
+                        options
+                    });
+                }
+            }
+
+            // --- Lógica de Impressão ---
+            async function generatePrintReport() {
+                const printContainer = doc('print-container');
+                if (fullDataset.length === 0) {
+                    showError("Não há dados para imprimir.");
+                    errorMessageDiv.scrollIntoView({ behavior: 'smooth' });
+                    return;
+                }
+
+                showLoading("A gerar relatório para impressão...");
+
+                // Garante que todos os gráficos estão renderizados e obtém as suas imagens
+                const chartImages = {};
+                const chartPromises = Object.keys(charts).map(key => {
+                    return new Promise((resolve) => {
+                        if (charts[key] && charts[key].ctx) {
+                            const originalAnimation = charts[key].options.animation;
+                            charts[key].options.animation = false;
+                            charts[key].update('none'); 
+
+                            setTimeout(() => {
+                                chartImages[key] = charts[key].toBase64Image();
+                                charts[key].options.animation = originalAnimation;
+                                charts[key].update('none');
+                                resolve();
+                            }, 250); 
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+
+                await Promise.all(chartPromises);
+                
+                // Volta para o estado normal do Dashboard
+                showDashboard();
+
+                let reportHTML = `
+                    <div style="font-family: 'Inter', sans-serif; padding: 1rem;">
+                        <div style="text-align: center; margin-bottom: 2rem;">
+                            <h1 style="font-size: 2rem; font-weight: 800; margin: 0;">FABRECK BATERIAS</h1>
+                            <h2 style="font-size: 1.25rem; font-weight: 600; color: #374151; margin: 0.5rem 0;">Relatório de Análise de Garantias</h2>
+                            <p style="font-size: 0.875rem; color: #6b7280;">Gerado em: ${new Date().toLocaleString('pt-BR')}</p>
+                        </div>
+                        
+                        <div class="print-page-break">
+                            <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem;">Resumo Geral</h3>
+                            <table style="width: 100%; text-align: left; font-size: 1.125rem;">
+                                <tr><td style="padding: 0.5rem 1rem 0.5rem 0; font-weight: 600;">Total de Baterias:</td><td>${doc('lote-total-items').textContent}</td></tr>
+                                <tr><td style="padding: 0.5rem 1rem 0.5rem 0; font-weight: 600;">Lotes Únicos:</td><td>${doc('lote-unique-lotes').textContent}</td></tr>
+                                <tr><td style="padding: 0.5rem 1rem 0.5rem 0; font-weight: 600;">Ações Únicas:</td><td>${doc('analise-unique-acoes').textContent}</td></tr>
+                                <tr><td style="padding: 0.5rem 1rem 0.5rem 0; font-weight: 600;">Total de Procedentes:</td><td>${doc('temporal-total-procedentes').textContent}</td></tr>
+                            </table>
+                        </div>
+
+                        <div class="print-page-break">
+                            <h3 style="font-size: 1.5rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem;">Gráficos de Distribuição</h3>
+                            ${chartImages.lote ? `<div><h4 style="font-size: 1.125rem; font-weight: 600; margin-top: 1rem;">Distribuição por Lote</h4><img src="${chartImages.lote}" class="chart-image"></div>` : ''}
+                            ${chartImages.analise ? `<div><h4 style="font-size: 1.125rem; font-weight: 600; margin-top: 2rem;">Distribuição por Análise</h4><img src="${chartImages.analise}" class="chart-image"></div>` : ''}
+                        </div>
+                        
+                        <div class="print-page-break">
+                            <h3 style="font-size: 1.5rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem;">Análise de Tendências</h3>
+                             ${chartImages.temporal ? `<div><h4 style="font-size: 1.125rem; font-weight: 600; margin-top: 1rem;">Evolução de Garantias Procedentes</h4><img src="${chartImages.temporal}" class="chart-image"></div>` : ''}
+                        </div>
+
+                        <div class="print-page-break">
+                            <h3 style="font-size: 1.5rem; font-weight: 600; margin-top: 2rem; margin-bottom: 1rem; border-bottom: 1px solid #ddd; padding-bottom: 0.5rem;">Tabelas de Dados</h3>
+                            <h4 style="font-size: 1.125rem; font-weight: 600;">Resumo por Lote</h4>
+                            <table><thead><tr><th>Lote</th><th>Quantidade</th></tr></thead><tbody>${doc('lote-summary-table').innerHTML}</tbody></table>
+                        </div>
+                        
+                        <div>
+                            <h4 style="font-size: 1.125rem; font-weight: 600; margin-top: 2rem;">Resumo por Análise</h4>
+                            <table><thead><tr><th>Ação Final</th><th>Quantidade</th></tr></thead><tbody>${doc('analise-summary-table').innerHTML}</tbody></table>
+                        </div>
+                    </div>
+                `;
+
+                printContainer.innerHTML = reportHTML;
+                printContainer.style.display = 'block';
+
+                // Um timeout para garantir que as imagens são carregadas no DOM antes de imprimir
+                setTimeout(() => {
+                    window.print();
+                    printContainer.innerHTML = '';
+                    printContainer.style.display = 'none';
+                }, 500);
+            }
+
+            // --- Lógica de Interação ---
+            printBtn.addEventListener('click', generatePrintReport);
+
+            Object.keys(viewButtons).forEach(viewKey => {
+                viewButtons[viewKey].addEventListener('click', () => {
+                    currentView = viewKey;
+                    Object.values(views).forEach(v => v.classList.add('hidden'));
+                    views[viewKey].classList.remove('hidden');
+                    Object.values(viewButtons).forEach(b => b.classList.remove('bg-white', 'dark:bg-gray-900', 'shadow'));
+                    viewButtons[viewKey].classList.add('bg-white', 'dark:bg-gray-900', 'shadow');
+                    
+                    if(viewKey === 'lote-analise' && loteSelector.value === 'todos' && loteSelector.options.length > 1) {
+                        loteSelector.selectedIndex = 1;
+                        loteSelector.dispatchEvent(new Event('change'));
+                    } else if (viewKey !== 'lote-analise' && loteSelector.value !== 'todos') {
+                        loteSelector.value = 'todos';
+                        updateViewLoteAnalise();
+                    }
+                });
+            });
+
+            loteSelector.addEventListener('change', () => {
+                const selectedValue = loteSelector.value;
+                if (selectedValue === 'todos') {
+                    if(currentView === 'lote-analise') {
+                       viewButtons['lote'].click(); // Volta para a visão "Por Lote"
+                    }
+                } else {
+                    viewButtons['lote-analise'].click(); // Vai para a visão "Lote x Análise"
+                }
+                updateViewLoteAnalise();
+            });
+
+            document.querySelectorAll('.chart-type-toggle button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const view = e.target.dataset.view;
+                    const type = e.target.dataset.type;
+                    currentChartType[view] = type;
+                    e.target.parentElement.querySelectorAll('button').forEach(btn => btn.classList.remove('bg-white', 'dark:bg-gray-900', 'shadow'));
+                    e.target.classList.add('bg-white', 'dark:bg-gray-900', 'shadow');
+                    renderChartForView(view);
+                });
+            });
+            
+            doc('lote-table-search').addEventListener('keyup', e => filterTable(e.target.value, doc('lote-summary-table')));
+            doc('analise-table-search').addEventListener('keyup', e => filterTable(e.target.value, doc('analise-summary-table')));
+            
+            const filterTable = (term, table) => table.querySelectorAll('tr').forEach(row => row.style.display = row.cells[0].textContent.toUpperCase().includes(term.toUpperCase()) ? "" : "none");
+            
+            document.querySelectorAll('.export-csv-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const view = e.target.dataset.view;
+                    let data, headers, rows;
+
+                    if (view === 'lote') {
+                        data = processedLoteData;
+                        headers = "Lote,Mes/Ano Fabricacao,Quantidade";
+                        rows = data.map(([lote, count]) => {
+                            const dateStr = getMonthYearFromLot(lote).replace(/[()]/g, '');
+                            return [lote, dateStr, count].join(',');
+                        });
+                    } else { 
+                        data = processedAnaliseData;
+                        headers = "Acao Final,Quantidade";
+                        rows = data.map(row => row.join(','));
+                    }
+                    
+                    const csvContent = `data:text/csv;charset=utf-8,${headers}\n` + rows.join('\n');
+                    const link = Object.assign(document.createElement("a"), { href: encodeURI(csvContent), download: `resumo_${view}.csv` });
+                    link.click();
+                });
+            });
+            
+            // --- Inicialização ---
+            initFirebase();
+            
+            // Certifica-se de que o estado inicial do tema está correto
+            const isDark = document.documentElement.classList.contains('dark');
+            doc('theme-toggle-light-icon').classList.toggle('hidden', !isDark);
+            doc('theme-toggle-dark-icon').classList.toggle('hidden', isDark);
+
+        });
+    </script>
+</body>
+</html>
