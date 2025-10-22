@@ -61,7 +61,11 @@ body.dark-mode .expired-row {
         <div class="form-group" style="margin: 0;"><label for="receiptSearchInput" style="margin-bottom: 2px;">Pesquisa Rápida:</label><input type="search" id="receiptSearchInput" class="form-control" placeholder="Pesquisar por cliente, códigos de bateria..."></div>
         <div class="form-group" style="margin: 0;"><label for="receiptClientFilter" style="margin-bottom: 2px;">Filtrar por Cliente:</label><select id="receiptClientFilter" class="form-control"></select></div>
     </div>
-</div><div class="stat-cards"><div class="stat-card"><div class="stat-title">Aguardando Recebimento</div><div class="stat-value" id="awaitingReceiptCount">0</div></div></div><div class="batch-actions"><button id="batchReceiptBtn" class="btn btn-success" disabled><i class="fas fa-check-double"></i> Confirmar Recebidos</button></div><div class="table-container"><table id="receiptTable"><thead><tr><th><input type="checkbox" id="selectAllReceiptCheckbox"></th><th>Código Bateria</th><th>Modelo</th><th>Cliente</th><th>Vendedor</th><th>Data Envio</th><th>Status Prazo</th><th class="actions-cell">Ação</th></tr></thead><tbody id="receiptBody"></tbody></table></div></div></div>
+</div><div class="stat-cards"><div class="stat-card"><div class="stat-title">Aguardando Recebimento</div><div class="stat-value" id="awaitingReceiptCount">0</div></div></div><div class="batch-actions" style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <button id="batchReceiptBtn" class="btn btn-success" disabled style="flex-grow: 1;"><i class="fas fa-check-double"></i> Confirmar Recebidos</button>
+    <button id="receiptPdfBtn" class="btn btn-primary jenilton-only" style="flex-grow: 1; margin-top: 0;"><i class="fas fa-file-pdf"></i> Gerar PDF</button>
+    <button id="receiptExcelBtn" class="btn btn-success jenilton-only" style="flex-grow: 1; margin-top: 0;"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+</div><div class="table-container"><table id="receiptTable"><thead><tr><th><input type="checkbox" id="selectAllReceiptCheckbox"></th><th>Código Bateria</th><th>Modelo</th><th>Cliente</th><th>Vendedor</th><th>Data Envio</th><th>Status Prazo</th><th class="actions-cell">Ação</th></tr></thead><tbody id="receiptBody"></tbody></table></div></div></div>
 
 <!-- PÁGINA EXCLUSIVA DO REGINALDO: ANÁLISE TÉCNICA -->
 <div id="analysisPage" class="page"><div class="card"><div class="card-header"><h2 class="card-title">Minhas Análises (Reginaldo)</h2><div class="card-icon"><i class="fas fa-clipboard-check"></i></div></div><div class="info-section"><p><b>Função:</b> Esta lista contém apenas baterias que já foram recebidas e estão prontas para o seu teste técnico. Utilize os filtros para organizar a fila de trabalho.</p></div><div class="report-filters"><div class="filter-row" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));">
@@ -69,7 +73,11 @@ body.dark-mode .expired-row {
         <div class="form-group" style="margin: 0;"><label for="analysisClientFilter">Filtrar por Cliente:</label><select id="analysisClientFilter" class="form-control"></select></div>
         <div class="form-group" style="margin: 0;"><label for="analysisSalesmanFilter">Filtrar por Vendedor:</label><select id="analysisSalesmanFilter" class="form-control"></select></div>
     </div>
-</div><div class="stat-cards"><div class="stat-card"><div class="stat-title">Prontas para Análise</div><div class="stat-value" id="inAnalysisCount">0</div></div></div><div class="batch-actions"><button id="batchAnalyzeBtn" class="btn btn-success" disabled><i class="fas fa-layer-group"></i> Analisar Selecionados</button></div><div class="table-container"><table id="analysisTable"><thead><tr><th><input type="checkbox" id="selectAllAnalysisCheckbox"></th><th>Cód. Operação</th><th>Código Bateria</th><th>Cliente</th><th>Modelo</th><th>Data Envio</th><th>Status Garantia</th><th class="actions-cell">Ação</th></tr></thead><tbody id="analysisBody"></tbody></table></div></div></div>
+</div><div class="stat-cards"><div class="stat-card"><div class="stat-title">Prontas para Análise</div><div class="stat-value" id="inAnalysisCount">0</div></div></div><div class="batch-actions" style="display: flex; flex-wrap: wrap; gap: 10px;">
+    <button id="batchAnalyzeBtn" class="btn btn-warning" disabled style="flex-grow: 1;"><i class="fas fa-layer-group"></i> Analisar Selecionados</button>
+    <button id="analysisPdfBtn" class="btn btn-primary jenilton-only" style="flex-grow: 1; margin-top: 0;"><i class="fas fa-file-pdf"></i> Gerar PDF</button>
+    <button id="analysisExcelBtn" class="btn btn-success jenilton-only" style="flex-grow: 1; margin-top: 0;"><i class="fas fa-file-excel"></i> Exportar Excel</button>
+</div><div class="table-container"><table id="analysisTable"><thead><tr><th><input type="checkbox" id="selectAllAnalysisCheckbox"></th><th>Cód. Operação</th><th>Código Bateria</th><th>Cliente</th><th>Modelo</th><th>Data Envio</th><th>Status Garantia</th><th class="actions-cell">Ação</th></tr></thead><tbody id="analysisBody"></tbody></table></div></div></div>
 
 <!-- PÁGINA DE FINALIZADAS (Para todos, mas com ações exclusivas Jenilton) -->
 <div id="finalizadoPage" class="page"><div class="card"><div class="card-header"><h2 class="card-title">Garantias Finalizadas</h2><div class="card-icon"><i class="fas fa-check-double"></i></div></div><div class="info-section"><p><b>Função do Jenilton:</b> Use esta página para consultar garantias já finalizadas, gerar relatórios para os clientes e preparar os pedidos de envio.</p></div><div class="stat-cards">
@@ -494,6 +502,19 @@ const batteryModelMap={'A':'FA6AD','B':'FA4D','C':'FA5AD','D':'FA5D','E':'FA5,5D
             sendTodaySummaryBtn?.addEventListener('click',generateTodaySummaryReport);
             sendPendingAnalysisBtn?.addEventListener('click',generatePendingAnalysisReport);
             sendGeneralSummaryBtn?.addEventListener('click',generateGeneralSummaryReport);
+
+            // NOVOS LISTENERS PARA RECEBIMENTO/ANÁLISE (JENILTON ONLY)
+            const receiptPdfBtn=document.getElementById('receiptPdfBtn');
+            const receiptExcelBtn=document.getElementById('receiptExcelBtn');
+            const analysisPdfBtn=document.getElementById('analysisPdfBtn');
+            const analysisExcelBtn=document.getElementById('analysisExcelBtn');
+            
+            receiptPdfBtn?.addEventListener('click', generateReceiptsPDF);
+            receiptExcelBtn?.addEventListener('click', exportReceiptsToExcel);
+            analysisPdfBtn?.addEventListener('click', generateAnalysisPDF);
+            analysisExcelBtn?.addEventListener('click', exportAnalysisToExcel);
+            // FIM DOS NOVOS LISTENERS
+
             const screensaverOverlay=document.getElementById('screensaverOverlay');
             screensaverOverlay?.addEventListener('click',()=>hideScreensaver());
             ['click','mousemove','keypress','touchstart'].forEach(evt=>document.addEventListener(evt,resetIdleTimer,false));
@@ -589,13 +610,94 @@ const batteryModelMap={'A':'FA6AD','B':'FA4D','C':'FA5AD','D':'FA5D','E':'FA5,5D
         // (handleRestoreFile, exportData, clearData, etc.) estão aqui, mas omitidas para brevidade na explicação do erro.
         // No ficheiro real, elas estão presentes.
         
-        function updateReceiptTable(){const searchTerm=receiptSearchInput.value.trim().toLowerCase();const selectedClient=receiptClientFilter.value;const activeClient=currentClientDisplay.textContent;let dataToReceive=batteryData.filter(b=>b.status==='awaiting_receipt');if(selectedClient){dataToReceive=dataToReceive.filter(b=>b.client===selectedClient)}if(searchTerm){dataToReceive=dataToReceive.filter(b=>(b.code.toLowerCase().includes(searchTerm))||b.client.toLowerCase().includes(searchTerm)||b.salesman.toLowerCase().includes(searchTerm))}dataToReceive.sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));const isAnyClientActive=activeClient!=='N/A';receiptLockMessage.style.display=isAnyClientActive?'block':'none';let shouldDisableSelectAll=false;if(dataToReceive.length===0){receiptBody.innerHTML=`<tr><td colspan="7" style="text-align: center;">Nenhuma bateria aguardando recebimento.</td></tr>`;}else{receiptBody.innerHTML=dataToReceive.map(b=>{const warrantyStatus=b.warranty_period_status==='warranty'?'<span class="status-badge status-warranty">Em Garantia</span>':'<span class="status-badge status-expired">Fora do Prazo</span>';const isClientLocked=(isAnyClientActive&&b.client===activeClient);const disabledAttribute=isClientLocked?'disabled':'';const lockIcon=isClientLocked?'<i class="fas fa-lock"></i>':'';if(isClientLocked){shouldDisableSelectAll=true;}
+        function updateReceiptTable(){const searchTerm=receiptSearchInput.value.trim().toLowerCase();const selectedClient=receiptClientFilter.value;const activeClient=currentClientDisplay.textContent;let dataToReceive=getReceiptsData(); // Agora usa a função de dados brutos
+        
+            if(selectedClient){dataToReceive=dataToReceive.filter(b=>b.client===selectedClient)}
+            if(searchTerm){dataToReceive=dataToReceive.filter(b=>(b.code.toLowerCase().includes(searchTerm))||b.client.toLowerCase().includes(searchTerm)||b.salesman.toLowerCase().includes(searchTerm))}
+            
+            dataToReceive.sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
+            
+            const isAnyClientActive=activeClient!=='N/A';
+            receiptLockMessage.style.display=isAnyClientActive?'block':'none';
+            let shouldDisableSelectAll=false;
+            
+            if(dataToReceive.length===0){
+                receiptBody.innerHTML=`<tr><td colspan="8" style="text-align: center;">Nenhuma bateria aguardando recebimento.</td></tr>`;
+            }else{
+                receiptBody.innerHTML=dataToReceive.map(b=>{const warrantyStatus=b.warranty_period_status==='warranty'?'<span class="status-badge status-warranty">Em Garantia</span>':'<span class="status-badge status-expired">Fora do Prazo</span>';const isClientLocked=(isAnyClientActive&&b.client===activeClient);const disabledAttribute=(isClientLocked || sessionStorage.getItem('currentUser') !== 'ALINE BURQUE' && sessionStorage.getItem('currentUser') !== 'JENILTON') ? 'disabled':''; // Garante que apenas Aline e Jenilton podem interagir.
+                const lockIcon=isClientLocked?'<i class="fas fa-lock"></i>':'';if(isClientLocked){shouldDisableSelectAll=true;}
                 // ADICIONA CLASSE expired-row SE ESTIVER FORA DO PRAZO
                 const rowClass = b.warranty_period_status === 'expired' ? 'expired-row' : '';
-                return`<tr class="${rowClass}"><td><input type="checkbox" class="receipt-checkbox" data-id="${b.id}" ${disabledAttribute}></td><td>${b.code}</td><td>${b.batteryModel}</td><td>${b.client}</td><td>${b.salesman}</td><td>${new Date(b.submissionDate).toLocaleDateString('pt-BR')}</td><td>${warrantyStatus}</td><td class="actions-cell">${lockIcon}<button class="confirm-receipt-btn btn btn-success" data-id="${b.id}" style="padding: 8px 12px; width: auto; margin: 0 5px 0 0;" ${disabledAttribute}><i class="fas fa-check"></i> Receber</button></td></tr>`}).join('')}if(selectedClient&&dataToReceive.length>0&&!activeClient.includes(selectedClient)){showReceiptSummary(selectedClient,dataToReceive)}selectAllReceiptCheckbox.disabled=shouldDisableSelectAll;receiptBody.querySelectorAll('.confirm-receipt-btn').forEach(btn=>{if(!btn.disabled){btn.addEventListener('click',function(){openReceiptConfirmModal([this.dataset.id])});}});receiptBody.querySelectorAll('.receipt-checkbox').forEach(cb=>cb.addEventListener('change',updateBatchReceiptButtonState));selectAllReceiptCheckbox.checked=false;updateBatchReceiptButtonState();applyUIRestrictions();}
+                return`<tr class="${rowClass}"><td><input type="checkbox" class="receipt-checkbox" data-id="${b.id}" ${disabledAttribute}></td><td>${b.code}</td><td>${b.batteryModel}</td><td>${b.client}</td><td>${b.salesman}</td><td>${new Date(b.submissionDate).toLocaleDateString('pt-BR')}</td><td>${warrantyStatus}</td><td class="actions-cell">${lockIcon}<button class="confirm-receipt-btn btn btn-success" data-id="${b.id}" style="padding: 8px 12px; width: auto; margin: 0 5px 0 0;" ${disabledAttribute}><i class="fas fa-check"></i> Receber</button></td></tr>`}).join('')
+            }
+            if(selectedClient&&dataToReceive.length>0&&!activeClient.includes(selectedClient)){showReceiptSummary(selectedClient,dataToReceive)}
+            selectAllReceiptCheckbox.disabled=shouldDisableSelectAll;
+            receiptBody.querySelectorAll('.confirm-receipt-btn').forEach(btn=>{if(!btn.disabled){btn.addEventListener('click',function(){openReceiptConfirmModal([this.dataset.id])});}});
+            receiptBody.querySelectorAll('.receipt-checkbox').forEach(cb=>cb.addEventListener('change',updateBatchReceiptButtonState));
+            selectAllReceiptCheckbox.checked=false;
+            updateBatchReceiptButtonState();
+            applyUIRestrictions();
+        }
 
-        function updateAnalysisTable(){const selectedClient=analysisClientFilter.value;const selectedSalesman=analysisSalesmanFilter.value;const searchTerm=analysisSearchInput.value.trim().toLowerCase();let dataToAnalyze=batteryData.filter(b=>b.status==='in_analysis');if(selectedClient){dataToAnalyze=dataToAnalyze.filter(b=>b.client===selectedClient)}if(selectedSalesman){dataToAnalyze=dataToAnalyze.filter(b=>b.salesman===selectedSalesman)}if(searchTerm){dataToAnalyze=dataToAnalyze.filter(b=>(b.operationCode&&b.operationCode.toLowerCase().includes(searchTerm))||b.code.toLowerCase().includes(searchTerm)||b.batteryModel.toLowerCase().includes(searchTerm))}dataToAnalyze.sort((a,b)=>new Date(a.receiptDate)-new Date(b.receiptDate));selectAllAnalysisCheckbox.checked=false;if(dataToAnalyze.length===0){analysisBody.innerHTML=`<tr><td colspan="8" style="text-align: center;">Nenhuma bateria na fila para análise técnica.</td></tr>`;}else{analysisBody.innerHTML=dataToAnalyze.map(renderAnalysisTableRow).join('')}analysisBody.querySelectorAll('.analyze-btn').forEach(btn=>btn.addEventListener('click',function(){openSingleAnalysisModal(this.dataset.id)}));analysisBody.querySelectorAll('.revert-to-receipt-btn').forEach(btn=>btn.addEventListener('click',function(){showConfirmModal('Retroceder para Recebimento?','Esta bateria voltará para a fila da Aline. Os dados de recebimento serão apagados.',()=>revertToReceipt(this.dataset.id))}));analysisBody.querySelectorAll('.analysis-checkbox').forEach(box=>box.addEventListener('change',updateBatchAnalyzeButtonState));updateBatchAnalyzeButtonState();applyUIRestrictions();}
+        function getFilteredReceiptsData() {
+            // Nova função para obter os dados exibidos após a filtragem
+            const searchTerm=receiptSearchInput.value.trim().toLowerCase();
+            const selectedClient=receiptClientFilter.value;
+            let dataToReceive=getReceiptsData();
+            
+            if(selectedClient){dataToReceive=dataToReceive.filter(b=>b.client===selectedClient)}
+            if(searchTerm){dataToReceive=dataToReceive.filter(b=>(b.code.toLowerCase().includes(searchTerm))||b.client.toLowerCase().includes(searchTerm)||b.salesman.toLowerCase().includes(searchTerm))}
+
+            dataToReceive.sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
+            return dataToReceive;
+        }
+
+
+        function updateAnalysisTable(){const selectedClient=analysisClientFilter.value;const selectedSalesman=analysisSalesmanFilter.value;const searchTerm=analysisSearchInput.value.trim().toLowerCase();let dataToAnalyze=getAnalysisData(); // Agora usa a função de dados brutos
+            
+            if(selectedClient){dataToAnalyze=dataToAnalyze.filter(b=>b.client===selectedClient)}
+            if(selectedSalesman){dataToAnalyze=dataToAnalyze.filter(b=>b.salesman===selectedSalesman)}
+            if(searchTerm){dataToAnalyze=dataToAnalyze.filter(b=>(b.operationCode&&b.operationCode.toLowerCase().includes(searchTerm))||b.code.toLowerCase().includes(searchTerm)||b.batteryModel.toLowerCase().includes(searchTerm))}
+            
+            dataToAnalyze.sort((a,b)=>new Date(a.receiptDate)-new Date(b.receiptDate));
+            selectAllAnalysisCheckbox.checked=false;
+            
+            if(dataToAnalyze.length===0){
+                analysisBody.innerHTML=`<tr><td colspan="8" style="text-align: center;">Nenhuma bateria na fila para análise técnica.</td></tr>`;
+            }else{
+                 // Garante que os botões de ação na tabela são desabilitados para não-Reginaldo/Jenilton
+                const isReginaldoOrJenilton = sessionStorage.getItem('currentUser') === 'REGINALDO' || sessionStorage.getItem('currentUser') === 'JENILTON';
+                analysisBody.innerHTML=dataToAnalyze.map(b=>{
+                    const rowHtml = renderAnalysisTableRow(b);
+                    if (!isReginaldoOrJenilton) {
+                        return rowHtml.replace(/<button/g, '<button disabled').replace(/<input type="checkbox"/g, '<input type="checkbox" disabled');
+                    }
+                    return rowHtml;
+                }).join('');
+            }
+            
+            analysisBody.querySelectorAll('.analyze-btn').forEach(btn=>btn.addEventListener('click',function(){openSingleAnalysisModal(this.dataset.id)}));
+            analysisBody.querySelectorAll('.revert-to-receipt-btn').forEach(btn=>btn.addEventListener('click',function(){showConfirmModal('Retroceder para Recebimento?','Esta bateria voltará para a fila da Aline. Os dados de recebimento serão apagados.',()=>revertToReceipt(this.dataset.id))}));
+            analysisBody.querySelectorAll('.analysis-checkbox').forEach(box=>box.addEventListener('change',updateBatchAnalyzeButtonState));
+            updateBatchAnalyzeButtonState();
+            applyUIRestrictions();
+        }
         
+        function getFilteredAnalysisData() {
+            // Nova função para obter os dados exibidos após a filtragem
+            const selectedClient=analysisClientFilter.value;
+            const selectedSalesman=analysisSalesmanFilter.value;
+            const searchTerm=analysisSearchInput.value.trim().toLowerCase();
+            let dataToAnalyze=getAnalysisData();
+            
+            if(selectedClient){dataToAnalyze=dataToAnalyze.filter(b=>b.client===selectedClient)}
+            if(selectedSalesman){dataToAnalyze=dataToAnalyze.filter(b=>b.salesman===selectedSalesman)}
+            if(searchTerm){dataToAnalyze=dataToAnalyze.filter(b=>(b.operationCode&&b.operationCode.toLowerCase().includes(searchTerm))||b.code.toLowerCase().includes(searchTerm)||b.batteryModel.toLowerCase().includes(searchTerm))}
+
+            dataToAnalyze.sort((a,b)=>new Date(a.receiptDate)-new Date(b.receiptDate));
+            return dataToAnalyze;
+        }
+
         function updateFinalizadoTable(){const searchTerm=finalizadoSearchInput.value.trim().toLowerCase();const startDate=finalizadoStartDate.value;const endDate=finalizadoEndDate.value;const selectedClient=finalizadoClientFilter.value;const selectedSalesman=finalizadoSalesmanFilter.value;const selectedAction=finalizadoActionFilter.value;let dataFinalizada=batteryData.filter(b=>b.status==='finalized');if(searchTerm){dataFinalizada=dataFinalizada.filter(b=>(b.operationCode&&b.operationCode.toLowerCase().includes(searchTerm))||b.code.toLowerCase().includes(searchTerm)||b.client.toLowerCase().includes(searchTerm)||(b.recommendation&&b.recommendation.toLowerCase().includes(searchTerm)))}if(startDate||endDate){const start=startDate?new Date(startDate+'T00:00:00'):new Date('1970-01-01');const end=endDate?new Date(endDate+'T23:59:59'):new Date();dataFinalizada=dataFinalizada.filter(b=>{const analysisDate=b.technicalOpinionDate?new Date(b.technicalOpinionDate):null;return analysisDate&&analysisDate>=start&&analysisDate<=end})}if(selectedClient){dataFinalizada=dataFinalizada.filter(b=>b.client===selectedClient)}if(selectedSalesman){dataFinalizada=dataFinalizada.filter(b=>b.salesman===selectedSalesman)}if(selectedAction){dataFinalizada=dataFinalizada.filter(b=>b.finalAction===selectedAction)}dataFinalizada.sort((a,b)=>new Date(b.technicalOpinionDate)-new Date(b.technicalOpinionDate));if(dataFinalizada.length===0){finalizadoBody.innerHTML=`<tr><td colspan="8" style="text-align: center;">Nenhuma garantia finalizada encontrada com estes filtros.</td></tr>`;}else{finalizadoBody.innerHTML=dataFinalizada.map(renderFinalizadoTableRow).join('')}finalizadoBody.querySelectorAll('.finalizado-checkbox').forEach(box=>box.addEventListener('change',updateBatchEditFinalizadoButtonState));finalizadoBody.querySelectorAll('.return-to-analysis-btn').forEach(btn=>btn.addEventListener('click',function(){showConfirmModal('Retornar para Análise?','Esta bateria voltará para a fila de análise do Reginaldo. O parecer anterior será apagado.',()=>returnToAnalysis(this.dataset.id))}));finalizadoBody.querySelectorAll('.name-edit-btn').forEach(btn=>btn.addEventListener('click',function(){openClientEditModal(this.dataset.id)}));finalizadoBody.querySelectorAll('.remove-btn').forEach(btn=>btn.addEventListener('click',function(){showConfirmModal('Remover Bateria da Nuvem','Tem a certeza que deseja remover esta bateria? A ação é irreversível.',()=>removeBattery(this.dataset.id))}));updateBatchEditFinalizadoButtonState();applyUIRestrictions();}
 
         function updateDispatchPage(){const searchTerm=dispatchSearchInput.value.trim().toLowerCase();const pendingDispatch=batteryData.filter(b=>b.status==='finalized'&&(b.finalAction.includes('PROCEDENTE')||b.finalAction.includes('CORTESIA'))&&!b.dispatchOrderId);let groupedByClient=pendingDispatch.reduce((acc,battery)=>{const key=`${battery.client}|${battery.salesman}`;if(!acc[key]){acc[key]=[]}acc[key].push(battery);return acc},{});if(searchTerm){groupedByClient=Object.fromEntries(Object.entries(groupedByClient).filter(([key])=>key.toLowerCase().includes(searchTerm)))}dispatchClientList.innerHTML='';if(Object.keys(groupedByClient).length===0){dispatchClientList.innerHTML='<div class="info-section"><p>Nenhuma expedição pendente encontrada.</p></div>';return}for(const key in groupedByClient){const[client,salesman]=key.split('|');const batteries=groupedByClient[key];const clientCard=document.createElement('div');clientCard.className='card';const tableRows=batteries.map(b=>`<tr><td>${b.code}</td><td>${b.batteryModel}</td><td><span class="status-badge ${b.finalAction.includes('PROCEDENTE')?'action-approved':'action-courtesy'}">${b.finalAction}</span></td><td>${b.operationCode||'-'}</td></tr>`).join('');clientCard.innerHTML=`<div class="card-header" style="align-items: flex-start;"><div><h3 class="card-title" style="margin-bottom: 5px;">Cliente: ${client}</h3><p style="font-size: 14px; color: var(--fabreck-gray);">Vendedor: ${salesman}</p></div><div style="display:flex; gap:10px;"><button class="btn btn-info summary-dispatch-btn" data-key="${key}" style="margin-top:0; white-space: nowrap; width: auto;"><i class="fas fa-file-alt"></i> Resumo</button><button class="btn btn-primary generate-dispatch-order-btn" data-key="${key}" style="margin-top: 0; white-space: nowrap; width: auto;"><i class="fas fa-print"></i> Gerar Pedido (${batteries.length})</button></div></div><div class="table-container" style="margin-top: 10px;"><table style="font-size: 12px;"><thead><tr><th>Código Bateria</th><th>Modelo</th><th>Ação</th><th>Cód. Operação</th></tr></thead><tbody>${tableRows}</tbody></table></div>`;dispatchClientList.appendChild(clientCard)}document.querySelectorAll('.summary-dispatch-btn').forEach(btn=>{btn.addEventListener('click',function(){const key=this.dataset.key;const batteries=groupedByClient[key];showDispatchSummary(key.split('|')[0],batteries)})});document.querySelectorAll('.generate-dispatch-order-btn').forEach(btn=>{btn.addEventListener('click',function(){const key=this.dataset.key;const batteries=groupedByClient[key];openDispatchConfirmModal(batteries)})})}
@@ -772,6 +874,218 @@ const batteryModelMap={'A':'FA6AD','B':'FA4D','C':'FA5AD','D':'FA5D','E':'FA5,5D
         function updateLastUpdate(){lastUpdate.textContent=new Date().toLocaleString('pt-BR')}
         
         function generateDispatchPDF(orderId,batteries){const doc=new window.jspdf.jsPDF('l','pt');const today=new Date().toLocaleDateString('pt-BR');const clientName=batteries[0].client;const salesmanName=batteries[0].salesman;doc.setFontSize(20).setFont(undefined,'bold').text('PEDIDO DE EXPEDIÇÃO - GARANTIA',doc.internal.pageSize.getWidth()/2,40,{align:'center'});doc.setFontSize(14).setFont(undefined,'normal').text(`Pedido Nº: ${orderId}`,doc.internal.pageSize.getWidth()/2,58,{align:'center'});let startY=85;doc.setFontSize(12);doc.text(`Cliente:`,40,startY);doc.setFont(undefined,'bold').text(clientName,90,startY);doc.setFont(undefined,'normal').text(`Vendedor:`,40,startY+20);doc.setFont(undefined,'bold').text(salesmanName,100,startY+20);doc.text(`Data de Emissão:`,doc.internal.pageSize.getWidth()-40,startY,{align:'right',baseline:'middle',x:doc.internal.pageSize.getWidth()-120,y:startY});doc.setFont(undefined,'bold').text(today,doc.internal.pageSize.getWidth()-40,startY,{align:'right'});startY+=45;const modelSummary=batteries.reduce((acc,battery)=>{const model=battery.batteryModel||'N/A';acc[model]=(acc[model]||0)+1;return acc},{});startY+=10;doc.setFontSize(14).setFont(undefined,'bold').text('Resumo por Modelo',40,startY);startY+=8;const summaryBody=Object.entries(modelSummary).map(([model,count])=>[model,count]);doc.autoTable({startY:startY,head:[['Modelo','Quantidade']],body:summaryBody,theme:'grid',headStyles:{fillColor:[0,71,171]},columnStyles:{1:{halign:'center'}},tableWidth:300});startY=doc.lastAutoTable.finalY+20;const tableBody=batteries.map(b=>[b.code,b.batteryModel,b.timestamp?new Date(b.timestamp).toLocaleDateString('pt-BR'):'-',getUserFullName(b.createdBy),b.receiptDate?new Date(b.receiptDate).toLocaleDateString('pt-BR'):'-',getUserFullName(b.receivedBy),b.technicalOpinionDate?new Date(b.technicalOpinionDate).toLocaleDateString('pt-BR'):'-',getUserFullName(b.analyzedBy),b.finalAction,b.recommendation||'-']);doc.autoTable({startY:startY,head:[['Cód. Bateria','Modelo','Data Reg.','Registado por','Data Rec.','Recebido por','Data Análise','Analisado por','Ação Final','Parecer Técnico']],body:tableBody,theme:'grid',styles:{fontSize:8},headStyles:{fillColor:[30,30,30]},columnStyles:{9:{cellWidth:'auto'}}});let finalY=doc.lastAutoTable.finalY+40;if(finalY>doc.internal.pageSize.getHeight()-100){doc.addPage();finalY=80}doc.line(40,finalY,240,finalY);doc.text('Separado por',140,finalY+15,{align:'center'});doc.line(doc.internal.pageSize.getWidth()-240,finalY,doc.internal.pageSize.getWidth()-40,finalY);doc.text('Conferido por',doc.internal.pageSize.getWidth()-140,finalY+15,{align:'center'});drawPdfFooter(doc);doc.output('dataurlnewwindow');}
+        
+        function saveNewPassword(e){e.preventDefault();const currentPassword=document.getElementById('currentPassword').value;const newPassword=document.getElementById('newPassword').value;const confirmNewPassword=document.getElementById('confirmNewPassword').value;const loggedInUser=sessionStorage.getItem('currentUser');if(!loggedInUser)return showNotification('Erro: Utilizador não identificado.','error');let adminUsers=JSON.parse(localStorage.getItem(ADMIN_USERS_KEY));const userToUpdate=adminUsers.find(admin=>admin.user===loggedInUser);if(!userToUpdate||currentPassword!==userToUpdate.pass)return showNotification('A palavra-passe atual está incorreta.','error');if(newPassword.length<3)return showNotification('A nova palavra-passe deve ter pelo menos 3 caracteres.','error');if(newPassword!==confirmNewPassword)return showNotification('As novas palavras-passe não coincidem.','error');userToUpdate.pass=newPassword;localStorage.setItem(ADMIN_USERS_KEY,JSON.stringify(adminUsers));showNotification('Palavra-passe alterada com sucesso!','success');passwordModal.classList.remove('active');passwordChangeForm.reset()}
+        
+        function handleClearDataConfirmation(e){e.preventDefault();const enteredPassword=adminPasswordConfirmInput.value;const loggedInUser=sessionStorage.getItem('currentUser');if(loggedInUser!=='JENILTON')return;const adminUsers=JSON.parse(localStorage.getItem(ADMIN_USERS_KEY));const userToUpdate=adminUsers.find(admin=>admin.user===loggedInUser);if(userToUpdate&&enteredPassword===userToUpdate.pass){showNotification('Senha correta. A limpar os dados...','warning');passwordConfirmModal.classList.remove('active');clearData()}else{showNotification('Palavra-passe incorreta. A limpeza foi cancelada.','error');adminPasswordConfirmInput.value=''}}
+        
+        function generateDetailedFilteredReport(){const data=getFilteredFinalizadasData();if(data.length===0)return showNotification('Nenhum dado no filtro para gerar o relatório.','error');let message=`*Relatório Detalhado de Garantias Finalizadas*\n`;message+=`*Data:* ${new Date().toLocaleDateString('pt-BR')}\n`;message+=`====================================\n\n`;const groupedBySalesman=data.reduce((acc,battery)=>{(acc[battery.salesman]=acc[battery.salesman]||[]).push(battery);return acc},{});for(const salesman in groupedBySalesman){const clientData=groupedBySalesman[salesman];message+=`*VENDEDOR:* ${salesman} (${clientData.length} Baterias)\n`;message+=`------------------------------------\n`;const groupedByClient=clientData.reduce((acc,battery)=>{(acc[battery.client]=acc[battery.client]||[]).push(battery);return acc},{});for(const client in groupedByClient){const batteryData=groupedByClient[client];message+=`  *CLIENTE:* ${client}\n`;const groupedByAction=batteryData.reduce((acc,b)=>{(acc[b.finalAction]=acc[b.finalAction]||[]).push(b);return acc},{});for(const action in groupedByAction){message+=`    *-> Ação:* ${action} (${groupedByAction[action].length} itens)\n`;const groupedByModel=groupedByAction[action].reduce((acc,b)=>{(acc[b.batteryModel]=acc[b.batteryModel]||[]).push(b);return acc},{});for(const model in groupedByModel){const modelBatteries=groupedByModel[model];message+=`      - Modelo ${model}: ${modelBatteries.length} unidades (Códigos: ${modelBatteries.map(b=>b.code).join(', ')})\n`;}}message+=`\n`}}message+=`_Relatório detalhado gerado pelo Sistema de Garantia Fabreck._`;openWhatsAppModal('custom',{message})}
+        
+        function generateTodaySummaryReport(){const today=new Date();today.setHours(0,0,0,0);const todaysEntries=batteryData.filter(b=>{const entryDate=new Date(b.timestamp);return entryDate>=today});if(todaysEntries.length===0){return showNotification('Nenhum registo de garantia feito hoje.','info')}let message=`*RESUMO DE REGISTOS DE GARANTIA - ${new Date().toLocaleDateString('pt-BR')}*\n\n`;const groupedBySalesman=todaysEntries.reduce((acc,battery)=>{(acc[battery.salesman]=acc[battery.salesman]||[]).push(battery);return acc},{});let totalToday=0;Object.keys(groupedBySalesman).sort().forEach(salesman=>{const entries=groupedBySalesman[salesman];const count=entries.length;totalToday+=count;message+=`*VENDEDOR: ${salesman}*\n`;message+=`Total de Baterias Registadas: ${count}\n\n`});message+=`*TOTAL GERAL DO DIA: ${totalToday} BATERIAS*\n\n`;message+=`_Relatório gerado pelo Sistema de Garantia Fabreck._`;openWhatsAppModal('custom',{message:message})}
+        
+        function generatePendingAnalysisReport(){const pendingData=batteryData.filter(b=>b.status==='awaiting_receipt'||b.status==='in_analysis');if(pendingData.length===0){return showNotification('Nenhuma bateria pendente.','info')}let message=`*RESUMO DE BATERIAS PENDENTES*\n`;message+=`*Data:* ${new Date().toLocaleDateString('pt-BR')}\n\n`;const groupedByClient=pendingData.reduce((acc,battery)=>{(acc[battery.client]=acc[battery.client]||[]).push(battery);return acc},{});for(const client in groupedByClient){const batteries=groupedByClient[client];message+=`*CLIENTE: ${client}* (${batteries.length} UNID.)\n`;batteries.forEach(b=>{const statusText=b.status==='awaiting_receipt'?'Aguardando Recebimento':'Em Análise';message+=` • ${b.batteryModel} (${b.code}) - ${statusText}\n`});message+='\n'}openWhatsAppModal('custom',{message})}
+        
+        function generateGeneralSummaryReport(){const finalizedData=batteryData.filter(b=>b.status==='finalized');if(finalizedData.length===0)return showNotification('Nenhuma garantia finalizada para gerar resumo.','info');let message=`*RESUMO GERAL DE GARANTIAS FINALIZADAS*\n`;message+=`*Data:* ${new Date().toLocaleDateString('pt-BR')}\n`;message+=`====================================\n\n`;const groupedBySalesman=finalizedData.reduce((acc,battery)=>{(acc[battery.salesman]=acc[battery.salesman]||[]).push(battery);return acc},{});for(const salesman in groupedBySalesman){const clientData=groupedBySalesman[salesman];message+=`*VENDEDOR:* ${salesman} (${clientData.length} Baterias)\n`;message+=`------------------------------------\n`;const summary=clientData.reduce((acc,b)=>{const key=`${b.batteryModel}|${b.finalAction}`;acc[key]=(acc[key]||0)+1;return acc},{});const models=[...new Set(clientData.map(b=>b.batteryModel))].sort();models.forEach(model=>{message+=`  *MODELO ${model}:*\n`;for(const key in summary){const[modelKey,action]=key.split('|');if(modelKey===model){message+=`    - ${action}: ${summary[key]} unidade(s)\n`;}}});message+=`\n`}message+=`_Resumo geral gerado pelo Sistema de Garantia Fabreck._`;openWhatsAppModal('custom',{message})}
+        
+        function openWhatsAppModal(type,data=null){let message='';let targetPhone='';whatsappOptionsMenuModal.classList.remove('active');if(type==='custom'){message=data.message;if(data.phone)targetPhone=data.phone}if(!message){showNotification('Não foi possível gerar a mensagem.','error');return}whatsappMessagePreview.textContent=message;const encodedMessage=encodeURIComponent(message);whatsappUrl=targetPhone?`https://wa.me/${targetPhone.replace(/\D/g,'')}?text=${encodedMessage}`:`https://web.whatsapp.com/send?text=${encodedMessage}`;whatsappPreviewModal.classList.add('active');}
+        
+        function showDispatchSummary(clientName,clientBatteries){if(!clientBatteries||clientBatteries.length===0)return;currentDispatchSummaryData={clientName,batteries:clientBatteries};dispatchSummaryTitle.textContent=`Resumo para Expedição: ${clientName}`;let summaryHtml=`
+        <p><strong>Cliente:</strong> ${clientName}</p>
+        <p><strong>Vendedor:</strong> ${clientBatteries[0]?.salesman||'N/A'}</p>
+        <p><strong>Total de Baterias a Enviar:</strong> ${clientBatteries.length}</p>
+        <hr style="margin: 10px 0;">
+        <p><strong>Resumo de Ações e Modelos:</strong></p>
+        <ul>
+    `;const summary=clientBatteries.reduce((acc,battery)=>{const key=`${battery.finalAction}|${battery.batteryModel}`;acc[key]=(acc[key]||0)+1;return acc},{});for(const[key,count]of Object.entries(summary).sort((a,b)=>a[0].localeCompare(b[0]))){summaryHtml+=`<li>- ${key} (Cód. Op.: ${clientBatteries.find(b=>`${b.finalAction}|${b.batteryModel}`===key)?.operationCode||'-'}): ${count} unidade(s)</li>`}summaryHtml+='</ul>';dispatchSummaryBody.innerHTML=summaryHtml;dispatchSummaryModal.classList.add('active')}
+
+        function showDispatchSummary(clientName,clientBatteries){if(!clientBatteries||clientBatteries.length===0)return;currentDispatchSummaryData={clientName,batteries:clientBatteries};dispatchSummaryTitle.textContent=`Resumo para Expedição: ${clientName}`;let summaryHtml=`
+        <p><strong>Cliente:</strong> ${clientName}</p>
+        <p><strong>Vendedor:</strong> ${clientBatteries[0]?.salesman||'N/A'}</p>
+        <p><strong>Total de Baterias a Enviar:</strong> ${clientBatteries.length}</p>
+        <hr style="margin: 10px 0;">
+        <p><strong>Resumo de Ações e Modelos:</strong></p>
+        <ul>
+    `;const summary=clientBatteries.reduce((acc,battery)=>{const key=`${battery.finalAction}|${battery.batteryModel}`;acc[key]=(acc[key]||0)+1;return acc},{});for(const[key,count]of Object.entries(summary).sort((a,b)=>a[0].localeCompare(b[0]))){summaryHtml+=`<li>- ${key} (Cód. Op.: ${clientBatteries.find(b=>`${b.finalAction}|${b.batteryModel}`===key)?.operationCode||'-'}): ${count} unidade(s)</li>`}summaryHtml+='</ul>';dispatchSummaryBody.innerHTML=summaryHtml;dispatchSummaryModal.classList.add('active')}
+        
+        function openDispatchConfirmModal(batteries){dispatchBatteriesToConfirm=batteries;const clientName=batteries[0]?.client||'Lote';dispatchConfirmTitle.textContent=`Finalizar Expedição para ${clientName}`;dispatchOSCode.value='';dispatchConfirmModal.classList.add('active');}
+        
+        async function confirmDispatch(batteries){const orderId=dispatchOSCode.value.trim().toUpperCase();const currentUser=sessionStorage.getItem('currentUser')||'unknown';if(!orderId){return showNotification('A Ordem de Serviço (O.S.) é obrigatória.','error')}try{const batch=writeBatch(db);const dispatchDate=new Date().toISOString();batteries.forEach(battery=>{const docRef=doc(db,"batteries",battery.id);batch.update(docRef,{dispatchOrderId:orderId,dispatchDate:dispatchDate,dispatchedBy:currentUser});});await batch.commit();generateDispatchPDF(orderId,batteries);addActivity('fas fa-truck',`${batteries.length} baterias expedidas com O.S. ${orderId}.`);dispatchConfirmModal.classList.remove('active');showNotification(`${batteries.length} baterias prontas para envio! Pedido de Expedição gerado.`, 'success');}catch(error){console.error("Erro ao confirmar expedição:",error);showNotification("Erro ao finalizar expedição. Tente novamente.", "error");}}
+        
+        function getReceiptsData() {
+            // Filtra todos os itens que AINDA NÃO FORAM RECEBIDOS
+            return batteryData.filter(b => b.status === 'awaiting_receipt');
+        }
+
+        function getFilteredReceiptsData() {
+            const searchTerm = receiptSearchInput.value.trim().toLowerCase();
+            const selectedClient = receiptClientFilter.value;
+            let dataToReceive = getReceiptsData();
+            
+            if(selectedClient){dataToReceive=dataToReceive.filter(b=>b.client===selectedClient)}
+            if(searchTerm){dataToReceive=dataToReceive.filter(b=>(b.code.toLowerCase().includes(searchTerm))||b.client.toLowerCase().includes(searchTerm)||b.salesman.toLowerCase().includes(searchTerm))}
+
+            dataToReceive.sort((a,b)=>new Date(a.timestamp)-new Date(b.timestamp));
+            return dataToReceive;
+        }
+
+        function exportReceiptsToExcel() {
+            const data = getFilteredReceiptsData();
+            if (data.length === 0) return showNotification('Nenhuma bateria pendente de recebimento no filtro para exportar.', 'error');
+
+            const mappedData = data.map(b => ({
+                'Código Bateria': b.code,
+                'Modelo': b.batteryModel,
+                'Cliente': b.client,
+                'Vendedor': b.salesman,
+                'Data Envio': b.submissionDate ? new Date(b.submissionDate).toLocaleDateString('pt-BR') : 'N/A',
+                'Status Prazo': b.warranty_period_status === 'warranty' ? 'Em Garantia' : 'Fora do Prazo',
+                'Registado por': getUserFullName(b.createdBy)
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(mappedData);
+            ws['!autofilter'] = { ref: ws['!ref'] };
+            const colWidths = Object.keys(mappedData[0]).map(key => ({ wch: Math.max(key.length, ...mappedData.map(row => (row[key] || '').toString().length)) + 2 }));
+            ws['!cols'] = colWidths;
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Recebimentos Pendentes");
+            XLSX.writeFile(wb, `relatorio_recebimento_pendente_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            showNotification(`Exportação de ${data.length} registos concluída.`, 'success');
+        }
+
+        function generateReceiptsPDF() {
+            const data = getFilteredReceiptsData();
+            if (data.length === 0) {
+                showNotification('Nenhuma bateria pendente de recebimento no filtro para gerar o PDF.', 'info');
+                return;
+            }
+
+            try {
+                const doc = new window.jspdf.jsPDF('p', 'pt');
+                let startY = drawPdfHeader(doc, 'Relatório de Recebimentos Pendentes (Filtrado)');
+
+                // Resumo
+                doc.setFontSize(10).setFont(undefined, 'normal');
+                doc.text(`Total de Baterias no Relatório: ${data.length}`, 40, startY);
+                startY += 20;
+
+                // Tabela de Dados
+                const tableBody = data.map(b => [
+                    b.code,
+                    b.batteryModel,
+                    b.client,
+                    b.salesman,
+                    new Date(b.submissionDate).toLocaleDateString('pt-BR'),
+                    b.warranty_period_status === 'warranty' ? 'Sim' : 'Não'
+                ]);
+
+                doc.autoTable({
+                    startY: startY,
+                    head: [['Código Bateria', 'Modelo', 'Cliente', 'Vendedor', 'Data Envio', 'Em Garantia?']],
+                    body: tableBody,
+                    theme: 'grid',
+                    headStyles: { fillColor: [0, 71, 171] },
+                    styles: { fontSize: 8, cellPadding: 2 },
+                    margin: { left: 40, right: 40 }
+                });
+
+                drawPdfFooter(doc);
+                doc.output('dataurlnewwindow');
+            } catch (error) {
+                showNotification(`Erro ao gerar PDF de recebimento: ${error.message}`, 'error');
+                console.error("Erro PDF Recebimento:", error);
+            }
+        }
+
+        function getAnalysisData() {
+            // Filtra todos os itens que estão EM ANÁLISE (Recebidos, mas não finalizados)
+            return batteryData.filter(b => b.status === 'in_analysis');
+        }
+
+        function getFilteredAnalysisData() {
+            const selectedClient=analysisClientFilter.value;
+            const selectedSalesman=analysisSalesmanFilter.value;
+            const searchTerm=analysisSearchInput.value.trim().toLowerCase();
+            let dataToAnalyze=getAnalysisData();
+            
+            if(selectedClient){dataToAnalyze=dataToAnalyze.filter(b=>b.client===selectedClient)}
+            if(selectedSalesman){dataToAnalyze=dataToAnalyze.filter(b=>b.salesman===selectedSalesman)}
+            if(searchTerm){dataToAnalyze=dataToAnalyze.filter(b=>(b.operationCode&&b.operationCode.toLowerCase().includes(searchTerm))||b.code.toLowerCase().includes(searchTerm)||b.batteryModel.toLowerCase().includes(searchTerm))}
+
+            dataToAnalyze.sort((a,b)=>new Date(a.receiptDate)-new Date(b.receiptDate));
+            return dataToAnalyze;
+        }
+
+        function exportAnalysisToExcel() {
+            const data = getFilteredAnalysisData();
+            if (data.length === 0) return showNotification('Nenhuma bateria na fila de análise no filtro para exportar.', 'error');
+
+            const mappedData = data.map(b => ({
+                'Cód. Operação': b.operationCode || 'N/A',
+                'Código Bateria': b.code,
+                'Modelo': b.batteryModel,
+                'Cliente': b.client,
+                'Vendedor': b.salesman,
+                'Data Recebimento': b.receiptDate ? new Date(b.receiptDate).toLocaleDateString('pt-BR') : 'N/A',
+                'Recebido por': getUserFullName(b.receivedBy),
+                'Status Prazo': b.warranty_period_status === 'warranty' ? 'Em Garantia' : 'Fora do Prazo'
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(mappedData);
+            ws['!autofilter'] = { ref: ws['!ref'] };
+            const colWidths = Object.keys(mappedData[0]).map(key => ({ wch: Math.max(key.length, ...mappedData.map(row => (row[key] || '').toString().length)) + 2 }));
+            ws['!cols'] = colWidths;
+
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Análises Pendentes");
+            XLSX.writeFile(wb, `relatorio_analise_pendente_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            showNotification(`Exportação de ${data.length} registos concluída.`, 'success');
+        }
+
+        function generateAnalysisPDF() {
+            const data = getFilteredAnalysisData();
+            if (data.length === 0) {
+                showNotification('Nenhuma bateria na fila de análise no filtro para gerar o PDF.', 'info');
+                return;
+            }
+
+            try {
+                const doc = new window.jspdf.jsPDF('p', 'pt');
+                let startY = drawPdfHeader(doc, 'Relatório de Baterias Prontas para Análise (Filtrado)');
+
+                // Resumo
+                doc.setFontSize(10).setFont(undefined, 'normal');
+                doc.text(`Total de Baterias no Relatório: ${data.length}`, 40, startY);
+                startY += 20;
+
+                // Tabela de Dados
+                const tableBody = data.map(b => [
+                    b.operationCode || '-',
+                    b.code,
+                    b.batteryModel,
+                    b.client,
+                    new Date(b.receiptDate).toLocaleDateString('pt-BR'),
+                    getUserFullName(b.receivedBy),
+                    b.warranty_period_status === 'warranty' ? 'Sim' : 'Não'
+                ]);
+
+                doc.autoTable({
+                    startY: startY,
+                    head: [['Cód. Op.', 'Código Bateria', 'Modelo', 'Cliente', 'Data Rec.', 'Recebido por', 'Em Garantia?']],
+                    body: tableBody,
+                    theme: 'grid',
+                    headStyles: { fillColor: [243, 156, 18] }, // Cor laranja para destaque
+                    styles: { fontSize: 8, cellPadding: 2 },
+                    margin: { left: 40, right: 40 }
+                });
+
+                drawPdfFooter(doc);
+                doc.output('dataurlnewwindow');
+            } catch (error) {
+                showNotification(`Erro ao gerar PDF de análise: ${error.message}`, 'error');
+                console.error("Erro PDF Análise:", error);
+            }
+        }
         
         function saveNewPassword(e){e.preventDefault();const currentPassword=document.getElementById('currentPassword').value;const newPassword=document.getElementById('newPassword').value;const confirmNewPassword=document.getElementById('confirmNewPassword').value;const loggedInUser=sessionStorage.getItem('currentUser');if(!loggedInUser)return showNotification('Erro: Utilizador não identificado.','error');let adminUsers=JSON.parse(localStorage.getItem(ADMIN_USERS_KEY));const userToUpdate=adminUsers.find(admin=>admin.user===loggedInUser);if(!userToUpdate||currentPassword!==userToUpdate.pass)return showNotification('A palavra-passe atual está incorreta.','error');if(newPassword.length<3)return showNotification('A nova palavra-passe deve ter pelo menos 3 caracteres.','error');if(newPassword!==confirmNewPassword)return showNotification('As novas palavras-passe não coincidem.','error');userToUpdate.pass=newPassword;localStorage.setItem(ADMIN_USERS_KEY,JSON.stringify(adminUsers));showNotification('Palavra-passe alterada com sucesso!','success');passwordModal.classList.remove('active');passwordChangeForm.reset()}
         
